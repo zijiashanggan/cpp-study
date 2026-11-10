@@ -123,7 +123,8 @@
   .t { color: #7dd3fc; }
   .s { color: #a5e075; }
   .c { color: #5c6b7a; font-style: italic; }
-  .n { color: #f0a868; }
+  /* 数字 token 用 .num：.n 是卡片编号徽章（24×24），两者不能共用类名 */
+  .num { color: #f0a868; }
 
   ul.pts { margin: 10px 0 0; padding-left: 18px; font-size: 14px; color: #b9c4d1; }
   ul.pts li { margin: 5px 0; }
@@ -1077,7 +1078,7 @@ function hl(src) {
   return esc.replace(re, function (m, c1, c2, c3, word, num) {
     if (c1) return '<span class="c">' + m + '</span>';
     if (c2 || c3) return '<span class="s">' + m + '</span>';
-    if (num) return '<span class="n">' + m + '</span>';
+    if (num) return '<span class="num">' + m + '</span>';
     if (word) {
       if (KEY.indexOf(word) > -1) return '<span class="k">' + m + '</span>';
       if (TYP.indexOf(word) > -1) return '<span class="t">' + m + '</span>';
