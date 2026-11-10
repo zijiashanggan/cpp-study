@@ -104,6 +104,9 @@
   .carebody p{margin:0 0 9px}
   .carebody p:last-child{margin-bottom:0}
   .carebody b{color:#e6edf3}
+  .carebody p.sayl{font-size:12.5px;color:#c7d2df;padding:8px 11px;border-radius:8px;background:#0f151d;border:1px solid #22303f}
+  .carebody p.sayl b{color:#5eead4}
+  .carebody p.sayl + p.sayl b{color:#a9c1f5}
   .plainline{
     padding:10px 12px;border-left:3px solid rgba(94,234,212,.6);border-radius:0 8px 8px 0;
     background:rgba(94,234,212,.06);font-size:13.5px;color:#d8f6ef;margin:0 0 12px;
@@ -189,6 +192,11 @@
   .brow .code{margin:5px 0 0}
   .brow.trap p{color:#f2c3cb}
   .brow.trap .k{color:#f7768e}
+  .brow.say .k{color:#5eead4}
+  .brow.say p{color:#d8f6ef}
+  .brow.from .k{color:#a9c1f5}
+  .brow.from p{color:#dbe4f3}
+  .brow p b{color:#fff;font-weight:700}
   .bnote{
     margin-top:4px;padding:9px 11px;border-radius:8px;background:rgba(122,162,247,.07);
     border:1px solid rgba(122,162,247,.2);font-size:12.5px;color:#a9c1f5;
@@ -546,161 +554,788 @@ var D = [
 ['math','pow','算 x 的 y 次方。','double pow(double x, double y);','求幂。','返回：x 的 y 次方（double）。','pow 返回 double，算完再交给整数会丢精度；嵌入式里能用乘法就别用 pow，慢而且要把数学库链进来。','double v = pow(2, 10);  // 1024']
 ];
 
+/* 读音 + 名字来源 + 带注释的示例（键 = 组id:名字）
+   s = 怎么念（分音节 ｜ IPA ｜ 中文谐音）
+   o = 名字怎么来的（**x** 会被渲染成加粗）
+   e = 覆盖原示例，每一行都加中文注释 */
+var META = {
+
+/* ---------- C 字符串 ---------- */
+'cstr:strlen': {
+  s: 'str-len ｜ /ˌes tiː ˈɑːr ˈlen/ ｜ 艾斯-提-阿-冷（也有人直接读 string-length）',
+  o: '**str**ing **len**gth —— str 是 string（字符串）前三个字母，len 是 length（长度）前三个字母。合起来就是“字符串的长度”。',
+  e: `char s[] = "hello";
+size_t n = strlen(s);      // 从 s 开头数到结尾的 \\0 就停，所以是 5，不是 6
+printf("%zu\\n", n);        // size_t 是无符号整数，占位符要用 %zu，写 %d 会打印错`
+},
+'cstr:strcpy': {
+  s: 'str-copy ｜ /ˌes tiː ˈɑːr ˈkɒpi/ ｜ 艾斯-提-阿-考皮（常省略成 string-copy）',
+  o: '**str**ing **cpy** —— cpy 是 copy（复制）挖掉元音字母的写法，C 语言里为了名字短，习惯这么缩。',
+  e: `char buf[16];             // 先准备足够大的盒子，16 个字节够放 hello
+strcpy(buf, "hello");     // 把 hello 连同结尾的 \\0 一起抄进去
+printf("%s\\n", buf);       // hello
+// 盒子只有 6 个字节却抄 10 个字的句子，多出来的部分会写到盒子外面去`
+},
+'cstr:strncpy': {
+  s: 'str-n-copy ｜ /ˌes tiː ˈɑːr en ˈkɒpi/ ｜ 艾斯-提-阿-恩-考皮',
+  o: '**str**ing **n** **cpy** —— 中间的 n 是 number（个数）的意思，表示“只抄 n 个字符”。',
+  e: `char buf[8];                          // 只有 8 个格子
+strncpy(buf, "hello world", 7);       // 只抄前 7 个字符：hello w
+buf[7] = '\\0';                        // 源串比 7 长时它不补结尾 0，得自己补
+printf("%s\\n", buf);                  // hello w（补了 0 才不会带出一串乱码）`
+},
+'cstr:strcmp': {
+  s: 'str-cmp ｜ /ˌes tiː ˈɑːr ˈkʌmp/ ｜ 艾斯-提-阿-康普（完整读 string-compare）',
+  o: '**str**ing **cmp** —— cmp 是 compare（比较）挖掉元音的缩写。',
+  e: `char a[] = "abc";
+if (strcmp(a, "abc") == 0) {   // 一样时返回 0，所以跟 0 比
+    puts("一样");
+}
+// 不能写 a == "abc"：那比的是两块内存的地址，不是内容`
+},
+'cstr:strcat': {
+  s: 'str-cat ｜ /ˌes tiː ˈɑːr ˈkæt/ ｜ 艾斯-提-阿-凯特（注意不是“猫”）',
+  o: '**str**ing **cat** —— cat 是 concatenate（连接、串起来）的缩写，跟猫一点关系没有。',
+  e: `char buf[16] = "ab";      // dest 本身必须已经是合法字符串，结尾有 \\0
+strcat(buf, "cd");        // 从 buf 的 \\0 那里开始往后接
+printf("%s\\n", buf);       // abcd`
+},
+'cstr:strstr': {
+  s: 'str-str ｜ /ˌes tiː ˈɑːr ˈes tiː ˈɑːr/ ｜ 艾斯-提-阿-艾斯-提-阿（读快了像 string-string）',
+  o: '**str**ing **str**ing —— 两个 string 首尾相连，意思是“在一个字符串里找另一个字符串”。',
+  e: `char *p = strstr("a=1;b=2", "b=");   // 找 b= 第一次出现的位置
+if (p != NULL) {                     // 找不到会给 NULL，不判空就崩
+    printf("%s\\n", p);               // b=2（从找到的地方一直打到结尾）
+}`
+},
+'cstr:strchr': {
+  s: 'str-chr ｜ /ˌes tiː ˈɑːr ˈsiː eɪtʃ ɑːr/ ｜ 艾斯-提-阿-西-诶奇-阿（也读 string-char）',
+  o: '**str**ing **chr** —— chr 是 character（字符）的缩写，说明它找的是单个字符，不是一整串。',
+  e: `char *p = strchr("a/b/c", '/');   // 找斜杠第一次出现的位置
+if (p) printf("%s\\n", p);         // /b/c
+// 找不到时 p 是 NULL，直接 printf 会崩`
+},
+'cstr:strtok': {
+  s: 'str-tok ｜ /ˌes tiː ˈɑːr ˈtɒk/ ｜ 艾斯-提-阿-托克（完整读 string-token）',
+  o: '**str**ing **tok** —— tok 是 token（一段、一个词）的缩写，意思是把长串切成一个个 token。',
+  e: `char s[] = "a,b,c";                    // 必须是自己能改的数组，不能写字符串常量
+char *p = strtok(s, ",");              // 第一次传原串，它会就地切
+while (p != NULL) {
+    puts(p);                           // 依次打印 a、b、c
+    p = strtok(NULL, ",");             // 后面都传 NULL，表示“接着上次的位置切”
+}`
+},
+'cstr:strncmp': {
+  s: 'str-n-cmp ｜ /ˌes tiː ˈɑːr en ˈkʌmp/ ｜ 艾斯-提-阿-恩-康普',
+  o: '**str**ing **n** **cmp** —— n 是“只比前 n 个字符”，cmp 是 compare（比较）。',
+  e: `char cmd[] = "AT+OK";
+if (strncmp(cmd, "AT+", 3) == 0) {   // 只看前 3 个字符是不是 AT+
+    puts("这是 AT 指令");
+}
+// 判断前缀就用它；n 写大了会把后面不同的地方也比进去`
+},
+'cstr:strerror': {
+  s: 'str-error ｜ /ˌes tiː ˈɑːr ˈerə/ ｜ 艾斯-提-阿-诶若',
+  o: '**str**ing **error** —— 把错误编号变成一段字符串，也就是一段人话。',
+  e: `FILE *fp = fopen("no.txt", "r");
+if (fp == NULL) {                     // 打开失败
+    printf("%s\\n", strerror(errno));   // 把 errno 翻成人话，例如 No such file
+}
+// 它返回的是公用缓冲区，再调一次就被覆盖，别长期存这个指针`
+},
+
+/* ---------- C 内存 ---------- */
+'cmem:memcpy': {
+  s: 'mem-copy ｜ /ˈmem kɒpi/ ｜ 迈姆-考皮（mem 读“迈姆”，不读“么姆”）',
+  o: '**mem**ory **c**o**py** —— memory（内存）的 mem + copy（复制）里取 c 和 py。',
+  e: `int a[3] = {1, 2, 3};
+int b[3];
+memcpy(b, a, sizeof(a));     // 第三个参数是字节数：3 个 int = 12 字节
+printf("%d\\n", b[2]);        // 3
+// 写成 memcpy(b, a, 3) 就只拷了 3 个字节，连一个半 int 都不到`
+},
+'cmem:memmove': {
+  s: 'mem-move ｜ /ˈmem muːv/ ｜ 迈姆-木夫',
+  o: '**mem**ory **move** —— 内存搬家。跟 memcpy 的区别是它允许“搬到自己身上”。',
+  e: `char s[] = "abcdef";
+memmove(s, s + 1, strlen(s));   // 把从第 2 个字符起的 6 个字节挪到开头
+printf("%s\\n", s);              // bcdef（换成 memcpy 可能得到 bbcdef）`
+},
+'cmem:memset': {
+  s: 'mem-set ｜ /ˈmem set/ ｜ 迈姆-塞特',
+  o: '**mem**ory **set** —— 把一块内存“设成”同一个字节。',
+  e: `int a[10];
+memset(a, 0, sizeof(a));   // 最常用的用法：整块清零，40 个字节全涂 0
+printf("%d\\n", a[0]);      // 0
+// 别拿它把 int 设成 1：那是 4 个字节都涂 1，得到 16843009`
+},
+'cmem:memcmp': {
+  s: 'mem-cmp ｜ /ˈmem ˈkʌmp/ ｜ 迈姆-康普',
+  o: '**mem**ory **cmp**are —— 按字节比较两块内存。',
+  e: `int a[3] = {1, 2, 3};
+int b[3] = {1, 2, 3};
+if (memcmp(a, b, sizeof(a)) == 0) {   // 返回 0 表示一模一样
+    puts("一样");
+}`
+},
+
+/* ---------- 格式化与数字转换 ---------- */
+'fmt:printf': {
+  s: 'print-f ｜ /ˈprɪnt ef/ ｜ 普林特-艾弗（公认读法就是 print-eff）',
+  o: '**print** **f**ormatted —— print（打印）+ formatted（按格式排好），意思是“格式化打印”。',
+  e: `int n = 42;
+printf("n=%d\\n", n);   // %d 是整数占位符，\\n 是换行
+// 屏幕上出现：n=42`
+},
+'fmt:snprintf': {
+  s: 's-n-print-f ｜ /ˌes en ˈprɪnt ef/ ｜ 艾斯-恩-普林特-艾弗（常见读 sn-print-eff）',
+  o: '**s**tring **n** **printf** —— s 是“写进字符串”，n 是“最多写 n 个字节”，printf 是“格式化”。',
+  e: `char buf[8];
+int n = snprintf(buf, sizeof(buf), "%s", "hello world");
+printf("[%s] n=%d\\n", buf, n);   // [hello w] n=11
+// n 是“本来想写 11 个字”，不是你实际写进去的 7 个`
+},
+'fmt:sscanf': {
+  s: 's-scan-f ｜ /ˌes ˈskæn ef/ ｜ 艾斯-斯坎-艾弗（常见读 s-scan-eff）',
+  o: '**s**tring **scan** **f**ormatted —— 从字符串（不是键盘）里按格式“扫描”出数据。',
+  e: `int a = 0, b = 0;
+int n = sscanf("12,34", "%d,%d", &a, &b);   // 变量前必须加 & 取地址
+if (n == 2) {                               // 返回成功读到的项数，先检查再用
+    printf("%d\\n", a + b);                  // 46
+}`
+},
+'fmt:atoi': {
+  s: '两种都常见：A-to-I ｜ /ˌeɪ tuː ˈaɪ/ ｜ 诶-图-艾　·　at-oy ｜ /ˈætɔɪ/ ｜ 阿托伊',
+  o: '**a**scii **to** **i**nteger —— a 是 ASCII（字符串），to 是“转成”，i 是 integer（整数）。按字母念是 A-to-I，当成一个词念就是 at-oy。',
+  e: `int n = atoi("123");   // 123
+int m = atoi("abc");   // 0，跟输入 "0" 完全分不出来，所以它没法报错
+// 想区分“真的是 0”和“转失败了”，改用 strtol`
+},
+'fmt:strtol': {
+  s: 'str-to-l ｜ /ˌes tiː ˈɑːr tuː ˈel/ ｜ 艾斯-提-阿-图-艾尔（也读 string-to-long）',
+  o: '**str**ing **to** **l**ong —— 字符串转成长整数 long。',
+  e: `char *end = NULL;
+long v = strtol("0x1A", &end, 16);   // 16 表示按十六进制读：1A = 26
+printf("%ld 停在 [%s]\\n", v, end);    // 26 停在 []，因为 end 指到了结尾的 \\0
+// 如果 end 还等于原串开头，说明一个字都没转成功`
+},
+
+/* ---------- 文件读写 ---------- */
+'file:fopen': {
+  s: 'f-open ｜ /ˈef ˈəʊpən/ ｜ 艾弗-欧盆',
+  o: '**f**ile **open** —— file（文件）+ open（打开）。f 打头是 C 文件系列函数的老规矩。',
+  e: `FILE *fp = fopen("a.txt", "r");   // 用只读方式打开
+if (fp == NULL) {                    // 打不开就返回 NULL，这一步不能省
+    perror("open");                  // 顺便打印失败原因
+    return 1;                        // 直接退出，别接着往下读
+}`
+},
+'file:fclose': {
+  s: 'f-close ｜ /ˈef kləʊz/ ｜ 艾弗-克洛斯',
+  o: '**f**ile **close** —— 关闭文件，同时把缓冲区里还没写出去的东西冲出去。',
+  e: `FILE *fp = fopen("a.txt", "w");
+fprintf(fp, "hi\\n");
+fclose(fp);    // 不调用它，最后一段内容可能还躺在缓冲区里没落盘
+fp = NULL;     // 关完就置空，防止后面当野指针用`
+},
+'file:fread': {
+  s: 'f-read ｜ /ˈef riːd/ ｜ 艾弗-瑞德',
+  o: '**f**ile **read** —— 从文件里“读”。',
+  e: `char buf[65] = {0};                   // 多留一个字节，给结尾的 \\0
+size_t n = fread(buf, 1, 64, fp);     // 每块 1 字节，最多读 64 块
+printf("读到 %zu 字节：%s\\n", n, buf);   // size 传 1 时，n 正好就是字节数
+// 返回值是“元素个数”，size 传 4 时 n 要乘 4 才是字节数`
+},
+'file:fwrite': {
+  s: 'f-write ｜ /ˈef raɪt/ ｜ 艾弗-瑞特',
+  o: '**f**ile **write** —— 往文件里“写”。',
+  e: `int v[3] = {1, 2, 3};
+size_t n = fwrite(v, sizeof(int), 3, fp);   // 写 3 个元素，每个 4 字节
+if (n != 3) {                                // 返回实际写出的元素个数
+    puts("没写全，可能是磁盘满了");           // 不检查就会误以为写成功了
+}`
+},
+'file:fseek': {
+  s: 'f-seek ｜ /ˈef siːk/ ｜ 艾弗-西克',
+  o: '**f**ile **seek** —— seek 是“寻找、定位”，把文件的读写位置挪到指定地方。',
+  e: `fseek(fp, 0, SEEK_END);   // 挪到文件末尾：偏移 0、从末尾算
+long sz = ftell(fp);      // 这时候的位置数值就是文件大小
+fseek(fp, 0, SEEK_SET);   // 一定要挪回开头，否则后面读不到东西`
+},
+'file:ftell': {
+  s: 'f-tell ｜ /ˈef tel/ ｜ 艾弗-泰尔',
+  o: '**f**ile **tell** —— tell 是“告诉”，让它告诉你“现在读到第几个字节了”。',
+  e: `fseek(fp, 0, SEEK_END);
+long sz = ftell(fp);      // 从头算的字节偏移，也就是文件大小
+printf("大小 %ld\\n", sz);
+fseek(fp, 0, SEEK_SET);   // 用完记得回到开头`
+},
+'file:fprintf': {
+  s: 'f-print-f ｜ /ˈef ˈprɪnt ef/ ｜ 艾弗-普林特-艾弗',
+  o: '**f**ile **print** **f**ormatted —— 跟 printf 一样排版，只是写进“文件”而不是屏幕。',
+  e: `fprintf(stderr, "err=%d\\n", 3);      // 写到标准错误，重定向输出时也不会丢
+FILE *log = fopen("run.log", "a");   // a 表示追加，不会清掉老日志
+if (log) {
+    fprintf(log, "start\\n");         // 往日志里写一行
+    fclose(log);                     // 写完必须关，否则可能少最后几行
+}`
+},
+'file:fgets': {
+  s: 'f-get-s ｜ /ˈef ɡet ˈes/ ｜ 艾弗-盖特-艾斯',
+  o: '**f**ile **get** **s**tring —— 从文件里“取一段字符串”，一次取一行。',
+  e: `char line[128];
+while (fgets(line, sizeof(line), fp) != NULL) {   // 读到文件尾会给 NULL，循环就结束
+    printf("%s", line);                          // 换行符它自己也存进来了，所以不用再补 \\n
+}
+// 一行超过 127 个字时只读到一半，剩下的一半下次循环再读`
+},
+
+/* ---------- C++ std::string ---------- */
+'string:size()': {
+  s: 'size ｜ /saɪz/ ｜ 赛兹（完整读 string-size）',
+  o: '**size** —— 就是英文 size（大小、数量），问“里面有几个字符”。',
+  e: `std::string s = "hello";
+std::cout << s.size() << "\\n";   // 5（不含结尾的 \\0，string 自己管着）
+// size() 是无符号数，空串上写 size()-1 会变成一个天文数字`
+},
+'string:empty()': {
+  s: 'empty ｜ /ˈempti/ ｜ 艾姆普提',
+  o: '**empty** —— 英文 empty（空的），问“是不是空的”。',
+  e: `std::string s;          // 默认造出来就是空串
+if (s.empty()) {        // 空就给 true
+    puts("空");
+}
+// 想表示“不为空”就写 !s.empty()，别绕成 s.size() > 0`
+},
+'string:c_str()': {
+  s: 'c-str ｜ /ˈsiː str/ ｜ 西-斯特（读 C-string）',
+  o: '**c** **_str** —— c 指 C 语言风格，str 是 string；意思是“给我一个 C 语言那种以 \\0 结尾的字符指针”。',
+  e: `std::string s = "a.txt";
+FILE *fp = fopen(s.c_str(), "r");   // fopen 只认 const char*，先转一下
+// c_str() 返回的是“借来的”指针：s 一改动或扩容，它就可能失效`
+},
+'string:substr()': {
+  s: 'sub-str ｜ /ˈsʌb str/ ｜ 萨布-斯特',
+  o: '**sub** **str**ing —— sub 是“从属、下面”，这里指“从原串里取出的一段子串”。',
+  e: `std::string s = "2026-11-10";
+std::string y = s.substr(0, 4);   // 从下标 0 开始，取 4 个字符
+std::cout << y << "\\n";           // 2026
+// 第二个参数是“取几个”，不是“到第几位结束”`
+},
+'string:find()': {
+  s: 'find ｜ /faɪnd/ ｜ 凡德',
+  o: '**find** —— 英文 find（找），找子串第一次出现的位置。',
+  e: `std::string s = "a=1";
+size_t p = s.find('=');
+if (p != std::string::npos) {   // 找不到返回 npos，不能跟 0 比
+    std::cout << p << "\\n";     // 1
+}`
+},
+'string:append()': {
+  s: 'ap-pend ｜ /əˈpend/ ｜ 阿-盆德',
+  o: '**append** —— 英文 append（追加、附加），在末尾接内容。',
+  e: `std::string s = "ab";
+s.append("cd");          // 在末尾接上 cd，效果跟 s += "cd" 差不多
+std::cout << s << "\\n";  // abcd
+// 直接接数字编不过，得先 std::to_string(n) 转成字符串`
+},
+'string:push_back()': {
+  s: 'push-back ｜ /pʊʃ bæk/ ｜ 普什-拜克',
+  o: '**push** **back** —— push（推）+ back（后面），把东西“从后面推进去”。',
+  e: `std::string s = "ab";
+s.push_back('c');        // 括号里是单个字符，用单引号
+std::cout << s << "\\n";  // abc`
+},
+'string:clear()': {
+  s: 'clear ｜ /klɪə/ ｜ 克利尔',
+  o: '**clear** —— 英文 clear（清空），内容全倒掉。',
+  e: `std::string s = "abc";
+s.clear();                      // 内容清空，长度变 0
+std::cout << s.size() << "\\n";  // 0
+// 清空不等于还内存，容量一般还留着`
+},
+'string:replace()': {
+  s: 're-place ｜ /rɪˈpleɪs/ ｜ 瑞-普雷斯',
+  o: '**replace** —— 英文 replace（替换），把一段换成另一段。',
+  e: `std::string s = "a=1";
+s.replace(2, 1, "10");    // 从下标 2 开始，换掉 1 个字符，换成 "10"
+std::cout << s << "\\n";   // a=10（长度变了，后面的字符会自动往后挪）`
+},
+'string:erase()': {
+  s: 'e-rase ｜ /ɪˈreɪz/ ｜ 伊-瑞兹',
+  o: '**erase** —— 英文 erase（擦掉、删除），剪掉一段字符。',
+  e: `std::string s = "a,b,c";
+s.erase(1, 1);            // 从下标 1 开始，删 1 个字符（那个逗号）
+std::cout << s << "\\n";   // ab,c
+// 循环里边找边删时，删完后面的字往前挪，i++ 会漏掉一个`
+},
+
+/* ---------- C++ std::vector ---------- */
+'vector:push_back()': {
+  s: 'push-back ｜ /pʊʃ bæk/ ｜ 普什-拜克',
+  o: '**push** **back** —— push（推）+ back（后面），把元素加在末尾。',
+  e: `std::vector<int> v;
+v.push_back(1);    // 队伍里现在有 1
+v.push_back(2);    // 再排一个 2，变成 {1,2}
+// 容量不够时它会去堆上重新找地方、把老元素全搬过去，之前的指针全失效`
+},
+'vector:pop_back()': {
+  s: 'pop-back ｜ /pɒp bæk/ ｜ 泡普-拜克',
+  o: '**pop** **back** —— pop 是“弹出、取出”，从后面弹走最后一个。',
+  e: `std::vector<int> v{1, 2};
+v.pop_back();                    // 删掉最后一个 2
+std::cout << v.size() << "\\n";   // 1
+// 它不检查空！在空 vector 上调用是未定义行为`
+},
+'vector:size()': {
+  s: 'size ｜ /saɪz/ ｜ 赛兹（完整读 vector-size）',
+  o: '**size** —— 英文 size（大小），问“队里有几个元素”。',
+  e: `std::vector<int> v{1, 2, 3};
+printf("%zu\\n", v.size());   // 3，size() 返回无符号数，用 %zu
+// 空的时候 v.size()-1 会变成巨大数，循环条件别这么写`
+},
+'vector:empty()': {
+  s: 'empty ｜ /ˈempti/ ｜ 艾姆普提',
+  o: '**empty** —— 英文 empty（空的）。',
+  e: `std::vector<int> v;
+if (v.empty()) {    // 判断的是“有没有元素”，不是“有没有占内存”
+    puts("空");
+}
+// 想知道容量要看 v.capacity()`
+},
+'vector:at()': {
+  s: 'at ｜ /æt/ ｜ 艾特（完整读 vector-at）',
+  o: '**at** —— 英文 at（在……处），意思是“取某个位置上的元素”，而且带越界检查。',
+  e: `std::vector<int> v{10, 20};
+printf("%d\\n", v.at(1));   // 20
+// v.at(5) 会抛 out_of_range，没人接程序就终止；v[5] 则悄悄读错内存`
+},
+'vector:front()': {
+  s: 'front ｜ /frʌnt/ ｜ 弗兰特',
+  o: '**front** —— 英文 front（前面），取第一个元素。',
+  e: `std::vector<int> v{1, 2};
+v.front() = 9;            // 返回的是引用，可以直接赋值改掉
+printf("%d\\n", v[0]);     // 9
+// 空 vector 上调用 front() 是未定义行为`
+},
+'vector:back()': {
+  s: 'back ｜ /bæk/ ｜ 拜克',
+  o: '**back** —— 英文 back（后面），取最后一个元素。',
+  e: `std::vector<int> v{1, 2};
+printf("%d\\n", v.back());   // 2
+v.pop_back();                // 想“取出再删掉”，顺序是先 back() 再 pop_back()`
+},
+'vector:clear()': {
+  s: 'clear ｜ /klɪə/ ｜ 克利尔',
+  o: '**clear** —— 英文 clear（清空），元素全删，但占的地还留着。',
+  e: `std::vector<int> v{1, 2, 3};
+v.clear();                                     // 元素全删
+printf("%zu %zu\\n", v.size(), v.capacity());   // 0 3：个数 0，容量还是 3
+// 原来的指针和迭代器这时全部失效`
+},
+'vector:resize()': {
+  s: 're-size ｜ /riːˈsaɪz/ ｜ 瑞-赛兹',
+  o: '**re** **size** —— re 是“重新”，size 是“大小”，重新指定元素个数。',
+  e: `std::vector<int> v;
+v.resize(3);                              // 变成 3 个元素，新补的 int 是 0
+printf("%d %d %d\\n", v[0], v[1], v[2]);   // 0 0 0
+// 改小再改大，被删掉的元素不会“回来”，补进来的还是 0`
+},
+'vector:begin() / end()': {
+  s: 'be-gin / end ｜ /bɪˈɡɪn/ /end/ ｜ 比-金 / 恩德',
+  o: '**begin** / **end** —— begin 是“开始”，end 是“结尾”，注意它指最后一个的下一格。',
+  e: `std::vector<int> v{1, 2, 3};
+for (auto it = v.begin(); it != v.end(); ++it) {   // end() 是最后一格的下一格
+    printf("%d ", *it);                            // 1 2 3
+}
+// 不能写 *v.end()，它并不指向任何元素`
+},
+'vector:erase()': {
+  s: 'e-rase ｜ /ɪˈreɪz/ ｜ 伊-瑞兹',
+  o: '**erase** —— 英文 erase（擦掉），从中间抽走一个元素。',
+  e: `std::vector<int> v{1, 2, 2, 3};
+for (auto it = v.begin(); it != v.end(); ) {   // 注意这里不写 ++it
+    if (*it == 2) it = v.erase(it);            // 用返回值接住下一个位置
+    else ++it;                                 // 没删的才往后走
+}
+// 写成 erase(it); it++; 会跳过一个元素`
+},
+'vector:insert()': {
+  s: 'in-sert ｜ /ɪnˈsɜːt/ ｜ 印-瑟特',
+  o: '**insert** —— 英文 insert（插入），插到指定位置的前面。',
+  e: `std::vector<int> v{1, 3};
+v.insert(v.begin() + 1, 2);   // 插在下标 1 前面，也就是 1 和 3 中间
+// 现在 v 是 {1, 2, 3}
+// 插入可能扩容搬家，之前拿到的迭代器和指针全部失效`
+},
+'vector:reserve()': {
+  s: 're-serve ｜ /rɪˈzɜːv/ ｜ 瑞-泽夫',
+  o: '**reserve** —— 英文 reserve（预留），提前把容量占好，省得后面反复搬家。',
+  e: `std::vector<int> v;
+v.reserve(100);                                // 一次占好能放 100 个元素的地
+printf("%zu %zu\\n", v.size(), v.capacity());   // 0 100
+// 只改容量不改个数，v[0] 还是越界，想直接用得 resize`
+},
+
+/* ---------- C++ 输入输出 ---------- */
+'io:std::cin': {
+  s: 'see-in ｜ /ˌsiː ˈɪn/ ｜ 西-印',
+  o: '**c**haracter **in**put —— c 是 character（字符），in 是“进来”；std:: 表示它属于标准库。',
+  e: `int n;
+std::cin >> n;   // >> 会跳过空格和回车，读一个整数进来
+// 如果输入的是字母，流会进入失败状态，后面所有读取都直接失败，要 cin.clear()`
+},
+'io:std::cout': {
+  s: 'see-out ｜ /ˌsiː ˈaʊt/ ｜ 西-奥特',
+  o: '**c**haracter **out**put —— c 是 character，out 是“出去”，往标准输出送。',
+  e: `std::cout << "n=" << 3 << "\\n";   // 用 << 一个接一个往外出
+// 它不会自动换行，要自己写 "\\n"；浮点默认只打 6 位有效数字`
+},
+'io:std::getline': {
+  s: 'get-line ｜ /ˈɡet laɪn/ ｜ 盖特-莱恩',
+  o: '**get** **line** —— 取一“行”，连空格都算进去。',
+  e: `std::string line;
+std::getline(std::cin, line);   // 读到回车为止，存进去的内容不含那个回车
+// 前面若用 cin >> 读过东西，缓冲区里还留着回车，这里会读到空串`
+},
+'io:std::cin.ignore()': {
+  s: 'ig-nore ｜ /ɪɡˈnɔː/ ｜ 伊格-诺',
+  o: '**ignore** —— 英文 ignore（忽略），把缓冲区里不要的字符丢掉。',
+  e: `int n;
+std::cin >> n;
+std::cin.ignore(1000, '\\n');   // 最多丢 1000 个字符，一直丢到换行为止
+std::string line;
+std::getline(std::cin, line);  // 这时才能正确读到一整行`
+},
+
+/* ---------- C++ 常用工具 ---------- */
+'tool:std::sort': {
+  s: 'sort ｜ /sɔːt/ ｜ 索特',
+  o: '**sort** —— 英文 sort（排序、分类）。',
+  e: `std::vector<int> v{3, 1, 2};
+std::sort(v.begin(), v.end());       // 范围左闭右开，第二个参数给 end() 不是 end()-1
+for (int x : v) printf("%d ", x);    // 1 2 3`
+},
+'tool:std::to_string': {
+  s: 'to-string ｜ /tuː ˈstrɪŋ/ ｜ 图-斯特林',
+  o: '**to** **string** —— to 是“转换成”，string 是字符串。',
+  e: `std::string s = "id=" + std::to_string(7);   // 数字 7 先变 "7"，再拼进去
+std::cout << s << "\\n";                      // id=7
+// 浮点固定给 6 位小数，比如 1.5 会变成 1.500000`
+},
+'tool:std::stoi': {
+  s: 's-to-i ｜ /ˌes tuː ˈaɪ/ ｜ 艾斯-图-艾（也有人读 string-toy）',
+  o: '**s**tring **to** **i**nt —— 字符串转成 int。和 atoi 是一家人，但它转不了会抛异常。',
+  e: `int n = std::stoi("42");        // 42
+try {
+    int m = std::stoi("abc");    // 这里会抛 invalid_argument
+} catch (const std::exception& e) {
+    puts("转不了");               // 不接住的话程序直接结束
+}`
+},
+'tool:std::max': {
+  s: 'max ｜ /mæks/ ｜ 迈克斯',
+  o: '**max** —— 英文 maximum（最大值）的缩写。',
+  e: `int m = std::max(3, 7);   // 7
+// 两个参数类型必须一样：std::max(1, v.size()) 编不过，int 和 size_t 不是一种`
+},
+'tool:std::min': {
+  s: 'min ｜ /mɪn/ ｜ 民',
+  o: '**min** —— 英文 minimum（最小值）的缩写。',
+  e: `int m = std::min(3, 7);   // 3
+// 类型不一致会报一大段看不懂的模板错误，先把两边类型统一`
+},
+'tool:std::make_unique': {
+  s: 'make-u-nique ｜ /meɪk juːˈniːk/ ｜ 梅克-尤-尼克',
+  o: '**make** **unique** —— make 是“造出来”，unique 是“独占的”，造一个只有你能管的对象。',
+  e: `auto p = std::make_unique<int>(42);   // 在堆上造一个 int，值是 42
+printf("%d\\n", *p);                    // 42，用 * 把值取出来
+// p 离开作用域时自动 delete，不用你管，这就是“独占管家”的意思`
+},
+'tool:std::swap': {
+  s: 'swap ｜ /swɒp/ ｜ 斯瓦普',
+  o: '**swap** —— 英文 swap（交换）。',
+  e: `int a = 1, b = 2;
+std::swap(a, b);             // 两人手里的值互换
+printf("%d %d\\n", a, b);     // 2 1
+// 两个 vector 之间 swap 只换内部指针，不挨个搬元素，非常快`
+},
+'tool:std::find': {
+  s: 'find ｜ /faɪnd/ ｜ 凡德',
+  o: '**find** —— 英文 find（找），返回找到的位置。',
+  e: `std::vector<int> v{1, 5, 7};
+auto it = std::find(v.begin(), v.end(), 7);   // 从头到尾找 7
+if (it != v.end()) {                          // 找不到返回的是 end()，不是 NULL
+    printf("下标 %d\\n", (int)(it - v.begin()));   // 两个迭代器相减得到下标 2
+}`
+},
+'tool:std::reverse': {
+  s: 're-verse ｜ /rɪˈvɜːs/ ｜ 瑞-沃斯',
+  o: '**reverse** —— 英文 reverse（反转、颠倒）。',
+  e: `std::string s = "abc";
+std::reverse(s.begin(), s.end());   // 原地把区间倒过来，不产生新字符串
+std::cout << s << "\\n";             // cba
+// rbegin()/rend() 是“反过来遍历”，不是反转，别搞混`
+},
+
+/* ---------- new / delete 配对 ---------- */
+'heap:new': {
+  s: 'new ｜ /njuː/ ｜ 纽',
+  o: '**new** —— 英文 new（新的），在堆上新建一个对象。',
+  e: `int *p = new int(5);   // 在堆上造一个 int，值是 5
+printf("%d\\n", *p);      // 5，指针要加 * 才是里面的值
+delete p;               // 借了必须还，否则这块内存一直占着
+p = nullptr;            // 还完置空，防止变成野指针`
+},
+'heap:new[]': {
+  s: 'new + 方括号 ｜ /njuː/ ｜ 纽-阿瑞（行业里一般直接说 “new 方括号”）',
+  o: '**new** **[ ]** —— 方括号表示“一排连着的位置”，一次借 n 个。',
+  e: `int *a = new int[10]();   // 方括号里是元素个数；后面加 () 才会全部清零
+for (int i = 0; i < 10; i++) printf("%d ", a[i]);   // 打出 10 个 0
+delete[] a;                // new[] 必须配 delete[]
+a = nullptr;`
+},
+'heap:delete': {
+  s: 'de-lete ｜ /dɪˈliːt/ ｜ 迪-利特',
+  o: '**delete** —— 英文 delete（删除），把 new 出来的单个对象还回去。',
+  e: `int *p = new int(1);
+delete p;        // 还掉这一个对象，顺便调用它的析构函数
+p = nullptr;     // 置空，防止后面误用
+// 同一个指针 delete 两次是未定义行为，可能把堆的内部记录写坏`
+},
+'heap:delete[]': {
+  s: 'delete + 方括号 ｜ /dɪˈliːt/ ｜ 迪-利特-阿瑞（一般说 “delete 方括号”）',
+  o: '**delete** **[ ]** —— 方括号表示“还的是一排”，专门配 new[]。',
+  e: `int *a = new int[3];
+delete[] a;      // 必须带方括号，它会对每个元素都调用析构
+a = nullptr;
+// 写成 delete a; 只处理第一个元素，是未定义行为`
+},
+
+/* ---------- 字符判断与数学 ---------- */
+'math:isdigit': {
+  s: 'is-di-git ｜ /ɪz ˈdɪdʒɪt/ ｜ 伊兹-迪吉特',
+  o: '**is** **digit** —— is 是“是不是”，digit 是“数字（0~9 的一位）”。',
+  e: `char c = '7';
+if (isdigit((unsigned char)c)) {   // 先转无符号，防止参数字节大于 127 时变负数
+    puts("是数字字符");
+}`
+},
+'math:isalpha': {
+  s: 'is-al-pha ｜ /ɪz ˈælfə/ ｜ 伊兹-阿尔法',
+  o: '**is** **alpha** —— alpha 是希腊字母表第一个字母，这里指“英文字母”。',
+  e: `char c = 'A';
+if (isalpha((unsigned char)c)) {   // 只认 a-z 和 A-Z，中文和数字都返回 0
+    puts("是字母");
+}`
+},
+'math:isspace': {
+  s: 'is-space ｜ /ɪz speɪs/ ｜ 伊兹-斯佩斯',
+  o: '**is** **space** —— 判断是不是“空白”，包括空格、\\t、\\n、\\r 这些。',
+  e: `char c = '\\n';
+if (isspace((unsigned char)c)) {   // 换行也算空白，扫行的时候小心别把行尾吃掉
+    puts("空白字符");
+}`
+},
+'math:toupper': {
+  s: 'to-up-per ｜ /tuː ˈʌpə/ ｜ 图-阿珀',
+  o: '**to** **upper** —— to 是“变成”，upper 是“大写的（upper case）”。',
+  e: `char c = 'a';
+c = (char)toupper(c);   // 它返回 int 且不改原变量，必须赋值回去
+printf("%c\\n", c);      // A`
+},
+'math:tolower': {
+  s: 'to-low-er ｜ /tuː ˈləʊə/ ｜ 图-楼尔',
+  o: '**to** **lower** —— to 是“变成”，lower 是“小写的（lower case）”。',
+  e: `char c = 'A';
+c = (char)tolower(c);   // 同样要赋值回去才生效
+printf("%c\\n", c);      // a
+// 比较用户输入前先统一小写，"YES" 和 "yes" 才不会判成不相等`
+},
+'math:abs': {
+  s: 'abs ｜ /æbs/ ｜ 艾布斯（完整读 absolute）',
+  o: '**abs** —— absolute（绝对值）的前三个字母。',
+  e: `int d = abs(-5);   // 5，把负号去掉
+// abs 只管 int：long 用 labs，浮点用 fabs；把 double 传进去小数会被悄悄截掉`
+},
+'math:fabs': {
+  s: 'f-abs ｜ /ˈef æbs/ ｜ 艾弗-艾布斯（读 float-abs）',
+  o: '**f** **abs** —— f 表示 floating point（浮点数），abs 是绝对值。',
+  e: `double d = fabs(-1.5);          // 1.5
+if (fabs(d - 1.5) < 1e-6) {      // 浮点数不能写 ==，要判断差值足够小
+    puts("相等");
+}`
+},
+'math:sqrt': {
+  s: 's-q-r-t ｜ /ˌes kjuː ɑːr ˈtiː/ ｜ 艾斯-丘-阿-提（也有人读 square-root）',
+  o: '**s** **q**uare **r**oo**t** —— square root 是“平方根”，取首字母缩成 sqrt。',
+  e: `double r = sqrt(9.0);   // 3
+// 传负数会得到 NaN，后面一路算下去全是 NaN，很难查；链接时可能还要加 -lm`
+},
+'math:pow': {
+  s: 'pow ｜ /paʊ/ ｜ 泡（完整读 power）',
+  o: '**pow** —— power（幂、次方）的前三个字母。',
+  e: `double v = pow(2, 10);   // 1024，2 的 10 次方
+// 返回的是 double，交给整数会丢精度；能连乘就别用它，慢`
+}
+
+};
+
 /* 手写区的“写调用 + 验坑”题 */
 var CALL = [
 {id:'strncpy-copy', card:'cstr:strncpy', title:'strncpy 抄字符串（会缺结尾 0）',
  task:'把 <code>"hello world"</code> 抄进 <code>char buf[8]</code>，要求打印出来只有 <code>hello w</code>，不带乱码。写 3~4 行。',
- answer:`char buf[8];
-strncpy(buf, "hello world", sizeof(buf) - 1);
-buf[sizeof(buf) - 1] = '\\0';
-printf("%s\\n", buf);   // hello w`,
+ answer:`char buf[8];                                 // 只有 8 个格子，最多放 7 个字 + 结尾 0
+strncpy(buf, "hello world", sizeof(buf) - 1);  // 只抄 7 个字符，留一格给结尾 0
+buf[sizeof(buf) - 1] = '\\0';                   // 源串比 7 长，它不会自己补，得手动补
+printf("%s\\n", buf);                           // hello w`,
  trap:'源串比 n 长时，strncpy 不会帮你补 \\0。少了最后那句手动补 0，printf 会一路读到别人的内存里，打印出一串乱码甚至崩掉。'},
 {id:'memcpy-bytes', card:'cmem:memcpy', title:'memcpy 拷数组（单位是字节）',
  task:'把 <code>int a[4] = {1,2,3,4}</code> 整个拷到 <code>int b[4]</code>，再打印 b。第三个参数别写错单位。',
- answer:`int a[4] = {1,2,3,4}, b[4];
-memcpy(b, a, sizeof(a));        // 16 字节
-for (int i = 0; i < 4; i++) printf("%d ", b[i]);`,
+ answer:`int a[4] = {1,2,3,4}, b[4];                 // a 是原数组，b 是等着接货的空数组
+memcpy(b, a, sizeof(a));                       // sizeof(a) 是 16 字节，整个搬过去
+for (int i = 0; i < 4; i++) printf("%d ", b[i]);   // 1 2 3 4，逐个验证`,
  trap:'第三个参数是字节数不是元素个数，写成 4 只拷了 1 个 int，剩下 3 个是随机垃圾。还有：数组当参数传进函数后 sizeof 只剩指针大小，那时必须额外传长度。'},
 {id:'memmove-shift', card:'cmem:memmove', title:'memmove 原地删首字符',
  task:'<code>char s[] = "abcdef"</code>，把第一个字符删掉，让 s 原地变成 <code>bcdef</code>（不许新建数组）。',
- answer:`char s[] = "abcdef";
-memmove(s, s + 1, strlen(s));   // 连同结尾 0 一起往前挪
-printf("%s\\n", s);              // bcdef`,
+ answer:`char s[] = "abcdef";                     // 用数组不用指针，才能就地改
+memmove(s, s + 1, strlen(s));                 // 从第 2 个字符起挪 6 字节到开头，含结尾 0
+printf("%s\\n", s);                            // bcdef`,
  trap:'这种“自己盖自己”的搬家用 memcpy 可能得到 bbcdef：前面的字节先被覆盖，后面再读就错了。重叠必须用 memmove。'},
 {id:'memset-int', card:'cmem:memset', title:'memset 把 int 设成 1（会翻车）',
  task:'先写 <code>memset</code> 把 <code>int buf[10]</code> 清零；再试着用 memset 把 <code>int x</code> 设成 1，打印看看是不是 1。',
  answer:`int buf[10];
-memset(buf, 0, sizeof(buf));    // 全 0，正确用法
+memset(buf, 0, sizeof(buf));            // 正确用法：整块清零，40 个字节全涂 0
 int x = 0;
-memset(&x, 1, sizeof(x));       // 按字节涂 1
-printf("%d\\n", x);              // 16843009，不是 1`,
+memset(&x, 1, sizeof(x));               // 错误示范：把 4 个字节全涂成 1
+printf("%d\\n", x);                      // 16843009，根本不是 1`,
  trap:'memset 按字节涂。int 有 4 个字节，全涂 1 得到 0x01010101 = 16843009。想把 int 设成某个值，只能老老实实赋值。'},
 {id:'snprintf-trunc', card:'fmt:snprintf', title:'snprintf 截断与返回值',
  task:'用 <code>char buf[8]</code> 装 <code>"hello world"</code>，打印 buf 和返回值，并判断这次有没有被截断。',
- answer:`char buf[8];
-int n = snprintf(buf, sizeof(buf), "%s", "hello world");
-printf("[%s] n=%d\\n", buf, n);          // [hello w] n=11
-if (n >= (int)sizeof(buf)) puts("被截断了");`,
+ answer:`char buf[8];                                 // 只能装 7 个字 + 结尾 0
+int n = snprintf(buf, sizeof(buf), "%s", "hello world");   // 第二个参数是盒子总大小
+printf("[%s] n=%d\\n", buf, n);                  // [hello w] n=11
+if (n >= (int)sizeof(buf)) puts("被截断了");      // 返回值 >= 盒子大小，就是被截了`,
  trap:'返回值是“本来想写多长”（11），不是实际写进去的 7。拿它当下标会越界；判断截断要用 n >= size。'},
 {id:'sscanf-parse', card:'fmt:sscanf', title:'sscanf 拆键值对',
  task:'从 <code>"temp=25,hum=60"</code> 里解析出两个整数并打印，要求检查返回值。',
- answer:`int t = 0, h = 0;
-if (sscanf("temp=25,hum=60", "temp=%d,hum=%d", &t, &h) == 2)
-    printf("%d %d\\n", t, h);
+ answer:`int t = 0, h = 0;                      // 先给初值，解析失败也不会拿到垃圾数
+if (sscanf("temp=25,hum=60", "temp=%d,hum=%d", &t, &h) == 2)   // 读满 2 项才算成功
+    printf("%d %d\\n", t, h);             // 25 60
 else
-    puts("格式对不上");`,
+    puts("格式对不上");                   // 少读一项就走这条路`,
  trap:'返回值是成功赋值的项数，不是字符数。不检查返回值，解析失败时 t、h 保持原值（所以要先初始化），你会拿旧数字继续算。'},
 {id:'atoi-vs-strtol', card:'fmt:strtol', title:'atoi 与 strtol 的区别',
  task:'分别把 <code>"123abc"</code> 和 <code>"abc"</code> 用 atoi 转一下；再用 strtol 转 <code>"123abc"</code>，把“停在哪”也打印出来。',
- answer:`printf("%d\\n", atoi("123abc"));   // 123，后面的 abc 被无视
-printf("%d\\n", atoi("abc"));      // 0，和输入 "0" 分不出来
-char *end;
-long v = strtol("123abc", &end, 10);
-printf("%ld 停在 [%s]\\n", v, end);  // 123 停在 [abc]`,
+ answer:`printf("%d\\n", atoi("123abc"));   // 123：读到非数字就停，后面的 abc 不管
+printf("%d\\n", atoi("abc"));      // 0：一个数字都没有，可它也返回 0，分不出失败
+char *end;                         // strtol 会把“停在哪”写进这个指针
+long v = strtol("123abc", &end, 10);   // 10 表示按十进制读
+printf("%ld 停在 [%s]\\n", v, end);  // 123 停在 [abc]，一眼看出后面还有垃圾`,
  trap:'atoi 不报错，成功和失败都可能返回 0，你没法区分。strtol 靠 endptr 告诉你读到哪：end 等于原串开头，说明一个字都没转成功。'},
 {id:'strtok-split', card:'cstr:strtok', title:'strtok 按逗号切分',
  task:'把 <code>"a,b,,c"</code> 用逗号切开，一段一段打印出来（用方括号包住看得清楚）。',
- answer:`char s[] = "a,b,,c";        // 必须是能改的数组
-for (char *p = strtok(s, ","); p != NULL; p = strtok(NULL, ","))
-    printf("[%s]\\n", p);
-// [a] [b] [c]`,
+ answer:`char s[] = "a,b,,c";        // 必须是能改的数组，不能写字符串常量
+for (char *p = strtok(s, ","); p != NULL; p = strtok(NULL, ","))   // 第一次传 s，后面都传 NULL
+    printf("[%s]\\n", p);        // 依次打出 [a] [b] [c]
+// 连续两个逗号被当成一个分隔符，中间那个空段直接被跳过`,
  trap:'strtok 会把逗号改成 \\0，所以传字符串常量会崩（那块内存不许写）；连续两个逗号会被当成一个分隔符，空段直接跳过。'},
 {id:'strstr-find', card:'cstr:strstr', title:'strstr 找子串',
  task:'在 <code>"GET /index.html HTTP/1.1"</code> 里找 <code>"HTTP"</code>，把从它开始的剩余内容打印出来。',
- answer:`const char *req = "GET /index.html HTTP/1.1";
-const char *p = strstr(req, "HTTP");
-if (p) printf("%s\\n", p);       // HTTP/1.1
-else   puts("没找到");`,
+ answer:`const char *req = "GET /index.html HTTP/1.1";   // 被找的长串
+const char *p = strstr(req, "HTTP");              // 找到就返回指向那个 H 的指针
+if (p) printf("%s\\n", p);       // HTTP/1.1，从找到的地方一直打到结尾
+else   puts("没找到");           // 找不到 p 是 NULL，必须先判断再用`,
  trap:'返回的是指针不是下标，不判 NULL 就 printf 会崩；想要下标写 p - req。'},
 {id:'fopen-fread', card:'file:fopen', title:'fopen + fread 读文件',
  task:'打开 <code>test.txt</code> 读最多 64 字节并打印；打不开要报错并且不要继续往下读。',
- answer:`FILE *fp = fopen("test.txt", "rb");
-if (!fp) { perror("fopen"); return 1; }
-char buf[65] = {0};
-size_t n = fread(buf, 1, 64, fp);
-printf("读到 %zu 字节: %s\\n", n, buf);
-fclose(fp);`,
+ answer:`FILE *fp = fopen("test.txt", "rb");   // rb：二进制方式只读打开
+if (!fp) { perror("fopen"); return 1; }    // 打不开就报错退出，千万别往下读
+char buf[65] = {0};                        // 多留一格，保证结尾一定有 0
+size_t n = fread(buf, 1, 64, fp);          // 每块 1 字节读 64 块，n 正好是字节数
+printf("读到 %zu 字节: %s\\n", n, buf);      // %zu 是专门打印 size_t 的占位符
+fclose(fp);                                // 用完关掉，不关会一直占着文件`,
  trap:'fopen 失败只返回 NULL，不判空后面 fread 全崩；fread 返回的是元素个数，只有 size 传 1 时才等于字节数；读完要 fclose。'},
 {id:'vector-at', card:'vector:at()', title:'vector::at 越界会报警',
  task:'<code>vector&lt;int&gt; v{1,2,3}</code>，先用 <code>at</code> 取下标 5 并接住异常，再用 <code>[]</code> 取下标 5 对比一下。',
  answer:`std::vector<int> v{1,2,3};
 try {
-    printf("%d\\n", v.at(5));
-} catch (const std::out_of_range& e) {
+    printf("%d\\n", v.at(5));        // at 会检查范围，越界就抛异常
+} catch (const std::out_of_range& e) {   // 接住它，程序才不会直接终止
     printf("at 抓到了: %s\\n", e.what());
 }
-printf("%d\\n", v[5]);   // 越界，读到垃圾值，也可能直接崩`,
+printf("%d\\n", v[5]);   // [] 不检查，读到的是隔壁的垃圾数据`,
  trap:'at 越界抛 out_of_range，没人接程序立即终止；[] 不检查，越界是“悄悄读错内存”，值随机、偶尔才崩，查起来最费劲。'},
 {id:'vector-erase', card:'vector:erase()', title:'vector::erase 边遍历边删',
  task:'<code>vector&lt;int&gt; v{1,2,2,3}</code>，删掉所有等于 2 的元素，打印结果。',
  answer:`std::vector<int> v{1,2,2,3};
-for (auto it = v.begin(); it != v.end(); ) {
-    if (*it == 2) it = v.erase(it);   // 用返回值接住
-    else ++it;
+for (auto it = v.begin(); it != v.end(); ) {   // 注意：循环头里故意不写 ++it
+    if (*it == 2) it = v.erase(it);   // 删掉后接住返回的下一个位置
+    else ++it;                        // 没删的才自己往后走
 }
 for (int x : v) printf("%d ", x);     // 1 3`,
  trap:'erase 之后原来的 it 已经失效，还写 it++ 会跳过一个元素甚至越界（1 2 2 3 删完剩 1 2 3 就是症状）。正确做法是接返回值，删的那次不自增。'},
 {id:'c_str-lifetime', card:'string:c_str()', title:'c_str 的指针不能存',
  task:'把一段 <code>std::string</code> 交给 fopen，然后演示“先存下 c_str 指针、再修改字符串”会发生什么。',
  answer:`std::string name = "test.txt";
-FILE *fp = fopen(name.c_str(), "r");   // 当场借用，正确
-const char *p = name.c_str();
-name += "_long_long_long_name_that_reallocates";
-printf("%s\\n", p);   // p 可能已经指向被释放的旧内存`,
+FILE *fp = fopen(name.c_str(), "r");   // 正确：当场借着用，用完就不再管它
+const char *p = name.c_str();          // 错误：把借来的指针存了下来
+name += "_long_long_long_name_that_reallocates";   // 这一句很可能让它搬家
+printf("%s\\n", p);   // p 还指着老地方，可能已经是释放掉的内存`,
  trap:'c_str() 借的是内部缓冲区。string 一改动（尤其是扩容搬家），指针就失效，继续用是未定义行为：可能乱码，也可能崩。要用就当场用。'},
 {id:'substr-parse', card:'string:substr()', title:'substr 拆日期',
  task:'从 <code>"2026-11-10"</code> 里分别取出年、月、日三个数字并打印。',
  answer:`std::string s = "2026-11-10";
-int y = std::stoi(s.substr(0, 4));
-int m = std::stoi(s.substr(5, 2));
-int d = std::stoi(s.substr(8, 2));
-printf("%d/%d/%d\\n", y, m, d);`,
+int y = std::stoi(s.substr(0, 4));   // 从第 0 个取 4 个：2026，再转成整数
+int m = std::stoi(s.substr(5, 2));   // 从第 5 个取 2 个：11
+int d = std::stoi(s.substr(8, 2));   // 从第 8 个取 2 个：10
+printf("%d/%d/%d\\n", y, m, d);       // 2026/11/10`,
  trap:'substr 第一个参数是起点，第二个是“取几个”不是“到哪结束”；pos 超过长度会抛 out_of_range，不接住程序直接终止。'},
 {id:'new-array', card:'heap:new[]', title:'new[] 与 delete[] 配对',
  task:'用 <code>new[]</code> 建 5 个 int，填 0~4，打印后释放；顺便看看不写 <code>()</code> 时里面是什么。',
- answer:`int *p = new int[5]();        // 带 () 才清零
-for (int i = 0; i < 5; i++) p[i] = i;
-for (int i = 0; i < 5; i++) printf("%d ", p[i]);
-delete[] p;                    // 必须配 delete[]
-p = nullptr;`,
+ answer:`int *p = new int[5]();        // 后面那对 () 很重要，写了才会全部清零
+for (int i = 0; i < 5; i++) p[i] = i;   // 自己填成 0 1 2 3 4
+for (int i = 0; i < 5; i++) printf("%d ", p[i]);   // 0 1 2 3 4
+delete[] p;                    // 用带方括号的 delete，跟 new[] 配对
+p = nullptr;                   // 释放完置空，防止以后误用`,
  trap:'new[] 配 delete 是未定义行为，可能只析构第一个元素、把堆的内部记录写坏，崩在别的地方；new int[5] 不带括号时那些值是随机的。'},
 {id:'sort-both', card:'tool:std::sort', title:'sort 升序与降序',
  task:'对 <code>{3,1,2}</code> 先升序排一次，再按从大到小排一次，各打印一遍。',
  answer:`std::vector<int> v{3,1,2};
-std::sort(v.begin(), v.end());                                   // 1 2 3
-std::sort(v.begin(), v.end(), [](int a, int b){ return a > b; }); // 3 2 1`,
+std::sort(v.begin(), v.end());                                   // 默认从小到大：1 2 3
+std::sort(v.begin(), v.end(), [](int a, int b){ return a > b; }); // 传个比较函数，反过来：3 2 1`,
  trap:'第二个参数要 end() 不是 end()-1；比较函数返回 bool，表示“a 该不该排在 b 前面”，写成 a >= b 会在有相等元素时越界崩溃。'},
 {id:'to-string-stoi', card:'tool:std::to_string', title:'to_string 与 stoi 来回转',
  task:'把 42 转成字符串拼进 <code>"id="</code>，再把里面的数字转回来加 1 打印。',
- answer:`std::string s = "id=" + std::to_string(42);
-int n = std::stoi(s.substr(3)) + 1;
-printf("%s %d\\n", s.c_str(), n);   // id=42 43`,
+ answer:`std::string s = "id=" + std::to_string(42);   // 数字先变字符串，才能拼进去
+int n = std::stoi(s.substr(3)) + 1;           // 取第 3 个字符到结尾，转回数字再加 1
+printf("%s %d\\n", s.c_str(), n);              // id=42 43`,
  trap:'stoi 遇到 "abc" 抛 invalid_argument、超范围抛 out_of_range，不接住程序直接结束；而 "42abc" 会“成功”返回 42，别以为它帮你检查了整串。'},
 {id:'getline-ignore', card:'io:std::cin.ignore()', title:'cin >> 之后接 getline',
  task:'先读一个整数，再读一整行带空格的文字，把两次读到的内容都打印出来。',
  answer:`int n;
-std::cin >> n;
-std::cin.ignore(1000, '\\n');     // 把留在缓冲区的回车扔掉
+std::cin >> n;                   // 只读走数字，那个回车还留在缓冲区里
+std::cin.ignore(1000, '\\n');     // 把留在缓冲区的回车（和多余字符）扔掉
 std::string line;
-std::getline(std::cin, line);
-std::cout << n << " [" << line << "]\\n";`,
+std::getline(std::cin, line);    // 现在才能读到真正的一整行
+std::cout << n << " [" << line << "]\\n";   // 加方括号是为了看清首尾有没有空格`,
  trap:'少了 ignore，getline 会立刻读到 cin >> 留下的那个 \\n，拿到空串，看起来像“getline 失灵”。（如果流已经处于失败状态，要先 cin.clear()。）'},
 {id:'swap-two', card:'tool:std::swap', title:'std::swap 交换变量',
  task:'交换 <code>int a=1, b=2</code>，再交换两个 string，最后一起打印。',
  answer:`int a = 1, b = 2;
-std::swap(a, b);
+std::swap(a, b);                 // 两个 int 直接换，换完 a=2、b=1
 std::string x = "left", y = "right";
-std::swap(x, y);
-printf("%d %d %s %s\\n", a, b, x.c_str(), y.c_str());`,
+std::swap(x, y);                 // string 也能换，内部只倒腾指针，很快
+printf("%d %d %s %s\\n", a, b, x.c_str(), y.c_str());   // 2 1 right left`,
  trap:'交换两个数组的内容不能直接 swap（数组名不能赋值），要逐元素换；两个 vector 之间 swap 只换内部指针，不会挨个搬元素。'},
 {id:'sizeof-param', card:'cmem:memcpy', title:'sizeof 在函数参数里失效',
  task:'写一个函数 <code>show(char s[])</code>，里面同时打印 <code>sizeof(s)</code> 和 <code>strlen(s)</code>，在 main 里传一个 32 字节的数组进去，看差别。',
- answer:`void show(char s[]) {
-    printf("sizeof(s)=%zu strlen=%zu\\n", sizeof(s), strlen(s));
+ answer:`void show(char s[]) {            // 传进来的数组已经退化成指针
+    printf("sizeof(s)=%zu strlen=%zu\\n", sizeof(s), strlen(s));   // 8 5
 }
 int main(void) {
-    char buf[32] = "hello";
-    show(buf);          // 8 5（64 位机器上指针是 8 字节）
+    char buf[32] = "hello";      // 在 main 里它是货真价实的 32 字节数组
+    show(buf);          // 8 5：一传进去，长度信息就丢了（8 是指针大小）
 }`,
  trap:'数组当参数传进去就退化成指针，sizeof 只剩指针大小，永远算不出数组长度。要在函数里知道长度，只能靠 strlen 或者额外传一个长度参数。'}
 ];
@@ -708,34 +1343,50 @@ int main(void) {
 /* 慎用区 */
 var CARE = [
 {n:'malloc', plain:'临时跟系统借一块内存，用完必须还。',
+ say:'mal-loc ｜ /ˈmælək/ ｜ 马-洛克（也有人按字母念 M-alloc）',
+ from:'**m**emory **alloc**ation —— memory（内存）+ allocation（分配）。',
  when:'程序刚启动时一次性要一大块、这辈子都不还的缓冲区；或者数据量真的要到运行时才知道，而且这个平台的堆足够大。',
  alt:'全局数组或 static 数组（编译时就分配好，最稳）；或者一开始就按最大需求写死大小。',
  trap:'借不到会给你 NULL，不判空就往里写直接崩；借借还还多了，堆会被切成很多小碎块，之后明明总量还够，却再也借不到一块连续的大内存。'},
 {n:'calloc', plain:'跟 malloc 一样借内存，顺便帮你全部清零。',
+ say:'cal-loc ｜ /ˈkælək/ ｜ 卡-洛克（也有人读 C-alloc，取它“清零”的意思）',
+ from:'**c**ontiguous **alloc**ation —— 一种拆法是 contiguous（连续）+ allocation；也有很多人拆成 clear + alloc（分配并清零）。两种说法业内都在用。',
  when:'想一次借 n 个、并且保证每个字节都是 0（比如下标表、标志位表），省得自己再 memset。',
  alt:'静态数组 + memset 清零，行为最好预测。',
  trap:'它只是顺便清零，借不到一样返回 NULL；参数是“几个 × 每个多大”，顺序写反了结果一样，但读代码的人会以为你要干别的事。'},
 {n:'realloc', plain:'已经借了一块，发现不够大，再去找系统换一块更大的。',
+ say:'re-al-loc ｜ /ˌriːˈælək/ ｜ 瑞-阿-洛克',
+ from:'**re** **alloc** —— re 是“重新”，alloc 是 allocate（分配）。',
  when:'确实已经有一块动态内存，数据还要变多，才用它扩大；而且这块内存在整个程序里只有一处能碰到。',
  alt:'一开始就按最大可能分配；或者用固定大小的内存池，永远不换大小。',
  trap:'扩容可能要搬家：先找新地方、把老数据拷过去、再释放老地方，期间内存占用会短暂翻倍；最常见的错是忘了用返回值覆盖原指针，失败了还拿着老指针用。'},
 {n:'free', plain:'把借来的内存还回去。',
+ say:'free ｜ /friː/ ｜ 弗瑞',
+ from:'**free** —— 英文 free（释放、使自由），把借的内存还回去。',
  when:'你确实用 malloc / calloc / realloc 借过，而且这块内存真的不用了。',
  alt:'能不用动态内存就不用；真要反复借还，用固定尺寸的内存池（只借还同一尺寸的块）。',
  trap:'释放完指针还指着原地（野指针），再用就崩；同一块 free 两次会破坏堆的内部记录；free 一个栈上变量的地址更是直接完蛋。'},
 {n:'std::vector（MCU 上）', plain:'能自动变长的数组，容量不够时自己去堆上找更大的地方搬家。',
+ say:'vec-tor ｜ /ˈvektə/ ｜ 维克-特',
+ from:'**vector** —— 英文 vector 本来是“向量”，C++ 里指能自动变长的数组。',
  when:'在 MCU 上只建议“启动时 reserve 好、之后不再变长”的用法；真正需要动态增长的场景很少。',
  alt:'std::array 或普通数组 + 一个长度变量；长度会变的队列用环形缓冲（ring buffer）。',
  trap:'push_back 超出容量会翻倍扩容并搬家，堆被切碎后可能中途失败；很多 MCU 工程把异常关掉了，失败直接 abort；搬家还会让之前存的指针、迭代器全部失效。'},
 {n:'std::string（MCU 上）', plain:'会自动变长的字符串，拼一拼就可能去堆上重新要地方。',
+ say:'string ｜ /strɪŋ/ ｜ 斯特林',
+ from:'**string** —— 英文 string（一串、字符串），本来指“一串珠子”那样连在一起的东西。',
  when:'字符串短、数量固定，而且工具链的堆够用时可以考虑。',
  alt:'char buf[64] + snprintf；或者自己写一个固定容量的字符串结构。',
  trap:'每次拼接、每次 substr 都可能重新申请堆内存；字符串一改动，之前 c_str() 拿到的指针就失效。'},
 {n:'裸机 printf 重定向', plain:'printf 只会把字往“标准输出”里塞，裸机上没有这个出口，得你自己接一根管子到串口。',
+ say:'print-f ｜ /ˈprɪnt ef/ ｜ 普林特-艾弗；re-direct ｜ /ˌriːdəˈrekt/ ｜ 瑞-迪-瑞克特',
+ from:'**re** **direct** —— re 是“重新”，direct 是“指向”，重新把输出指向另一个出口，比如串口。',
  when:'调试阶段想看到打印，就必须重定向（通常是实现 _write 或者 fputc 的底层函数）。Linux 上不用管，标准输出本来就有。',
  alt:'自己写一个只支持 %d / %s / %x 的轻量打印函数；或者把日志塞进环形缓冲，由 DMA 或空闲中断慢慢发出去。',
  trap:'没重定向就调用 printf，轻则一个字都不出，重则卡死在库里；用 semihosting 打印非常慢，会把时序打乱；千万别在中断里打印，串口发送是阻塞的。'},
 {n:'volatile（不是函数，但面试常问）', plain:'告诉编译器：这个变量可能被别人偷偷改（中断、硬件寄存器），每次用都得去内存重新读，别自作聪明优化。',
+ say:'vol-a-tile ｜ /ˈvɒlətaɪl/ ｜ 沃-勒-泰尔',
+ from:'**volatile** —— 英文 volatile 就是“易变的、不稳定的”，提醒编译器这变量随时可能被外部改掉。',
  when:'中断服务函数和主循环共享的变量、映射到硬件寄存器的地址，必须加 volatile。',
  alt:'需要“读一次不被打断”时 volatile 不够，要关中断或用原子操作；多线程共享还要加锁。',
  trap:'volatile 不等于线程安全，也不保证原子性；memset / memcpy 不能直接用在 volatile 指针上（会丢掉 volatile 限定，读到的值可能不是你想要的）。漏加 volatile 的典型症状：中断里改了标志位，主循环 while(!flag) 永远出不来。'}
@@ -760,10 +1411,15 @@ var G = {};
 GROUPS.forEach(function(g){ G[g.id] = g; });
 
 var CARDS = D.map(function(r, i){
+  var id = r[0] + ':' + r[1];
+  var m = META[id] || {};
   return {
     g:r[0], name:r[1], plain:r[2], p:r[3], use:r[4],
-    args:r[5], trap:r[6], ex:r[7], note:r[8] || '',
-    order:i, id:r[0] + ':' + r[1]
+    args:r[5], trap:r[6],
+    ex: m.e || r[7],
+    say: m.s || '', from: m.o || '',
+    note:r[8] || '',
+    order:i, id:id
   };
 });
 var BY_ID = {};
@@ -974,6 +1630,8 @@ function renderCare(){
     return '<details class="care"><summary><b>' + esc(x.n) + '</b><span>什么时候才用 ▾</span></summary>' +
       '<div class="carebody">' +
       '<p class="plainline">' + esc(x.plain) + '</p>' +
+      '<p class="sayl"><b>怎么念：</b>' + esc(x.say) + '</p>' +
+      '<p class="sayl"><b>名字怎么来的：</b>' + md(x.from) + '</p>' +
       '<p><b>什么时候才用：</b>' + esc(x.when) + '</p>' +
       '<p><b>替代方案：</b>' + esc(x.alt) + '</p>' +
       '<p class="trapbox"><b>坑：</b>' + esc(x.trap) + '</p>' +
@@ -1227,6 +1885,8 @@ function renderStudy(){
   document.getElementById('bBody').innerHTML =
     '<p class="plainline">' + esc(card.plain) + '</p>' +
     '<div class="brow"><div class="k">原型（要几个参数、什么类型、返回什么）</div><pre class="code">' + esc(card.p) + '</pre></div>' +
+    (card.say ? '<div class="brow say"><div class="k">怎么念</div><p class="small">' + esc(card.say) + '</p></div>' : '') +
+    (card.from ? '<div class="brow from"><div class="k">名字怎么来的</div><p class="small">' + md(card.from) + '</p></div>' : '') +
     '<div class="brow"><div class="k">干嘛用的</div><p>' + esc(card.use) + '</p></div>' +
     '<div class="brow"><div class="k">参数 / 返回值</div><p class="small">' + esc(card.args) + '</p></div>' +
     '<div class="brow trap"><div class="k">最容易踩的坑</div><p>' + esc(card.trap) + '</p></div>' +
@@ -1360,6 +2020,10 @@ document.addEventListener('keydown', function(e){
 function esc(s){
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+/* 先转义再处理 **加粗**，避免标签被吃掉 */
+function md(s){
+  return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
 }
 
 function renderAll(){
