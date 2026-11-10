@@ -96,9 +96,15 @@
   .pstat.ok{color:#7ee787}
 
   details.care,details.later{border:1px solid #243040;border-radius:11px;background:#141a22;margin-bottom:8px}
-  details.care summary{padding:11px 13px;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;list-style:none;color:#e3d3ac}
+  details.care summary{padding:11px 13px;font-size:13.5px;cursor:pointer;list-style:none;color:#e3d3ac;
+    display:grid;grid-template-columns:1fr auto;gap:3px 10px;align-items:baseline}
   details.care summary::-webkit-details-marker{display:none}
   details.care summary span{font-size:11.5px;color:#8d9bab}
+  details.care summary .cgo{white-space:nowrap}
+  details.care summary .csub{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:3px 9px;min-width:0}
+  details.care summary .csub i{font-style:normal;font-size:11px;color:#6e8095;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}
+  details.care summary .csub em{font-style:normal;font-size:11.5px;color:#a8bccf}
   details.care[open] summary{border-bottom:1px solid #243040}
   .carebody{padding:12px 14px;font-size:13px;color:#c7d2df}
   .carebody p{margin:0 0 9px}
@@ -182,6 +188,14 @@
   .tag{font-size:11.5px;color:#5eead4;border:1px solid rgba(94,234,212,.3);background:rgba(94,234,212,.08);padding:2px 9px;border-radius:999px;margin-bottom:16px}
   .fname{font-size:clamp(26px,8vw,44px);font-weight:700;letter-spacing:.5px;line-height:1.25;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
   .fname.sm{font-size:clamp(19px,5.6vw,30px)}
+  /* 正面的音标：次要信息，颜色压暗；长音标允许换行、绝不出框 */
+  .fipa{margin-top:9px;max-width:100%;font-size:clamp(10.5px,3.2vw,12.5px);line-height:1.5;
+    color:#6e8095;letter-spacing:.2px;font-weight:400;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+    overflow-wrap:anywhere;word-break:break-word;padding:0 4px}
+  /* 正面的一行中文含义：比音标亮一点，但仍然让函数名当主角 */
+  .fmean{margin-top:5px;max-width:100%;font-size:clamp(12.5px,3.9vw,15px);line-height:1.45;
+    color:#a8bccf;font-weight:400;overflow-wrap:anywhere}
   .fhint{position:absolute;bottom:20px;left:0;right:0;font-size:12px;color:#6f7d8d}
   .bscroll{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 22px}
   .bscroll .plainline{font-size:13.5px}
@@ -405,6 +419,8 @@
         <div class="face front">
           <div class="tag" id="fTag">必背</div>
           <div class="fname" id="fName">strlen</div>
+          <div class="fipa" id="fIpa"></div>
+          <div class="fmean" id="fMean"></div>
           <div class="fhint">点一下卡片，看背面</div>
         </div>
         <div class="face back"><div class="bscroll" id="bBody"></div></div>
@@ -1088,7 +1104,7 @@ delete p;               // 借了必须还，否则这块内存一直占着
 p = nullptr;            // 还完置空，防止变成野指针`
 },
 'heap:new[]': {
-  s: 'new + 方括号 ｜ /njuː/ ｜ 纽-阿瑞（行业里一般直接说 “new 方括号”）',
+  s: 'new-array ｜ /njuː əˈreɪ/ ｜ 纽-阿瑞（行业里一般直接说 “new 方括号”）',
   o: '**new** **[ ]** —— 方括号表示“一排连着的位置”，一次借 n 个。',
   e: `int *a = new int[10]();   // 方括号里是元素个数；后面加 () 才会全部清零
 for (int i = 0; i < 10; i++) printf("%d ", a[i]);   // 打出 10 个 0
@@ -1104,7 +1120,7 @@ p = nullptr;     // 置空，防止后面误用
 // 同一个指针 delete 两次是未定义行为，可能把堆的内部记录写坏`
 },
 'heap:delete[]': {
-  s: 'delete + 方括号 ｜ /dɪˈliːt/ ｜ 迪-利特-阿瑞（一般说 “delete 方括号”）',
+  s: 'delete-array ｜ /dɪˈliːt əˈreɪ/ ｜ 迪-利特-阿瑞（一般说 “delete 方括号”）',
   o: '**delete** **[ ]** —— 方括号表示“还的是一排”，专门配 new[]。',
   e: `int *a = new int[3];   // 一次借 3 个 int
 delete[] a;      // 必须带方括号，它会对每个元素都调用析构
@@ -1179,6 +1195,94 @@ if (fabs(d - 1.5) < 1e-6) {      // 浮点数不能写 ==，要判断差值足�
 // 返回的是 double，交给整数会丢精度；能连乘就别用它，慢`
 }
 
+};
+
+/* 正面上那一行极短中文（8 字以内），只讲“它是干嘛的”，不讲细节 */
+var SHORT = {
+  'cstr:strlen': '求字符串长度',
+  'cstr:strcpy': '复制字符串',
+  'cstr:strncpy': '复制 n 个字符',
+  'cstr:strcmp': '比较两个字符串',
+  'cstr:strcat': '拼接字符串',
+  'cstr:strstr': '查找子串',
+  'cstr:strchr': '查找某个字符',
+  'cstr:strtok': '按分隔符切串',
+  'cstr:strncmp': '比较 n 个字符',
+  'cstr:strerror': '错误码转文字',
+  'cmem:memcpy': '按字节拷贝内存',
+  'cmem:memmove': '可重叠的内存拷贝',
+  'cmem:memset': '按字节填充内存',
+  'cmem:memcmp': '按字节比较内存',
+  'fmt:printf': '格式化打印',
+  'fmt:snprintf': '限量写进字符串',
+  'fmt:sscanf': '从字符串里解析',
+  'fmt:atoi': '字符串转整数',
+  'fmt:strtol': '字符串转长整数',
+  'file:fopen': '打开文件',
+  'file:fclose': '关闭文件',
+  'file:fread': '读文件',
+  'file:fwrite': '写文件',
+  'file:fseek': '挪动读写位置',
+  'file:ftell': '查当前读写位置',
+  'file:fprintf': '按格式写文件',
+  'file:fgets': '读一行',
+  'string:size()': '字符个数',
+  'string:empty()': '判断是否为空',
+  'string:c_str()': '转成 C 字符串',
+  'string:substr()': '截取子串',
+  'string:find()': '查找子串位置',
+  'string:append()': '末尾追加',
+  'string:push_back()': '末尾加字符',
+  'string:clear()': '清空内容',
+  'string:replace()': '替换一段',
+  'string:erase()': '删掉一段',
+  'vector:push_back()': '末尾加元素',
+  'vector:pop_back()': '删掉末尾元素',
+  'vector:size()': '元素个数',
+  'vector:empty()': '判断是否为空',
+  'vector:at()': '按下标取元素',
+  'vector:front()': '取第一个元素',
+  'vector:back()': '取最后一个元素',
+  'vector:clear()': '清空元素',
+  'vector:resize()': '改元素个数',
+  'vector:begin() / end()': '头和尾的迭代器',
+  'vector:erase()': '删掉一个元素',
+  'vector:insert()': '插入元素',
+  'vector:reserve()': '预留容量',
+  'io:std::cin': '标准输入',
+  'io:std::cout': '标准输出',
+  'io:std::getline': '读一整行',
+  'io:std::cin.ignore()': '丢掉缓冲区字符',
+  'tool:std::sort': '排序',
+  'tool:std::to_string': '数字转字符串',
+  'tool:std::stoi': '字符串转整数',
+  'tool:std::max': '取较大值',
+  'tool:std::min': '取较小值',
+  'tool:std::make_unique': '造独占智能指针',
+  'tool:std::swap': '交换两个值',
+  'tool:std::find': '查找元素',
+  'tool:std::reverse': '反转区间',
+  'heap:new': '堆上造一个对象',
+  'heap:new[]': '堆上造一排',
+  'heap:delete': '还掉一个对象',
+  'heap:delete[]': '还掉一排',
+  'math:isdigit': '是不是数字字符',
+  'math:isalpha': '是不是字母',
+  'math:isspace': '是不是空白',
+  'math:toupper': '转大写',
+  'math:tolower': '转小写',
+  'math:abs': '整数绝对值',
+  'math:fabs': '浮点绝对值',
+  'math:sqrt': '平方根',
+  'math:pow': '求次方',
+  'care:malloc': '借一块堆内存',
+  'care:calloc': '借清零的内存',
+  'care:realloc': '换更大的一块',
+  'care:free': '还掉借的内存',
+  'care:std::vector（MCU 上）': '会变长的数组',
+  'care:std::string（MCU 上）': '会变长的字符串',
+  'care:裸机 printf 重定向': '把输出接到串口',
+  'care:volatile（不是函数，但面试常问）': '别优化这个变量'
 };
 
 /* 手写区的“写调用 + 验坑”题 */
@@ -1418,6 +1522,7 @@ var CARDS = D.map(function(r, i){
     args:r[5], trap:r[6],
     ex: m.e || r[7],
     say: m.s || '', from: m.o || '',
+    t: SHORT[id] || '',
     note:r[8] || '',
     order:i, id:id
   };
@@ -1627,7 +1732,8 @@ function renderPanel(){
 /* ---------- 慎用 / 了解 ---------- */
 function renderCare(){
   document.getElementById('careList').innerHTML = CARE.map(function(x){
-    return '<details class="care"><summary><b>' + esc(x.n) + '</b><span>什么时候才用 ▾</span></summary>' +
+    return '<details class="care"><summary><b>' + esc(x.n) + '</b><span class="cgo">什么时候才用 ▾</span>' +
+      '<span class="csub"><i>' + esc(ipaOf(x.say)) + '</i><em>' + esc(SHORT['care:' + x.n] || '') + '</em></span></summary>' +
       '<div class="carebody">' +
       '<p class="plainline">' + esc(x.plain) + '</p>' +
       '<p class="sayl"><b>怎么念：</b>' + esc(x.say) + '</p>' +
@@ -1881,6 +1987,8 @@ function renderStudy(){
   var fn = document.getElementById('fName');
   fn.textContent = card.name;
   fn.className = 'fname' + (card.name.length > 16 ? ' sm' : '');
+  document.getElementById('fIpa').textContent = ipaOf(card.say);
+  document.getElementById('fMean').textContent = card.t || '';
 
   document.getElementById('bBody').innerHTML =
     '<p class="plainline">' + esc(card.plain) + '</p>' +
@@ -2024,6 +2132,16 @@ function esc(s){
 /* 先转义再处理 **加粗**，避免标签被吃掉 */
 function md(s){
   return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
+}
+/* 正面只显示「读法 + 音标」，中文谐音留在背面，两边共用同一份 say 数据 */
+function ipaOf(say){
+  if (!say) return '';
+  var segs = say.split('｜').map(function(t){
+    return t.replace(/（[^）]*）/g, '').trim();
+  });
+  var head = (segs[0] || '').replace(/^两种都常见[：:]/, '').trim();
+  var ipas = segs.filter(function(t){ return /^\/.+\/$/.test(t); });
+  return (head ? head + ' ' : '') + ipas.join(' · ');
 }
 
 function renderAll(){
