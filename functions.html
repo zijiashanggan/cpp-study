@@ -459,55 +459,21 @@ var IV = [1,2,4,7,15,30];
 var KEY = 'cpp_fn_cards_v1';
 
 var GROUPS = [
-  {id:'cstr',  name:'C 字符串',        color:'#5eead4'},
-  {id:'cmem',  name:'C 内存',          color:'#5eead4'},
-  {id:'fmt',   name:'格式化与数字转换', color:'#7aa2f7'},
-  {id:'file',  name:'文件读写',        color:'#7aa2f7'},
   {id:'string',name:'C++ std::string', color:'#a9c1f5'},
   {id:'vector',name:'C++ std::vector', color:'#a9c1f5'},
   {id:'io',    name:'C++ 输入输出',    color:'#c0a4f7'},
   {id:'tool',  name:'C++ 常用工具',    color:'#c0a4f7'},
   {id:'heap',  name:'new / delete 配对', color:'#f0c674'},
+  {id:'cstr',  name:'C 字符串',        color:'#5eead4'},
+  {id:'cmem',  name:'C 内存',          color:'#5eead4'},
+  {id:'fmt',   name:'格式化与数字转换', color:'#7aa2f7'},
+  {id:'file',  name:'文件读写',        color:'#7aa2f7'},
   {id:'math',  name:'字符判断与数学',  color:'#7ee787'}
+
 ];
 
 /* 必背卡片：[组, 名字, 大白话, 原型, 干嘛用的, 参数/返回, 坑, 一行示例, 平台提示] */
 var D = [
-/* ---------- C 字符串 ---------- */
-['cstr','strlen','数一数这句话有多少个字，数到结尾那个看不见的 0 就停。','size_t strlen(const char *s);','求字符串长度（不算结尾的 \\0）。','s：要以 \\0 结尾的字符数组；返回：字符个数，类型 size_t（只能存 0 和正数的整数类型）。','如果数组里没有 \\0，它会一直往后数，数到别人的内存里去，程序可能当场跑飞；另外两个长度相减得到负数时，会变成一个特别大的数。','printf("%zu\\n", strlen("hello"));  // 5'],
-['cstr','strcpy','把一句话连同结尾的 0，原封不动搬到另一个盒子里。','char *strcpy(char *dest, const char *src);','复制一个字符串到 dest。','dest：目标数组，必须够大；src：源字符串；返回：dest 的地址（一般不用接）。','它完全不看你盒子多大。10 个字的句子抄进只能装 3 个字的盒子，多出来的会盖住旁边别人的数据，程序可能当场崩，也可能过很久才莫名其妙出错。','char buf[16]; strcpy(buf, "hello");'],
-['cstr','strncpy','像搬家但只搬前 n 件，盒子满了就停手。','char *strncpy(char *dest, const char *src, size_t n);','最多复制 n 个字符到 dest。','n：最多搬几个字符；返回：dest。','如果源字符串长度 ≥ n，它搬完 n 个字符就收工，结尾不会给你补 \\0，后面一打印就带出一串乱码。用完自己补 dest[n-1] = \'\\0\'，或者干脆改用 snprintf。','char buf[8]; strncpy(buf, "hello world", 7); buf[7] = \'\\0\';'],
-['cstr','strcmp','像查字典一样比两句话谁排在前面，一模一样就回 0。','int strcmp(const char *s1, const char *s2);','按字典序比较两个字符串。','返回：小于 0 表示 s1 在前，等于 0 表示完全一样，大于 0 表示 s1 在后（不要记成只会返回 -1 和 1）。','不能用 == 比较两个字符串，那比的是地址不是内容，两个看起来一样的字符串也会判不相等；判断相等要写 strcmp(a, b) == 0。','if (strcmp(a, "ok") == 0) puts("一样");'],
-['cstr','strcat','把一句话接在另一句话的屁股后面。','char *strcat(char *dest, const char *src);','把 src 追加到 dest 末尾。','dest：必须已经是合法字符串，且后面剩余空间够；返回：dest。','它从 dest 的 \\0 位置开始往后写。dest 没初始化（里面是随机垃圾）或者空间不够，就会写到盒子外面去。','char buf[16] = "ab"; strcat(buf, "cd");  // "abcd"'],
-['cstr','strstr','在一段话里找另一段话，找到就指给你看它在哪。','char *strstr(const char *haystack, const char *needle);','查找子串第一次出现的位置。','haystack：被找的长串；needle：要找的短串；返回：指向找到位置的指针，找不到返回 NULL。','返回的是指针不是下标，直接当数字用会出错；求下标要写 p - haystack，而且用之前必须先判 NULL。','char *p = strstr("a=1;b=2", "b="); if (p) printf("%s\\n", p);  // b=2'],
-['cstr','strchr','在一句话里找一个字，第一次出现的地方指给你。','char *strchr(const char *s, int c);','查找字符 c 第一次出现的位置。','c：要查的字符（传 int）；返回：指针，找不到返回 NULL。','找不到返回 NULL，不判空就拿去打印会直接崩；另外它也会匹配结尾的 \\0，别拿它当“这个字符一定存在”来用。','char *p = strchr("a/b/c", \'/\'); if (p) printf("%s\\n", p);  // /b/c'],
-['cstr','strtok','把一整句话按逗号、空格这类分隔符切成一段一段。','char *strtok(char *str, const char *delim);','按分隔符逐个切出子串。','第一次传原字符串，后面几次传 NULL；delim：所有分隔符组成的字符串；返回：切出来的下一段，没有了返回 NULL。','它会直接动手改你原来的字符串（把分隔符改成 \\0），所以不能用在字符串常量上，也不能两个循环同时切。要保留原串先复制一份。','char s[] = "a,b,c"; for (char *p = strtok(s, ","); p; p = strtok(NULL, ",")) puts(p);'],
-['cstr','strncmp','只比两句话的前 n 个字，后面的不管。','int strncmp(const char *s1, const char *s2, size_t n);','只比较前 n 个字符。','返回同 strcmp：小于 0、等于 0、大于 0。','n 是“比较几个字符”，不是“比到第几位”；写大了会把后面不同的部分也比进去，写小了会把不同的字符串判成一样（比如只比 3 个字符时 "AT+OK" 和 "AT+ERR" 会被判相等）。','if (strncmp(cmd, "AT+", 3) == 0) { /* 是 AT 指令 */ }'],
-['cstr','strerror','把系统给的一串错误编号翻译成人能看懂的话。','char *strerror(int errnum);','把 errno 转成错误描述文字。','errnum：一般直接传 errno；返回：静态缓冲区里的说明文字。','它返回的是一块公用的静态内存，再调用一次就被覆盖，别长期存这个指针；不同平台文字不一样，程序里不要拿它做字符串比较。','FILE *f = fopen("no.txt", "r"); if (!f) printf("%s\\n", strerror(errno));'],
-
-/* ---------- C 内存 ---------- */
-['cmem','memcpy','按字节数搬家，不认里面装的是字还是数字，只认多少个字节。','void *memcpy(void *dest, const void *src, size_t n);','把 n 个字节从 src 复制到 dest。','n：字节数（不是元素个数）；返回：dest。','两块内存如果重叠（比如在同一个数组里往前挪），它可能先把自己盖掉再复制，结果一半是错的，这种要用 memmove；另外给数组算大小要 sizeof(数组)，但数组当参数传进函数后就只剩指针大小。','int a[3] = {1,2,3}, b[3]; memcpy(b, a, sizeof(a));'],
-['cmem','memmove','同样是搬家，但它会先看看会不会撞到自己，撞到就换个顺序搬。','void *memmove(void *dest, const void *src, size_t n);','复制 n 个字节，允许源和目标重叠。','参数同 memcpy；返回：dest。','它比 memcpy 慢一点点，只在真的可能重叠时才用；在同一个数组里做删除、插入、整体挪位，一定要用它，而且字节数要把结尾的 \\0 也算进去。','char s[] = "abcdef"; memmove(s, s + 1, strlen(s));  // "bcdef"'],
-['cmem','memset','拿一支笔，把一整块内存涂成同一个字节。','void *memset(void *s, int c, size_t n);','把 n 个字节都设成 c。','c：按字节填的值（0~255）；n：字节数；返回：s。','它是“按字节”涂的。想让 int x 变成 1 而写 memset(&x, 1, sizeof x) 是错的：4 个字节全涂 1，拼出来是 16843009。平时只该用它清零或者填 0xFF。','int a[10]; memset(a, 0, sizeof(a));  // 全部变 0'],
-['cmem','memcmp','拿两段内存逐字节对一遍，看是不是一样。','int memcmp(const void *s1, const void *s2, size_t n);','比较 n 个字节的内容。','返回：小于 0、等于 0、大于 0。','它按字节比，结构体里有“空隙”（为了对齐留的填充字节）时，两个成员都一样的结构体也可能被判不相等；比较结构体最好逐个成员比。','if (memcmp(a, b, sizeof(a)) == 0) puts("一样");'],
-
-/* ---------- 格式化与数字转换 ---------- */
-['fmt','printf','把数字、文字按你写的格式拼成一句话，从调试口吐出来。','int printf(const char *format, ...);','按格式输出到标准输出。','format：带 %d、%s 这类占位符的模板；返回：输出了多少个字符（出错返回负数）。','%d 配 long 会读错位置（long 要 %ld，size_t 要 %zu）；%s 传了没有结尾 0 的数组，会一路打印到崩。另外嵌入式里 printf 通常要自己重定向到串口才能用。','printf("%d %s\\n", 42, "hi");', '平台提示：Linux 下直接能打；裸机上要先做 printf 重定向，否则什么也看不到（见“慎用区”）。'],
-['fmt','snprintf','像 printf，但先把结果装进一个有盖子的盒子，盒子满了自动截断，不会溢出去。','int snprintf(char *str, size_t size, const char *format, ...);','格式化到字符串，最多写 size-1 个字符再补 \\0。','size：盒子总大小（包含结尾 0）；返回：它“本来想写多少字”，可能大于等于 size。','返回值不是实际写进去的长度，拿它当下标用会越界。想知道有没有被截断，要判断 返回 >= size。','char buf[8]; int n = snprintf(buf, sizeof buf, "%s", "hello world");  // buf="hello w", n=11'],
-['fmt','sscanf','从一句话里按模板把数字和单词抠出来。','int sscanf(const char *str, const char *format, ...);','从字符串按格式解析数据。','返回：成功读到的项数（不是读了多少字符）。','用 %s 读字符串照样会溢出，要写 %7s 限长；返回值一定要检查，不检查就会拿没赋上值的变量去算。','int a, b; if (sscanf("12,34", "%d,%d", &a, &b) == 2) printf("%d\\n", a + b);'],
-['fmt','atoi','把一串数字字符变成真正的整数。','int atoi(const char *nptr);','字符串转 int。','返回：转出来的整数；开头不是数字就返回 0。','它没法告诉你“失败了”：输入 "abc" 和输入 "0" 都返回 0；数字太大超出 int 范围时结果没有保证。要靠谱就用 strtol。','int n = atoi("123");  // 123'],
-['fmt','strtol','同样是字符串转整数，但它会告诉你“我读到哪停了”，还能顺便转十六进制。','long strtol(const char *nptr, char **endptr, int base);','按指定进制把字符串转成 long，并能发现非法输入。','base：10 十进制、16 十六进制、0 自动判断；endptr：传出“停在哪”（不要就传 NULL）；返回：转换结果。','判断有没有转成功要看 *endptr：它等于原串开头，说明一个字都没转；它还停在中间，说明后面有垃圾字符。只传 NULL 就只能靠 errno，很容易漏判。','char *end; long v = strtol("0x1A", &end, 16);  // v=26, *end=\'\\0\''],
-
-/* ---------- 文件读写 ---------- */
-['file','fopen','敲门打开一个文件，拿到一张“取号单”，后面读写都要凭这张单子。','FILE *fopen(const char *path, const char *mode);','打开文件，返回文件指针。','mode："r" 读、"w" 清空重写、"a" 追加、前面加 b 表示二进制（"rb"）；返回：成功给 FILE*，失败给 NULL。','打开失败只返回 NULL，不判空后面 fprintf/fread 全崩；用 "w" 打开会立刻把原文件清空，哪怕你一个字都没写。','FILE *fp = fopen("a.txt", "r"); if (!fp) { perror("open"); return; }'],
-['file','fclose','把借来的东西还回去，顺便把没写完的内容冲出去。','int fclose(FILE *stream);','关闭文件，刷新缓冲区。','返回：成功 0，失败 EOF。','写文件不 fclose（或 fflush），最后一段数据可能还躺在缓冲区里没落盘，断电就没了；关完再拿这个指针读写是野指针。','fclose(fp); fp = NULL;'],
-['file','fread','从文件里整块整块地读，像用勺子定量舀。','size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);','从文件读 nmemb 个、每个 size 字节的数据。','返回：真正读到的“元素个数”，不是字节数。','返回值要乘以 size 才是字节数；把返回值当字节数会少算。读到文件尾时返回值会小于 nmemb，这时 feof 才为真。','char buf[64]; size_t n = fread(buf, 1, sizeof buf, fp);  // size=1 时 n 就是字节数'],
-['file','fwrite','把内存里的一块数据整块倒进文件。','size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);','向文件写数据。','返回：成功写出的元素个数。','返回值小于 nmemb 说明没写全（磁盘满、权限问题），不检查就会以为写成功了；结构体直接写文件，换平台或换编译器可能读不回来（对齐和字节序不一样）。','int v[3] = {1,2,3}; fwrite(v, sizeof(int), 3, fp);'],
-['file','fseek','把文件里的“读书指针”拨到指定位置。','int fseek(FILE *stream, long offset, int whence);','移动文件读写位置。','whence：SEEK_SET 从头算、SEEK_CUR 从当前位置算、SEEK_END 从末尾算；返回：成功 0。','先写后读切换时中间要 fseek 或 fflush，否则位置和缓冲区可能对不上；文本模式下 offset 和字节数的对应关系不保证。','fseek(fp, 0, SEEK_END);'],
-['file','ftell','问一句“现在读到第几个字节了”。','long ftell(FILE *stream);','取当前读写位置（字节偏移）。','返回：从头算的字节偏移，出错返回 -1L。','用“fseek 到末尾 + ftell”取文件大小之后，别忘了把位置再 fseek 回 0，不然接着读是从末尾开始，什么也读不到。','fseek(fp, 0, SEEK_END); long sz = ftell(fp); fseek(fp, 0, SEEK_SET);'],
-['file','fprintf','跟 printf 一样排版，只是把结果写进文件或者串口。','int fprintf(FILE *stream, const char *format, ...);','按格式写数据到指定流。','stream：文件指针，或者 stderr；返回：写出的字符数。','调试信息写 stderr 不会被输出重定向搞丢；往文件写记得之后 fclose，不然日志可能少最后几行。','fprintf(stderr, "err=%d\\n", errno);'],
-['file','fgets','按“一行”从文件里取字，取到回车就停。','char *fgets(char *s, int size, FILE *stream);','读一行（最多 size-1 个字符）。','返回：成功给 s，到文件尾或出错给 NULL。','它会把换行 \\n 也一起存进来，直接拿来比较字符串会多一个字符对不上；一行超过 size-1 时只读到一半，剩下的下次再读。','char line[128]; while (fgets(line, sizeof line, fp)) printf("%s", line);'],
-
 /* ---------- C++ std::string ---------- */
 ['string','size()','问一句“这个字符串里现在有几个字符”。','std::string::size_type std::string::size() const;','返回字符个数。','返回：无符号整数，不含结尾的 \\0（string 自己管着）。','size() 是无符号的，空串的 size()-1 会变成一个巨大的数；循环条件写成 i <= s.size()-1 就会越界。空串要先判 empty()。','std::string s = "hello"; std::cout << s.size();  // 5'],
 ['string','empty()','问一句“这里面是空的吗”。','bool std::string::empty() const;','判断字符串是否为空。','返回：空为 true，不空为 false。','empty() 看的是长度不是容量；写“不为空”用 !s.empty()，别绕成 s.size() > 0 把自己的空串判断写错。','std::string s; if (s.empty()) puts("空");'],
@@ -519,7 +485,6 @@ var D = [
 ['string','clear()','把内容全倒掉，变回空串。','void std::string::clear();','清空字符串内容。','无返回值；长度变 0，容量通常不变。','clear() 之后，之前 c_str() 拿到的老指针就不能用了；清空不等于释放内存，别想着“清空一下就能省内存”。','std::string s = "abc"; s.clear();  // s.size() == 0'],
 ['string','replace()','把中间某一段换成别的内容。','std::string& std::string::replace(size_t pos, size_t len, const std::string& str);','把从 pos 开始的 len 个字符替换成 str。','pos：起点；len：换掉几个；str：换成什么；返回：自己的引用。','pos 越界会抛 out_of_range；len 写太长会自动截到结尾，但结果可能和你脑子里想的不一样。','std::string s = "a=1"; s.replace(2, 1, "10");  // a=10'],
 ['string','erase()','剪掉一段字符。','std::string& std::string::erase(size_t pos = 0, size_t len = npos);','删除从 pos 开始的 len 个字符。','pos：起点；len：删几个，默认删到结尾；返回：自己的引用。','在循环里“找到一个删一个”时，删完后面的字符会整体往前挪，i++ 会漏掉一个；删完要么不自增，要么重新 find。','std::string s = "a,b,c"; s.erase(1, 1);  // "ab,c"'],
-
 /* ---------- C++ std::vector ---------- */
 ['vector','push_back()','往队伍末尾再排一个人。','void std::vector<T>::push_back(const T& value);','在末尾添加一个元素。','value：要加的元素（会复制一份）；无返回值。','容量满了它会去堆上重新找一块更大的地、把老元素全搬过去，之前保存的指针和迭代器全部失效；MCU 上堆小，这种“搬家”很容易失败。','std::vector<int> v; v.push_back(1); v.push_back(2);', '平台差异：Linux 上随便用；MCU 上先 reserve 或改用固定大小数组。'],
 ['vector','pop_back()','把队伍最后一个人请出去。','void std::vector<T>::pop_back();','删除最后一个元素。','无参数无返回值；元素个数减 1。','它不检查空！空 vector 上 pop_back 是未定义行为，可能崩也可能悄悄改坏内存，调用前先判 !v.empty()。','std::vector<int> v{1,2}; v.pop_back();  // {1}'],
@@ -534,13 +499,11 @@ var D = [
 ['vector','erase()','从队伍中间抽走一个人，后面的人自动往前补位。','iterator std::vector<T>::erase(iterator pos);','删除 pos 位置的元素，返回下一个元素的迭代器。','pos：要删的位置；返回：被删元素的下一个位置。','最经典的坑：循环里 v.erase(it) 之后还 it++，会跳过元素甚至越界。正确写法是 it = v.erase(it);，删的那次不自增。','for (auto it = v.begin(); it != v.end(); ) { if (*it == 2) it = v.erase(it); else ++it; }'],
 ['vector','insert()','往队伍中间插一个人，后面的人整体往后挪。','iterator std::vector<T>::insert(iterator pos, const T& value);','在 pos 前面插入 value。','pos：插入位置（插在它前面）；返回：指向新元素的迭代器。','插入可能扩容搬家，插入前拿到的迭代器、指针、引用全部失效；边遍历边 insert，很容易越界。','std::vector<int> v{1,3}; v.insert(v.begin() + 1, 2);  // {1,2,3}'],
 ['vector','reserve()','提前把场地占好，后面加人就不用反复搬家。','void std::vector<T>::reserve(size_t n);','预分配至少能放 n 个元素的容量。','n：容量；不改变 size。','reserve 只改容量不改元素个数，之后 v[0] 访问是越界（元素还没构造）；要能直接用，得 resize。','std::vector<int> v; v.reserve(100);  // capacity>=100, size==0'],
-
 /* ---------- C++ 输入输出 ---------- */
 ['io','std::cin','从键盘（或者被重定向的输入）把东西读进来。','std::istream std::cin;','标准输入流，配合 >> 读数据。','>> 会跳过空白，遇到空格或换行就停；读取成功会返回流本身（可以拿来判断）。','读失败（比如要数字却输入字母）后流进入失败状态，后面所有读取都直接失败，要 cin.clear() 再 cin.ignore() 把坏字符清掉。','int n; std::cin >> n;', '平台差异：嵌入式里 cin 一般没接上任何设备，调试还是 printf 稳。'],
 ['io','std::cout','往屏幕上吐东西，可以连着写。','std::ostream std::cout;','标准输出流，配合 << 输出。','返回流本身，可以链式写；不会自动换行。','浮点默认只打 6 位有效数字，要 setprecision；嵌入式里 cout 往往没重定向，打不出东西。','std::cout << "n=" << 3 << \'\\n\';', '平台差异：裸机上通常没实现 cout，别指望它出串口。'],
 ['io','std::getline','读一整行，连空格都算进去，读到回车为止。','std::istream& std::getline(std::istream& is, std::string& str);','从流里读一行到 string（不含换行符）。','返回 is，可以判断成功；读到文件尾会失败。','和 cin >> 混用时，cin >> 会把回车留在缓冲区，紧接着的 getline 读到一个空串。中间要加 cin.ignore()。','std::string line; std::getline(std::cin, line);'],
 ['io','std::cin.ignore()','把缓冲区里不要的字符（通常是回车）扔掉。','std::istream& std::istream::ignore(std::streamsize n = 1, int delim = EOF);','丢弃 n 个字符，或者一直丢到遇到 delim。','默认丢 1 个字符；cin.ignore(1000, \'\\n\') 是丢到换行为止。','cin >> 之后不 ignore 就直接 getline，会读到一个空行，看起来像“getline 坏了”；ignore 之前如果流已经失败，要先 clear()。','int n; std::cin >> n; std::cin.ignore(); std::string s; std::getline(std::cin, s);'],
-
 /* ---------- C++ 常用工具 ---------- */
 ['tool','std::sort','把一排东西从小到大排好队。','void std::sort(RandomIt first, RandomIt last);','对区间 [first, last) 排序，默认升序。','first/last：开始位置和“最后一个的下一格”；第三个参数可以传比较函数。','last 要传 v.end() 而不是 v.end()-1；自定义比较函数必须返回 bool，写成 <= 会在有重复元素时崩。','std::vector<int> v{3,1,2}; std::sort(v.begin(), v.end());', '平台差异：MCU 上排序一般数据量小，注意别在中断里排。'],
 ['tool','std::to_string','把数字变成字符串，方便拼进一句话里。','std::string std::to_string(int val);','把数值转成 std::string（int、long、double 都有对应的版本）。','返回：转好的字符串。','浮点固定保留 6 位小数，想去掉多余的 0 得自己处理；它内部可能申请堆内存，嵌入式高频调用要留意。','std::string s = "id=" + std::to_string(7);  // id=7', '平台差异：MCU 上更常用 snprintf 拼字符串，不占堆。'],
@@ -551,13 +514,42 @@ var D = [
 ['tool','std::swap','两个人手里的东西互换一下。','void std::swap(T& a, T& b);','交换两个同类型变量的值。','在 <utility> 里；无返回值。','数组不能直接 swap 内容（交换的是指针，对数组名用不了）；两个 vector 之间 swap 只换内部指针，很快。','int a = 1, b = 2; std::swap(a, b);  // a=2, b=1'],
 ['tool','std::find','在一排东西里找一个，找到就把位置指给你。','InputIt std::find(InputIt first, InputIt last, const T& value);','在区间里从头到尾查找 value。','返回：指向第一个相等元素的迭代器；找不到返回 last。','找不到返回的是 last，不是 NULL；判断要写 it != v.end()，直接 *it 就崩。','auto it = std::find(v.begin(), v.end(), 7); if (it != v.end()) puts("有");'],
 ['tool','std::reverse','把一排东西整体掉个头。','void std::reverse(BidirIt first, BidirIt last);','反转区间 [first, last)。','无返回值，原地修改。','s.rbegin()/rend() 是“反向遍历”，不是反转；真要反转得用 std::reverse(s.begin(), s.end())。','std::string s = "abc"; std::reverse(s.begin(), s.end());  // cba'],
-
 /* ---------- new / delete 配对 ---------- */
 ['heap','new','跟系统临时借一块内存，在上面造一个对象。','T* p = new T;','在堆上创建一个对象。','返回：指向新对象的指针；失败抛 std::bad_alloc（老编译器可能返回 NULL）。','借了必须还（delete），漏一次就少一块内存；中断里、频繁调用的函数里别 new，堆会被切得七零八落。','int *p = new int(5); delete p;', '平台差异：Linux 应用层常用；MCU 上优先用静态变量，见“慎用区”。'],
 ['heap','new[]','一次借一排连续的位置。','T* p = new T[n];','在堆上创建 n 个元素的数组。','返回：首元素指针；n 可以是运行期才知道的变量。','new[] 必须配 delete[]，写成 delete p 只析构第一个元素，是未定义行为；new int[5] 里的值不确定，要清零写 new int[5]()。','int *a = new int[10]();  // 全 0', '平台差异：MCU 上大数组一次 new 很容易失败，先算好大小静态分配。'],
 ['heap','delete','把借来的单个东西还回去。','delete p;','释放 new 出来的单个对象。','无返回值；会调用析构函数。','只能 delete 由 new 出来的；delete 一个栈上变量的地址，或者同一个指针 delete 两次，都是未定义行为。删完把指针置 nullptr。','int *p = new int(1); delete p; p = nullptr;'],
 ['heap','delete[]','把借来的一排位置整排还回去。','delete[] p;','释放 new[] 出来的数组。','无返回值；会对每个元素调析构。','new[] 配 delete、new 配 delete[]，都是未定义行为，可能只在你换台机器时才崩；删完同样要置 nullptr。','int *a = new int[3]; delete[] a; a = nullptr;'],
-
+/* ---------- C 字符串 ---------- */
+['cstr','strlen','数一数这句话有多少个字，数到结尾那个看不见的 0 就停。','size_t strlen(const char *s);','求字符串长度（不算结尾的 \\0）。','s：要以 \\0 结尾的字符数组；返回：字符个数，类型 size_t（只能存 0 和正数的整数类型）。','如果数组里没有 \\0，它会一直往后数，数到别人的内存里去，程序可能当场跑飞；另外两个长度相减得到负数时，会变成一个特别大的数。','printf("%zu\\n", strlen("hello"));  // 5'],
+['cstr','strcpy','把一句话连同结尾的 0，原封不动搬到另一个盒子里。','char *strcpy(char *dest, const char *src);','复制一个字符串到 dest。','dest：目标数组，必须够大；src：源字符串；返回：dest 的地址（一般不用接）。','它完全不看你盒子多大。10 个字的句子抄进只能装 3 个字的盒子，多出来的会盖住旁边别人的数据，程序可能当场崩，也可能过很久才莫名其妙出错。','char buf[16]; strcpy(buf, "hello");'],
+['cstr','strncpy','像搬家但只搬前 n 件，盒子满了就停手。','char *strncpy(char *dest, const char *src, size_t n);','最多复制 n 个字符到 dest。','n：最多搬几个字符；返回：dest。','如果源字符串长度 ≥ n，它搬完 n 个字符就收工，结尾不会给你补 \\0，后面一打印就带出一串乱码。用完自己补 dest[n-1] = \'\\0\'，或者干脆改用 snprintf。','char buf[8]; strncpy(buf, "hello world", 7); buf[7] = \'\\0\';'],
+['cstr','strcmp','像查字典一样比两句话谁排在前面，一模一样就回 0。','int strcmp(const char *s1, const char *s2);','按字典序比较两个字符串。','返回：小于 0 表示 s1 在前，等于 0 表示完全一样，大于 0 表示 s1 在后（不要记成只会返回 -1 和 1）。','不能用 == 比较两个字符串，那比的是地址不是内容，两个看起来一样的字符串也会判不相等；判断相等要写 strcmp(a, b) == 0。','if (strcmp(a, "ok") == 0) puts("一样");'],
+['cstr','strcat','把一句话接在另一句话的屁股后面。','char *strcat(char *dest, const char *src);','把 src 追加到 dest 末尾。','dest：必须已经是合法字符串，且后面剩余空间够；返回：dest。','它从 dest 的 \\0 位置开始往后写。dest 没初始化（里面是随机垃圾）或者空间不够，就会写到盒子外面去。','char buf[16] = "ab"; strcat(buf, "cd");  // "abcd"'],
+['cstr','strstr','在一段话里找另一段话，找到就指给你看它在哪。','char *strstr(const char *haystack, const char *needle);','查找子串第一次出现的位置。','haystack：被找的长串；needle：要找的短串；返回：指向找到位置的指针，找不到返回 NULL。','返回的是指针不是下标，直接当数字用会出错；求下标要写 p - haystack，而且用之前必须先判 NULL。','char *p = strstr("a=1;b=2", "b="); if (p) printf("%s\\n", p);  // b=2'],
+['cstr','strchr','在一句话里找一个字，第一次出现的地方指给你。','char *strchr(const char *s, int c);','查找字符 c 第一次出现的位置。','c：要查的字符（传 int）；返回：指针，找不到返回 NULL。','找不到返回 NULL，不判空就拿去打印会直接崩；另外它也会匹配结尾的 \\0，别拿它当“这个字符一定存在”来用。','char *p = strchr("a/b/c", \'/\'); if (p) printf("%s\\n", p);  // /b/c'],
+['cstr','strtok','把一整句话按逗号、空格这类分隔符切成一段一段。','char *strtok(char *str, const char *delim);','按分隔符逐个切出子串。','第一次传原字符串，后面几次传 NULL；delim：所有分隔符组成的字符串；返回：切出来的下一段，没有了返回 NULL。','它会直接动手改你原来的字符串（把分隔符改成 \\0），所以不能用在字符串常量上，也不能两个循环同时切。要保留原串先复制一份。','char s[] = "a,b,c"; for (char *p = strtok(s, ","); p; p = strtok(NULL, ",")) puts(p);'],
+['cstr','strncmp','只比两句话的前 n 个字，后面的不管。','int strncmp(const char *s1, const char *s2, size_t n);','只比较前 n 个字符。','返回同 strcmp：小于 0、等于 0、大于 0。','n 是“比较几个字符”，不是“比到第几位”；写大了会把后面不同的部分也比进去，写小了会把不同的字符串判成一样（比如只比 3 个字符时 "AT+OK" 和 "AT+ERR" 会被判相等）。','if (strncmp(cmd, "AT+", 3) == 0) { /* 是 AT 指令 */ }'],
+['cstr','strerror','把系统给的一串错误编号翻译成人能看懂的话。','char *strerror(int errnum);','把 errno 转成错误描述文字。','errnum：一般直接传 errno；返回：静态缓冲区里的说明文字。','它返回的是一块公用的静态内存，再调用一次就被覆盖，别长期存这个指针；不同平台文字不一样，程序里不要拿它做字符串比较。','FILE *f = fopen("no.txt", "r"); if (!f) printf("%s\\n", strerror(errno));'],
+/* ---------- C 内存 ---------- */
+['cmem','memcpy','按字节数搬家，不认里面装的是字还是数字，只认多少个字节。','void *memcpy(void *dest, const void *src, size_t n);','把 n 个字节从 src 复制到 dest。','n：字节数（不是元素个数）；返回：dest。','两块内存如果重叠（比如在同一个数组里往前挪），它可能先把自己盖掉再复制，结果一半是错的，这种要用 memmove；另外给数组算大小要 sizeof(数组)，但数组当参数传进函数后就只剩指针大小。','int a[3] = {1,2,3}, b[3]; memcpy(b, a, sizeof(a));'],
+['cmem','memmove','同样是搬家，但它会先看看会不会撞到自己，撞到就换个顺序搬。','void *memmove(void *dest, const void *src, size_t n);','复制 n 个字节，允许源和目标重叠。','参数同 memcpy；返回：dest。','它比 memcpy 慢一点点，只在真的可能重叠时才用；在同一个数组里做删除、插入、整体挪位，一定要用它，而且字节数要把结尾的 \\0 也算进去。','char s[] = "abcdef"; memmove(s, s + 1, strlen(s));  // "bcdef"'],
+['cmem','memset','拿一支笔，把一整块内存涂成同一个字节。','void *memset(void *s, int c, size_t n);','把 n 个字节都设成 c。','c：按字节填的值（0~255）；n：字节数；返回：s。','它是“按字节”涂的。想让 int x 变成 1 而写 memset(&x, 1, sizeof x) 是错的：4 个字节全涂 1，拼出来是 16843009。平时只该用它清零或者填 0xFF。','int a[10]; memset(a, 0, sizeof(a));  // 全部变 0'],
+['cmem','memcmp','拿两段内存逐字节对一遍，看是不是一样。','int memcmp(const void *s1, const void *s2, size_t n);','比较 n 个字节的内容。','返回：小于 0、等于 0、大于 0。','它按字节比，结构体里有“空隙”（为了对齐留的填充字节）时，两个成员都一样的结构体也可能被判不相等；比较结构体最好逐个成员比。','if (memcmp(a, b, sizeof(a)) == 0) puts("一样");'],
+/* ---------- 格式化与数字转换 ---------- */
+['fmt','printf','把数字、文字按你写的格式拼成一句话，从调试口吐出来。','int printf(const char *format, ...);','按格式输出到标准输出。','format：带 %d、%s 这类占位符的模板；返回：输出了多少个字符（出错返回负数）。','%d 配 long 会读错位置（long 要 %ld，size_t 要 %zu）；%s 传了没有结尾 0 的数组，会一路打印到崩。另外嵌入式里 printf 通常要自己重定向到串口才能用。','printf("%d %s\\n", 42, "hi");', '平台提示：Linux 下直接能打；裸机上要先做 printf 重定向，否则什么也看不到（见“慎用区”）。'],
+['fmt','snprintf','像 printf，但先把结果装进一个有盖子的盒子，盒子满了自动截断，不会溢出去。','int snprintf(char *str, size_t size, const char *format, ...);','格式化到字符串，最多写 size-1 个字符再补 \\0。','size：盒子总大小（包含结尾 0）；返回：它“本来想写多少字”，可能大于等于 size。','返回值不是实际写进去的长度，拿它当下标用会越界。想知道有没有被截断，要判断 返回 >= size。','char buf[8]; int n = snprintf(buf, sizeof buf, "%s", "hello world");  // buf="hello w", n=11'],
+['fmt','sscanf','从一句话里按模板把数字和单词抠出来。','int sscanf(const char *str, const char *format, ...);','从字符串按格式解析数据。','返回：成功读到的项数（不是读了多少字符）。','用 %s 读字符串照样会溢出，要写 %7s 限长；返回值一定要检查，不检查就会拿没赋上值的变量去算。','int a, b; if (sscanf("12,34", "%d,%d", &a, &b) == 2) printf("%d\\n", a + b);'],
+['fmt','atoi','把一串数字字符变成真正的整数。','int atoi(const char *nptr);','字符串转 int。','返回：转出来的整数；开头不是数字就返回 0。','它没法告诉你“失败了”：输入 "abc" 和输入 "0" 都返回 0；数字太大超出 int 范围时结果没有保证。要靠谱就用 strtol。','int n = atoi("123");  // 123'],
+['fmt','strtol','同样是字符串转整数，但它会告诉你“我读到哪停了”，还能顺便转十六进制。','long strtol(const char *nptr, char **endptr, int base);','按指定进制把字符串转成 long，并能发现非法输入。','base：10 十进制、16 十六进制、0 自动判断；endptr：传出“停在哪”（不要就传 NULL）；返回：转换结果。','判断有没有转成功要看 *endptr：它等于原串开头，说明一个字都没转；它还停在中间，说明后面有垃圾字符。只传 NULL 就只能靠 errno，很容易漏判。','char *end; long v = strtol("0x1A", &end, 16);  // v=26, *end=\'\\0\''],
+/* ---------- 文件读写 ---------- */
+['file','fopen','敲门打开一个文件，拿到一张“取号单”，后面读写都要凭这张单子。','FILE *fopen(const char *path, const char *mode);','打开文件，返回文件指针。','mode："r" 读、"w" 清空重写、"a" 追加、前面加 b 表示二进制（"rb"）；返回：成功给 FILE*，失败给 NULL。','打开失败只返回 NULL，不判空后面 fprintf/fread 全崩；用 "w" 打开会立刻把原文件清空，哪怕你一个字都没写。','FILE *fp = fopen("a.txt", "r"); if (!fp) { perror("open"); return; }'],
+['file','fclose','把借来的东西还回去，顺便把没写完的内容冲出去。','int fclose(FILE *stream);','关闭文件，刷新缓冲区。','返回：成功 0，失败 EOF。','写文件不 fclose（或 fflush），最后一段数据可能还躺在缓冲区里没落盘，断电就没了；关完再拿这个指针读写是野指针。','fclose(fp); fp = NULL;'],
+['file','fread','从文件里整块整块地读，像用勺子定量舀。','size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);','从文件读 nmemb 个、每个 size 字节的数据。','返回：真正读到的“元素个数”，不是字节数。','返回值要乘以 size 才是字节数；把返回值当字节数会少算。读到文件尾时返回值会小于 nmemb，这时 feof 才为真。','char buf[64]; size_t n = fread(buf, 1, sizeof buf, fp);  // size=1 时 n 就是字节数'],
+['file','fwrite','把内存里的一块数据整块倒进文件。','size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);','向文件写数据。','返回：成功写出的元素个数。','返回值小于 nmemb 说明没写全（磁盘满、权限问题），不检查就会以为写成功了；结构体直接写文件，换平台或换编译器可能读不回来（对齐和字节序不一样）。','int v[3] = {1,2,3}; fwrite(v, sizeof(int), 3, fp);'],
+['file','fseek','把文件里的“读书指针”拨到指定位置。','int fseek(FILE *stream, long offset, int whence);','移动文件读写位置。','whence：SEEK_SET 从头算、SEEK_CUR 从当前位置算、SEEK_END 从末尾算；返回：成功 0。','先写后读切换时中间要 fseek 或 fflush，否则位置和缓冲区可能对不上；文本模式下 offset 和字节数的对应关系不保证。','fseek(fp, 0, SEEK_END);'],
+['file','ftell','问一句“现在读到第几个字节了”。','long ftell(FILE *stream);','取当前读写位置（字节偏移）。','返回：从头算的字节偏移，出错返回 -1L。','用“fseek 到末尾 + ftell”取文件大小之后，别忘了把位置再 fseek 回 0，不然接着读是从末尾开始，什么也读不到。','fseek(fp, 0, SEEK_END); long sz = ftell(fp); fseek(fp, 0, SEEK_SET);'],
+['file','fprintf','跟 printf 一样排版，只是把结果写进文件或者串口。','int fprintf(FILE *stream, const char *format, ...);','按格式写数据到指定流。','stream：文件指针，或者 stderr；返回：写出的字符数。','调试信息写 stderr 不会被输出重定向搞丢；往文件写记得之后 fclose，不然日志可能少最后几行。','fprintf(stderr, "err=%d\\n", errno);'],
+['file','fgets','按“一行”从文件里取字，取到回车就停。','char *fgets(char *s, int size, FILE *stream);','读一行（最多 size-1 个字符）。','返回：成功给 s，到文件尾或出错给 NULL。','它会把换行 \\n 也一起存进来，直接拿来比较字符串会多一个字符对不上；一行超过 size-1 时只读到一半，剩下的下次再读。','char line[128]; while (fgets(line, sizeof line, fp)) printf("%s", line);'],
 /* ---------- 字符判断与数学 ---------- */
 ['math','isdigit','看这个字符是不是 0~9 里的一个数字。','int isdigit(int c);','判断是否为数字字符。','c：字符的 ASCII 值；返回：是数字给非 0，不是给 0。','别把 char 直接传进去：char 在有些平台是有符号的，遇到大于 127 的字节会变成负数，行为不确定；稳妥写法是 (unsigned char)c。','if (isdigit(\'7\')) puts("是数字");'],
 ['math','isalpha','看这个字符是不是英文字母。','int isalpha(int c);','判断是否为字母（a-z 或 A-Z）。','返回：是字母非 0，否则 0。','它只认英文，中文和数字都返回 0；参数同样建议先转成 unsigned char。','if (isalpha(\'A\')) puts("字母");'],
@@ -1446,6 +1438,18 @@ int main(void) {                     // 程序入口
 
 /* 慎用区 */
 var CARE = [
+{n:'std::vector（MCU 上）', plain:'能自动变长的数组，容量不够时自己去堆上找更大的地方搬家。',
+ say:'vec-tor ｜ /ˈvektə/ ｜ 维克-特',
+ from:'**vector** —— 英文 vector 本来是“向量”，C++ 里指能自动变长的数组。',
+ when:'在 MCU 上只建议“启动时 reserve 好、之后不再变长”的用法；真正需要动态增长的场景很少。',
+ alt:'std::array 或普通数组 + 一个长度变量；长度会变的队列用环形缓冲（ring buffer）。',
+ trap:'push_back 超出容量会翻倍扩容并搬家，堆被切碎后可能中途失败；很多 MCU 工程把异常关掉了，失败直接 abort；搬家还会让之前存的指针、迭代器全部失效。'},
+{n:'std::string（MCU 上）', plain:'会自动变长的字符串，拼一拼就可能去堆上重新要地方。',
+ say:'string ｜ /strɪŋ/ ｜ 斯特林',
+ from:'**string** —— 英文 string（一串、字符串），本来指“一串珠子”那样连在一起的东西。',
+ when:'字符串短、数量固定，而且工具链的堆够用时可以考虑。',
+ alt:'char buf[64] + snprintf；或者自己写一个固定容量的字符串结构。',
+ trap:'每次拼接、每次 substr 都可能重新申请堆内存；字符串一改动，之前 c_str() 拿到的指针就失效。'},
 {n:'malloc', plain:'临时跟系统借一块内存，用完必须还。',
  say:'mal-loc ｜ /ˈmælək/ ｜ 马-洛克（也有人按字母念 M-alloc）',
  from:'**m**emory **alloc**ation —— memory（内存）+ allocation（分配）。',
@@ -1470,18 +1474,6 @@ var CARE = [
  when:'你确实用 malloc / calloc / realloc 借过，而且这块内存真的不用了。',
  alt:'能不用动态内存就不用；真要反复借还，用固定尺寸的内存池（只借还同一尺寸的块）。',
  trap:'释放完指针还指着原地（野指针），再用就崩；同一块 free 两次会破坏堆的内部记录；free 一个栈上变量的地址更是直接完蛋。'},
-{n:'std::vector（MCU 上）', plain:'能自动变长的数组，容量不够时自己去堆上找更大的地方搬家。',
- say:'vec-tor ｜ /ˈvektə/ ｜ 维克-特',
- from:'**vector** —— 英文 vector 本来是“向量”，C++ 里指能自动变长的数组。',
- when:'在 MCU 上只建议“启动时 reserve 好、之后不再变长”的用法；真正需要动态增长的场景很少。',
- alt:'std::array 或普通数组 + 一个长度变量；长度会变的队列用环形缓冲（ring buffer）。',
- trap:'push_back 超出容量会翻倍扩容并搬家，堆被切碎后可能中途失败；很多 MCU 工程把异常关掉了，失败直接 abort；搬家还会让之前存的指针、迭代器全部失效。'},
-{n:'std::string（MCU 上）', plain:'会自动变长的字符串，拼一拼就可能去堆上重新要地方。',
- say:'string ｜ /strɪŋ/ ｜ 斯特林',
- from:'**string** —— 英文 string（一串、字符串），本来指“一串珠子”那样连在一起的东西。',
- when:'字符串短、数量固定，而且工具链的堆够用时可以考虑。',
- alt:'char buf[64] + snprintf；或者自己写一个固定容量的字符串结构。',
- trap:'每次拼接、每次 substr 都可能重新申请堆内存；字符串一改动，之前 c_str() 拿到的指针就失效。'},
 {n:'裸机 printf 重定向', plain:'printf 只会把字往“标准输出”里塞，裸机上没有这个出口，得你自己接一根管子到串口。',
  say:'print-f ｜ /ˈprɪnt ef/ ｜ 普林特-艾弗；re-direct ｜ /ˌriːdəˈrekt/ ｜ 瑞-迪-瑞克特',
  from:'**re** **direct** —— re 是“重新”，direct 是“指向”，重新把输出指向另一个出口，比如串口。',
