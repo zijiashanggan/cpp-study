@@ -2397,6 +2397,13 @@ function aiContext(card){
 function aiErrText(err){
   var m = String((err && err.message) || err);
   if((err && err.name === 'AbortError') || /abort/i.test(m)) return '超时了：25 秒没回。检查网络，或换个小点的模型再试。';
+  var local = aiPreset(AICFG.p).id === 'ollama' || /localhost|127\.0\.0\.1/i.test(AICFG.base || '');
+  if(local && /not found|try pulling|no such model/i.test(m)){
+    return '本机还没拉这个模型。先在终端运行：ollama pull ' + (AICFG.model || 'qwen2.5:3b') + '，拉完再问。不想占本机就切到云端 key（DeepSeek 等）。';
+  }
+  if(local && /Failed to fetch|NetworkError|Load failed/i.test(m)){
+    return '连不上本机 Ollama。确认：① Ollama 正在运行（托盘图标）；② OLLAMA_ORIGINS 里有 https://zijiashanggan.github.io，并且重启过 Ollama。懒得弄就切到云端 key。';
+  }
   if(/HTTP 401|HTTP 403/.test(m)) return 'key 不对或没权限（' + m + '）。点下方「设置」检查 key。';
   if(/HTTP 429/.test(m)) return '被限流或额度用完了（429）。等一会儿再问，或换个服务商。';
   if(/HTTP 404/.test(m)) return '接口地址或模型名不对（404）。检查 base URL 和模型名。';
