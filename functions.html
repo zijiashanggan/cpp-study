@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#0d1117">
+<title>C/C++ 必背函数记忆卡 · 嵌入式软件方向</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0;background:#0d1117;color:#e6edf3;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",sans-serif;
+    line-height:1.7;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  body::before{
+    content:"";position:fixed;top:0;left:0;right:0;height:400px;pointer-events:none;z-index:0;
+    background:radial-gradient(70% 100% at 50% 0%,rgba(94,234,212,.09),transparent 70%);
+  }
+  .wrap{max-width:760px;margin:0 auto;padding:0 16px 70px;position:relative;z-index:1}
+  a{color:#7aa2f7;text-decoration:none}
+  a:hover{text-decoration:underline}
+  header{padding:32px 0 6px}
+  h1{font-size:clamp(22px,5.6vw,30px);margin:0 0 8px;letter-spacing:.3px;line-height:1.35}
+  .sub{color:#9aa7b6;font-size:13.5px;margin:0}
+  .badges{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px;align-items:center}
+  .badge{font-size:12px;padding:3px 10px;border-radius:999px;border:1px solid #2a3646;color:#a9b6c6;background:#141b24}
+  .badge.must{color:#5eead4;border-color:rgba(94,234,212,.35);background:rgba(94,234,212,.08)}
+  .badge.care{color:#f0c674;border-color:rgba(240,198,116,.35);background:rgba(240,198,116,.08)}
+  .badge.later{color:#94a3b5;background:#121820}
+  .badge.total{color:#c7d2df;border-color:#2f3d4f}
+
+  .stage{
+    margin-top:18px;padding:13px 15px;border-radius:12px;font-size:13.5px;
+    background:linear-gradient(180deg,rgba(122,162,247,.10),rgba(122,162,247,.03));
+    border:1px solid rgba(122,162,247,.26);color:#c3d3ef;
+  }
+  .stage b{color:#e6edf3}
+  .stage .sub2{display:block;color:#94a3b5;font-size:12.5px;margin-top:4px}
+
+  .sec{margin-top:26px}
+  .sec h2{font-size:15.5px;margin:0 0 11px;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
+  .sec h2 em{font-style:normal;color:#7d8b9c;font-size:12px;font-weight:400}
+
+  .panel{background:#161b22;border:1px solid #243040;border-radius:14px;padding:15px}
+  .panel + .panel{margin-top:11px}
+  .taskline{display:flex;justify-content:space-between;align-items:center;gap:12px}
+  .label{font-size:12px;color:#8d9bab;letter-spacing:.5px}
+  .cnt{font-size:23px;font-weight:700;line-height:1.25}
+  .cnt small{font-size:12.5px;font-weight:400;color:#8d9bab;margin-left:3px}
+  .hint{font-size:12.5px;color:#8d9bab;margin:9px 0 0}
+  .hint.warn{color:#f0c674}
+  .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+  .chip{font-size:12px;padding:3px 9px;border-radius:7px;background:#0f151d;border:1px solid #243040;color:#c7d2df}
+  .chip.new{color:#5eead4;border-color:rgba(94,234,212,.28)}
+  .chip.due{color:#f0c674;border-color:rgba(240,198,116,.3)}
+  .chip.over{color:#f7768e;border-color:rgba(247,118,142,.35)}
+  .chip.done{opacity:.48;text-decoration:line-through}
+  .chip.empty{color:#6f7d8d;border-style:dashed}
+
+  .btn{
+    font-family:inherit;font-size:13.5px;padding:9px 16px;border-radius:10px;border:1px solid #2c3a4b;
+    background:#1b2330;color:#dfe8f3;cursor:pointer;transition:background .15s,transform .08s;white-space:nowrap;
+  }
+  .btn:active{transform:scale(.98)}
+  .btn.primary{background:rgba(94,234,212,.13);border-color:rgba(94,234,212,.4);color:#5eead4}
+  .btn.primary:hover{background:rgba(94,234,212,.22)}
+  .btn.ghost{background:rgba(122,162,247,.10);border-color:rgba(122,162,247,.32);color:#a9c1f5}
+  .btn.ghost:hover{background:rgba(122,162,247,.18)}
+  .btn.danger{background:rgba(247,118,142,.12);border-color:rgba(247,118,142,.42);color:#f7768e}
+  .btn:disabled{opacity:.4;cursor:not-allowed}
+  .btn.big{width:100%;padding:13px;font-size:15px;border-radius:12px;margin-top:10px}
+
+  .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
+  .stat{background:#0f151d;border:1px solid #243040;border-radius:11px;padding:11px 12px}
+  .stat b{display:block;font-size:20px;line-height:1.35}
+  .stat span{font-size:11.5px;color:#8d9bab}
+
+  details.grp{border:1px solid #243040;border-radius:11px;background:#121820;margin-bottom:7px;overflow:hidden}
+  details.grp summary{
+    padding:10px 13px;cursor:pointer;font-size:13.5px;list-style:none;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;
+  }
+  details.grp summary::-webkit-details-marker{display:none}
+  details.grp summary span{color:#7d8b9c;font-size:11.5px;font-weight:400}
+  details.grp[open] summary{border-bottom:1px solid #243040;background:#0f151d}
+  .prow{display:flex;align-items:center;gap:9px;padding:7px 13px;font-size:12.5px}
+  .prow + .prow{border-top:1px solid rgba(36,48,64,.5)}
+  .pn{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;color:#cfdae7}
+  .dots{display:flex;gap:3px;flex:none}
+  .dot{width:8px;height:8px;border-radius:50%;background:#27313f}
+  .dot.done{background:#3fb950}
+  .dot.cur{background:#f0c674;box-shadow:0 0 0 2px rgba(240,198,116,.2)}
+  .pstat{width:94px;text-align:right;flex:none;font-size:11px;color:#8d9bab}
+  .pstat.warn{color:#f7768e}
+  .pstat.ok{color:#7ee787}
+
+  details.care,details.later{border:1px solid #243040;border-radius:11px;background:#141a22;margin-bottom:8px}
+  details.care summary{padding:11px 13px;font-size:13.5px;cursor:pointer;display:flex;justify-content:space-between;gap:10px;list-style:none;color:#e3d3ac}
+  details.care summary::-webkit-details-marker{display:none}
+  details.care summary span{font-size:11.5px;color:#8d9bab}
+  details.care[open] summary{border-bottom:1px solid #243040}
+  .carebody{padding:12px 14px;font-size:13px;color:#c7d2df}
+  .carebody p{margin:0 0 9px}
+  .carebody p:last-child{margin-bottom:0}
+  .carebody b{color:#e6edf3}
+  .plainline{
+    padding:10px 12px;border-left:3px solid rgba(94,234,212,.6);border-radius:0 8px 8px 0;
+    background:rgba(94,234,212,.06);font-size:13.5px;color:#d8f6ef;margin:0 0 12px;
+  }
+  .trapbox{padding:10px 12px;border-left:3px solid rgba(247,118,142,.65);border-radius:0 8px 8px 0;background:rgba(247,118,142,.06)}
+  .trapbox b{color:#f7768e}
+
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:#8d9bab;margin-top:4px}
+  .legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
+
+  .hwcard{border:1px solid #243040;border-radius:12px;background:#121820;padding:13px;margin-bottom:10px}
+  .hwcard.done{border-color:rgba(126,231,135,.3)}
+  .hwhead{display:flex;align-items:center;gap:9px;margin-bottom:7px;flex-wrap:wrap}
+  .hwtype{font-size:10.5px;padding:2px 8px;border-radius:6px;background:rgba(122,162,247,.14);color:#a9c1f5;border:1px solid rgba(122,162,247,.28)}
+  .hwtype.call{background:rgba(240,198,116,.12);color:#f0c674;border-color:rgba(240,198,116,.28)}
+  .hwtitle{font-size:13.5px;font-weight:600}
+  .hwask{font-size:13px;color:#b6c3d2;margin:0 0 9px}
+  .hwask code{background:#0d131b;padding:1px 5px;border-radius:5px;font-size:12px;color:#a9c1f5}
+  textarea{
+    width:100%;min-height:96px;background:#0b1118;border:1px solid #2a3646;border-radius:9px;color:#e6edf3;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6;
+    padding:10px;resize:vertical;
+  }
+  textarea:focus{outline:none;border-color:rgba(94,234,212,.45)}
+  .hwactions{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+  .hwres{margin-top:10px;font-size:12.5px}
+  .hwres pre,.code{
+    background:#0b1118;border:1px solid #243040;border-radius:8px;padding:10px;overflow-x:auto;
+    font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.65;
+    color:#cfe3ff;white-space:pre-wrap;word-break:break-word;margin:7px 0;
+  }
+  .chk{display:flex;gap:7px;padding:5px 0;font-size:12.5px;align-items:baseline;border-bottom:1px dashed rgba(36,48,64,.6)}
+  .chk .mark{width:15px;flex:none;font-weight:700}
+  .chk.ok .mark{color:#7ee787}
+  .chk.ng .mark{color:#f7768e}
+  .chk .lbl{flex:none;width:74px;color:#93a1b2}
+  .chk .val{color:#c7d2df;word-break:break-word}
+  .chk.ng .val{color:#f0b0bb}
+  .verdict{margin-top:9px;padding:8px 11px;border-radius:8px;font-size:12.5px}
+  .verdict.ok{background:rgba(126,231,135,.1);color:#9be8a4;border:1px solid rgba(126,231,135,.3)}
+  .verdict.ng{background:rgba(240,198,116,.09);color:#e8cb8b;border:1px solid rgba(240,198,116,.28)}
+
+  footer{margin-top:34px;padding-top:16px;border-top:1px solid #1c2532;font-size:12px;color:#6f7d8d;line-height:1.9}
+
+  /* ============ 学习浮层 ============ */
+  .study{
+    position:fixed;inset:0;z-index:100;background:#0b1016;display:flex;flex-direction:column;
+    padding:calc(env(safe-area-inset-top) + 8px) 12px calc(env(safe-area-inset-bottom) + 10px);
+    height:100vh;height:100dvh;
+  }
+  .study.hidden{display:none}
+  .study-top{display:flex;align-items:center;gap:10px;flex:none;padding:2px 2px 8px;position:relative}
+  .iconbtn{
+    width:34px;height:34px;border-radius:10px;border:1px solid #2a3646;background:#141b24;color:#c7d2df;
+    font-size:20px;line-height:1;cursor:pointer;flex:none;font-family:inherit;
+  }
+  .study-meta{flex:1;display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:#8d9bab;padding-right:4px}
+  .study-meta b{color:#5eead4;font-weight:600}
+  .study-bar{position:absolute;left:2px;right:2px;bottom:2px;height:2px;background:#1b2532;border-radius:2px;overflow:hidden}
+  .study-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5eead4,#7aa2f7);transition:width .3s}
+  .study-body{flex:1;min-height:0;display:flex;padding-top:8px}
+  .flash{flex:1;min-height:0;perspective:1600px;cursor:pointer;touch-action:manipulation}
+  .flash-inner{position:relative;width:100%;height:100%;transform-style:preserve-3d;transition:transform .55s cubic-bezier(.2,.7,.3,1)}
+  .flash.flipped .flash-inner{transform:rotateY(180deg)}
+  .face{
+    position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;
+    border:1px solid #26313f;border-radius:18px;background:linear-gradient(180deg,#161d26,#111720);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .face.front{align-items:center;justify-content:center;padding:22px;text-align:center;
+    box-shadow:0 12px 40px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.03)}
+  .face.back{transform:rotateY(180deg)}
+  .tag{font-size:11.5px;color:#5eead4;border:1px solid rgba(94,234,212,.3);background:rgba(94,234,212,.08);padding:2px 9px;border-radius:999px;margin-bottom:16px}
+  .fname{font-size:clamp(26px,8vw,44px);font-weight:700;letter-spacing:.5px;line-height:1.25;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
+  .fname.sm{font-size:clamp(19px,5.6vw,30px)}
+  .fhint{position:absolute;bottom:20px;left:0;right:0;font-size:12px;color:#6f7d8d}
+  .bscroll{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 22px}
+  .bscroll .plainline{font-size:13.5px}
+  .brow{margin-bottom:12px}
+  .brow .k{font-size:11px;color:#7d8b9c;letter-spacing:.6px;margin-bottom:3px}
+  .brow p{margin:0;font-size:13.5px;color:#d3dce7}
+  .brow p.small{font-size:12.5px;color:#b6c3d2}
+  .brow .code{margin:5px 0 0}
+  .brow.trap p{color:#f2c3cb}
+  .brow.trap .k{color:#f7768e}
+  .bnote{
+    margin-top:4px;padding:9px 11px;border-radius:8px;background:rgba(122,162,247,.07);
+    border:1px solid rgba(122,162,247,.2);font-size:12.5px;color:#a9c1f5;
+  }
+  .study-foot{flex:none;padding-top:10px}
+  .study-foot .hint{text-align:center;margin:0;font-size:12px}
+  .grades{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+  .grades.two{grid-template-columns:repeat(2,1fr)}
+  .grades.hidden,.hint.hidden,.finish.hidden{display:none}
+  .grades button{
+    font-family:inherit;padding:10px 6px;border-radius:12px;border:1px solid #2c3a4b;background:#151d27;
+    color:#dfe8f3;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center;
+  }
+  .grades button b{font-size:14px}
+  .grades button small{font-size:10.5px;color:#8d9bab}
+  .grades button[data-g="good"]{border-color:rgba(126,231,135,.35);background:rgba(126,231,135,.09)}
+  .grades button[data-g="good"] b{color:#9be8a4}
+  .grades button[data-g="fuzzy"]{border-color:rgba(240,198,116,.35);background:rgba(240,198,116,.08)}
+  .grades button[data-g="fuzzy"] b{color:#f0c674}
+  .grades button[data-g="forgot"]{border-color:rgba(247,118,142,.34);background:rgba(247,118,142,.08)}
+  .grades button[data-g="forgot"] b{color:#f7768e}
+  .finish{flex:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:20px;gap:6px}
+  .finish .fbig{font-size:21px;font-weight:700;color:#5eead4}
+  .finish p{color:#9aa7b6;font-size:13.5px;margin:6px 0 10px;max-width:340px}
+
+  .modal{position:fixed;inset:0;z-index:200;background:rgba(5,8,12,.75);display:flex;align-items:center;justify-content:center;padding:20px}
+  .modal.hidden{display:none}
+  .modal-card{background:#161b22;border:1px solid #2c3a4b;border-radius:16px;padding:18px;max-width:360px;width:100%}
+  .modal-card h3{margin:0 0 8px;font-size:16.5px}
+  .modal-card p{margin:0 0 14px;font-size:13px;color:#9aa7b6}
+  .modal-actions{display:flex;gap:9px}
+  .modal-actions .btn{flex:1}
+
+  @media (min-width:640px){
+    .fname{font-size:44px}
+    .fname.sm{font-size:32px}
+    .stats{grid-template-columns:repeat(4,1fr)}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>C / C++ 必背函数记忆卡</h1>
+    <p class="sub">给零基础、走嵌入式软件方向（板子上跑 Linux，写应用和驱动）的人：每天背几个函数，隔几天回来看一眼。手机也能看，一屏一张卡。</p>
+    <div class="badges">
+      <span class="badge must">必背 <b id="badgeMust">0</b> 张</span>
+      <span class="badge care">慎用 <b id="badgeCare">0</b> 条</span>
+      <span class="badge later">了解即可 <b id="badgeLater">0</b> 条</span>
+      <span class="badge total">共 <b id="badgeTotal">0</b> 个</span>
+    </div>
+  </header>
+
+  <div class="stage" id="stage"></div>
+
+  <section class="sec">
+    <h2>今天做什么 <em>先复习，再学新的——顺序别调</em></h2>
+    <div class="panel">
+      <div class="taskline">
+        <div>
+          <div class="label">第一步 · 复习</div>
+          <div class="cnt"><span id="dueCount">0</span><small>个到期</small></div>
+        </div>
+        <button class="btn primary" id="btnReview" type="button">开始复习</button>
+      </div>
+      <p class="hint" id="dueHint"></p>
+      <div class="chips" id="dueChips"></div>
+    </div>
+    <div class="panel">
+      <div class="taskline">
+        <div>
+          <div class="label">第二步 · 新卡</div>
+          <div class="cnt"><span id="newLeft">0</span><small>个待学</small></div>
+        </div>
+        <button class="btn ghost" id="btnNew" type="button">开始学新卡</button>
+      </div>
+      <p class="hint" id="newHint"></p>
+      <div class="chips" id="newChips"></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>手写区 <em>动手，不是看</em></h2>
+    <div class="panel">
+      <div class="taskline">
+        <div>
+          <div class="label">今天的动手题</div>
+          <div class="cnt"><span id="hwDone">0</span> / <span id="hwTotal">0</span><small>个已对照</small></div>
+        </div>
+        <div class="badge" id="hwCompose">2 个写原型 + 2 个写调用</div>
+      </div>
+      <p class="hint">这部分的题目从今天的新卡和复习卡里抽，专挑最容易出坑的函数。<b>答案区先别展开，抄一遍没用。</b>写完自己对照，这里不做真正的编译检查。</p>
+      <div id="hwList" style="margin-top:12px"></div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>为什么第 1、2、4 天要回来看 <em>遗忘曲线</em></h2>
+    <div class="panel">
+      <p class="hint" style="margin:0 0 10px;font-size:13px;color:#c7d2df">
+        今天记住的东西，明天会忘掉一大半；到第 4 天基本就只剩个影子了。所以第 1 天必须回来看——看图里那几条往上跳的线：每次回来看一眼，记忆就被重新拉回高点，而且下一次能撑更久。
+      </p>
+      <svg viewBox="0 0 520 300" role="img" aria-label="遗忘曲线：1、2、4、7、15、30 天六个复习点" style="width:100%;height:auto;display:block">
+        <defs>
+          <linearGradient id="gCurve" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#7aa2f7"/>
+          </linearGradient>
+        </defs>
+        <g stroke="#1e2a38" stroke-width="1">
+          <line x1="46" y1="24" x2="500" y2="24"/>
+          <line x1="46" y1="130" x2="500" y2="130"/>
+          <line x1="46" y1="236" x2="500" y2="236"/>
+        </g>
+        <text x="4" y="15" fill="#7d8b9c" font-size="12">记得</text>
+        <text x="4" y="233" fill="#7d8b9c" font-size="12">忘光</text>
+        <g stroke="#2b394a" stroke-width="1" stroke-dasharray="3 4">
+          <line x1="137.6" y1="34.6" x2="137.6" y2="236"/>
+          <line x1="191.2" y1="34.6" x2="191.2" y2="236"/>
+          <line x1="258.8" y1="34.6" x2="258.8" y2="236"/>
+          <line x1="320.9" y1="34.6" x2="320.9" y2="236"/>
+          <line x1="412.6" y1="34.6" x2="412.6" y2="236"/>
+          <line x1="500" y1="34.6" x2="500" y2="236"/>
+        </g>
+        <path d="M 46.0,24.0 L 99.6,80.9 L 137.6,122.5 L 167.1,153.0 L 191.2,175.3 L 211.6,191.6 L 229.3,203.5 L 244.9,212.2 L 258.8,218.6 L 271.4,223.3 L 282.9,226.7 L 293.5,229.2 L 303.3,231.0 L 312.4,232.4 L 320.9,233.3 L 328.9,234.0 L 336.5,234.6 L 343.6,235.0 L 350.4,235.2 L 356.9,235.4 L 363.0,235.6 L 368.9,235.7 L 374.5,235.8 L 379.9,235.8 L 385.1,235.9 L 390.1,235.9 L 394.9,235.9 L 399.5,236.0 L 404.0,236.0 L 408.4,236.0 L 412.6,236.0 L 416.6,236.0 L 420.6,236.0 L 424.4,236.0 L 428.1,236.0 L 431.8,236.0 L 435.3,236.0 L 438.7,236.0 L 442.1,236.0 L 445.3,236.0 L 448.5,236.0 L 451.6,236.0 L 454.7,236.0 L 457.6,236.0 L 460.5,236.0 L 463.4,236.0 L 466.2,236.0 L 468.9,236.0 L 471.6,236.0 L 474.2,236.0 L 476.7,236.0 L 479.3,236.0 L 481.7,236.0 L 484.2,236.0 L 486.5,236.0 L 488.9,236.0 L 491.2,236.0 L 493.4,236.0 L 495.7,236.0 L 497.9,236.0 L 500.0,236.0"
+              fill="none" stroke="#5b6b7d" stroke-width="2" stroke-dasharray="5 5"/>
+        <path d="M 46.0,34.6 L 61.6,47.9 L 75.5,60.3 L 88.1,71.9 L 99.6,82.8 L 110.2,92.9 L 120.0,102.3 L 129.1,111.2 L 137.6,119.4 L 137.6,34.6 L 145.7,47.9 L 153.2,60.3 L 160.4,71.9 L 167.1,82.8 L 173.6,92.9 L 179.7,102.3 L 185.6,111.2 L 191.2,119.4 L 191.2,34.6 L 201.8,47.9 L 211.6,60.3 L 220.7,71.9 L 229.3,82.8 L 237.3,92.9 L 244.9,102.3 L 252.0,111.2 L 258.8,119.4 L 258.8,34.6 L 268.3,47.9 L 277.3,60.3 L 285.6,71.9 L 293.5,82.8 L 300.9,92.9 L 307.9,102.3 L 314.6,111.2 L 320.9,119.4 L 320.9,34.6 L 336.5,47.9 L 350.4,60.3 L 363.0,71.9 L 374.5,82.8 L 385.1,92.9 L 394.9,102.3 L 404.0,111.2 L 412.6,119.4 L 412.6,34.6 L 427.2,47.9 L 440.4,60.3 L 452.4,71.9 L 463.4,82.8 L 473.5,92.9 L 483.0,102.3 L 491.8,111.2 L 500.0,119.4"
+              fill="none" stroke="url(#gCurve)" stroke-width="2.5" stroke-linejoin="round"/>
+        <g fill="#5eead4" stroke="#0d1117" stroke-width="2">
+          <circle cx="137.6" cy="34.6" r="4.5"/>
+          <circle cx="191.2" cy="34.6" r="4.5"/>
+          <circle cx="258.8" cy="34.6" r="4.5"/>
+          <circle cx="320.9" cy="34.6" r="4.5"/>
+          <circle cx="412.6" cy="34.6" r="4.5"/>
+          <circle cx="500" cy="34.6" r="4.5"/>
+        </g>
+        <g fill="#8d9bab" font-size="13" text-anchor="middle">
+          <text x="46" y="256" text-anchor="start">第0天</text>
+          <text x="137.6" y="256">第1天</text>
+          <text x="191.2" y="256">第2天</text>
+          <text x="258.8" y="256">第4天</text>
+          <text x="320.9" y="256">第7天</text>
+          <text x="412.6" y="256">第15天</text>
+          <text x="500" y="256" text-anchor="end">第30天</text>
+        </g>
+        <text x="46" y="282" fill="#5b6b7d" font-size="12">虚线：一直不复习　　</text>
+        <text x="190" y="282" fill="#5eead4" font-size="12">实线：按时回来看</text>
+      </svg>
+      <div class="legend">
+        <span><i style="background:#5b6b7d"></i>不复习，一路往下掉</span>
+        <span><i style="background:#5eead4"></i>按时复习，记忆被拉回来</span>
+      </div>
+      <p class="hint" style="margin-top:10px">
+        记岔了不用怕：点「记得」就往后走一个点；点「模糊」就在这个点明天再看一遍；点「忘了」就从第 1 个点重新排。全部 6 个点都过完，这张卡就算拿下了，不再打扰你。
+      </p>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>进度面板 <em id="panelMeta"></em></h2>
+    <div class="panel">
+      <div class="stats">
+        <div class="stat"><b id="statLearned">0 / 0</b><span>已学 / 总数</span></div>
+        <div class="stat"><b id="statNewLeft">0 张</b><span>今天还剩的新卡</span></div>
+        <div class="stat"><b id="statStreak">0 天</b><span>连续打卡</span></div>
+        <div class="stat"><b id="statMastered">0 张</b><span>6 个点全过（拿下）</span></div>
+      </div>
+      <p class="hint" id="panelHw" style="margin-top:11px"></p>
+      <div class="chips" style="margin-top:4px">
+        <span class="chip">● 绿点 = 已经过掉</span>
+        <span class="chip">● 黄点 = 下一个要过的点</span>
+        <span class="chip">● 灰点 = 还没到</span>
+      </div>
+      <div id="panelList" style="margin-top:12px"></div>
+      <button class="btn danger" id="btnReset" type="button" style="margin-top:14px;width:100%">重置全部进度</button>
+    </div>
+  </section>
+
+  <section class="sec">
+    <h2>慎用区 <em>MCU 上要小心，面试会问</em></h2>
+    <p class="hint" style="margin:0 0 10px">这几条不算进每天的新卡，也不用排复习，当常识看。点开看“什么时候才用 + 替代方案”。</p>
+    <div id="careList"></div>
+  </section>
+
+  <section class="sec">
+    <h2>了解即可 <em>现在不用背</em></h2>
+    <div class="panel" id="laterList" style="padding:12px 14px"></div>
+  </section>
+
+  <footer>
+    每天的量按你第一次使用的日期算：第 1 周每天 10 张新卡 + 4 个动手题，第 8 天起自动加到 15 张 + 6 个题。<br>
+    进度存在这台设备的浏览器里（localStorage），换设备或清缓存会丢。<br>
+    <a href="./index.html">← 回到 C++ 学习主页</a>
+  </footer>
+</div>
+
+<!-- 学习浮层 -->
+<div class="study hidden" id="study">
+  <div class="study-top">
+    <button class="iconbtn" id="studyClose" type="button" aria-label="关闭">×</button>
+    <div class="study-meta"><span id="studyMode">复习</span><span id="studyPos">1 / 1</span></div>
+    <div class="study-bar"><i id="studyBar"></i></div>
+  </div>
+  <div class="study-body">
+    <div class="flash" id="flash">
+      <div class="flash-inner">
+        <div class="face front">
+          <div class="tag" id="fTag">必背</div>
+          <div class="fname" id="fName">strlen</div>
+          <div class="fhint">点一下卡片，看背面</div>
+        </div>
+        <div class="face back"><div class="bscroll" id="bBody"></div></div>
+      </div>
+    </div>
+    <div class="finish hidden" id="finish">
+      <div class="fbig" id="finishTitle">这一轮做完了</div>
+      <p id="finishText"></p>
+      <button class="btn primary big" id="finishHome" type="button">回到首页</button>
+      <button class="btn ghost big hidden" id="finishNext" type="button">接着学今天的新卡</button>
+    </div>
+  </div>
+  <div class="study-foot">
+    <div class="hint" id="gradeHint">先点卡片翻面，看完再选</div>
+    <div class="grades hidden" id="grades"></div>
+  </div>
+</div>
+
+<!-- 重置确认 -->
+<div class="modal hidden" id="modal">
+  <div class="modal-card">
+    <h3>真的要全部清空吗？</h3>
+    <p>会删掉：已学的卡片、每个函数现在走到第几个复习点、连续打卡天数、今天的手写对照记录。删掉就找不回来了。</p>
+    <div class="modal-actions">
+      <button class="btn ghost" id="cancelReset" type="button">再想想</button>
+      <button class="btn danger" id="confirmReset" type="button">确认重置</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+var IV = [1,2,4,7,15,30];
+var KEY = 'cpp_fn_cards_v1';
+
+var GROUPS = [
+  {id:'cstr',  name:'C 字符串',        color:'#5eead4'},
+  {id:'cmem',  name:'C 内存',          color:'#5eead4'},
+  {id:'fmt',   name:'格式化与数字转换', color:'#7aa2f7'},
+  {id:'file',  name:'文件读写',        color:'#7aa2f7'},
+  {id:'string',name:'C++ std::string', color:'#a9c1f5'},
+  {id:'vector',name:'C++ std::vector', color:'#a9c1f5'},
+  {id:'io',    name:'C++ 输入输出',    color:'#c0a4f7'},
+  {id:'tool',  name:'C++ 常用工具',    color:'#c0a4f7'},
+  {id:'heap',  name:'new / delete 配对', color:'#f0c674'},
+  {id:'math',  name:'字符判断与数学',  color:'#7ee787'}
+];
+
+/* 必背卡片：[组, 名字, 大白话, 原型, 干嘛用的, 参数/返回, 坑, 一行示例, 平台提示] */
+var D = [
+/* ---------- C 字符串 ---------- */
+['cstr','strlen','数一数这句话有多少个字，数到结尾那个看不见的 0 就停。','size_t strlen(const char *s);','求字符串长度（不算结尾的 \\0）。','s：要以 \\0 结尾的字符数组；返回：字符个数，类型 size_t（只能存 0 和正数的整数类型）。','如果数组里没有 \\0，它会一直往后数，数到别人的内存里去，程序可能当场跑飞；另外两个长度相减得到负数时，会变成一个特别大的数。','printf("%zu\\n", strlen("hello"));  // 5'],
+['cstr','strcpy','把一句话连同结尾的 0，原封不动搬到另一个盒子里。','char *strcpy(char *dest, const char *src);','复制一个字符串到 dest。','dest：目标数组，必须够大；src：源字符串；返回：dest 的地址（一般不用接）。','它完全不看你盒子多大。10 个字的句子抄进只能装 3 个字的盒子，多出来的会盖住旁边别人的数据，程序可能当场崩，也可能过很久才莫名其妙出错。','char buf[16]; strcpy(buf, "hello");'],
+['cstr','strncpy','像搬家但只搬前 n 件，盒子满了就停手。','char *strncpy(char *dest, const char *src, size_t n);','最多复制 n 个字符到 dest。','n：最多搬几个字符；返回：dest。','如果源字符串长度 ≥ n，它搬完 n 个字符就收工，结尾不会给你补 \\0，后面一打印就带出一串乱码。用完自己补 dest[n-1] = \'\\0\'，或者干脆改用 snprintf。','char buf[8]; strncpy(buf, "hello world", 7); buf[7] = \'\\0\';'],
+['cstr','strcmp','像查字典一样比两句话谁排在前面，一模一样就回 0。','int strcmp(const char *s1, const char *s2);','按字典序比较两个字符串。','返回：小于 0 表示 s1 在前，等于 0 表示完全一样，大于 0 表示 s1 在后（不要记成只会返回 -1 和 1）。','不能用 == 比较两个字符串，那比的是地址不是内容，两个看起来一样的字符串也会判不相等；判断相等要写 strcmp(a, b) == 0。','if (strcmp(a, "ok") == 0) puts("一样");'],
+['cstr','strcat','把一句话接在另一句话的屁股后面。','char *strcat(char *dest, const char *src);','把 src 追加到 dest 末尾。','dest：必须已经是合法字符串，且后面剩余空间够；返回：dest。','它从 dest 的 \\0 位置开始往后写。dest 没初始化（里面是随机垃圾）或者空间不够，就会写到盒子外面去。','char buf[16] = "ab"; strcat(buf, "cd");  // "abcd"'],
+['cstr','strstr','在一段话里找另一段话，找到就指给你看它在哪。','char *strstr(const char *haystack, const char *needle);','查找子串第一次出现的位置。','haystack：被找的长串；needle：要找的短串；返回：指向找到位置的指针，找不到返回 NULL。','返回的是指针不是下标，直接当数字用会出错；求下标要写 p - haystack，而且用之前必须先判 NULL。','char *p = strstr("a=1;b=2", "b="); if (p) printf("%s\\n", p);  // b=2'],
+['cstr','strchr','在一句话里找一个字，第一次出现的地方指给你。','char *strchr(const char *s, int c);','查找字符 c 第一次出现的位置。','c：要查的字符（传 int）；返回：指针，找不到返回 NULL。','找不到返回 NULL，不判空就拿去打印会直接崩；另外它也会匹配结尾的 \\0，别拿它当“这个字符一定存在”来用。','char *p = strchr("a/b/c", \'/\'); if (p) printf("%s\\n", p);  // /b/c'],
+['cstr','strtok','把一整句话按逗号、空格这类分隔符切成一段一段。','char *strtok(char *str, const char *delim);','按分隔符逐个切出子串。','第一次传原字符串，后面几次传 NULL；delim：所有分隔符组成的字符串；返回：切出来的下一段，没有了返回 NULL。','它会直接动手改你原来的字符串（把分隔符改成 \\0），所以不能用在字符串常量上，也不能两个循环同时切。要保留原串先复制一份。','char s[] = "a,b,c"; for (char *p = strtok(s, ","); p; p = strtok(NULL, ",")) puts(p);'],
+['cstr','strncmp','只比两句话的前 n 个字，后面的不管。','int strncmp(const char *s1, const char *s2, size_t n);','只比较前 n 个字符。','返回同 strcmp：小于 0、等于 0、大于 0。','n 是“比较几个字符”，不是“比到第几位”；写大了会把后面不同的部分也比进去，写小了会把不同的字符串判成一样（比如只比 3 个字符时 "AT+OK" 和 "AT+ERR" 会被判相等）。','if (strncmp(cmd, "AT+", 3) == 0) { /* 是 AT 指令 */ }'],
+['cstr','strerror','把系统给的一串错误编号翻译成人能看懂的话。','char *strerror(int errnum);','把 errno 转成错误描述文字。','errnum：一般直接传 errno；返回：静态缓冲区里的说明文字。','它返回的是一块公用的静态内存，再调用一次就被覆盖，别长期存这个指针；不同平台文字不一样，程序里不要拿它做字符串比较。','FILE *f = fopen("no.txt", "r"); if (!f) printf("%s\\n", strerror(errno));'],
+
+/* ---------- C 内存 ---------- */
+['cmem','memcpy','按字节数搬家，不认里面装的是字还是数字，只认多少个字节。','void *memcpy(void *dest, const void *src, size_t n);','把 n 个字节从 src 复制到 dest。','n：字节数（不是元素个数）；返回：dest。','两块内存如果重叠（比如在同一个数组里往前挪），它可能先把自己盖掉再复制，结果一半是错的，这种要用 memmove；另外给数组算大小要 sizeof(数组)，但数组当参数传进函数后就只剩指针大小。','int a[3] = {1,2,3}, b[3]; memcpy(b, a, sizeof(a));'],
+['cmem','memmove','同样是搬家，但它会先看看会不会撞到自己，撞到就换个顺序搬。','void *memmove(void *dest, const void *src, size_t n);','复制 n 个字节，允许源和目标重叠。','参数同 memcpy；返回：dest。','它比 memcpy 慢一点点，只在真的可能重叠时才用；在同一个数组里做删除、插入、整体挪位，一定要用它。','char s[] = "abcdef"; memmove(s, s + 1, 5);  // "bcdef"'],
+['cmem','memset','拿一支笔，把一整块内存涂成同一个字节。','void *memset(void *s, int c, size_t n);','把 n 个字节都设成 c。','c：按字节填的值（0~255）；n：字节数；返回：s。','它是“按字节”涂的。想让 int x 变成 1 而写 memset(&x, 1, sizeof x) 是错的：4 个字节全涂 1，拼出来是 16843009。平时只该用它清零或者填 0xFF。','int a[10]; memset(a, 0, sizeof(a));  // 全部变 0'],
+['cmem','memcmp','拿两段内存逐字节对一遍，看是不是一样。','int memcmp(const void *s1, const void *s2, size_t n);','比较 n 个字节的内容。','返回：小于 0、等于 0、大于 0。','它按字节比，结构体里有“空隙”（为了对齐留的填充字节）时，两个成员都一样的结构体也可能被判不相等；比较结构体最好逐个成员比。','if (memcmp(a, b, sizeof(a)) == 0) puts("一样");'],
+
+/* ---------- 格式化与数字转换 ---------- */
+['fmt','printf','把数字、文字按你写的格式拼成一句话，从调试口吐出来。','int printf(const char *format, ...);','按格式输出到标准输出。','format：带 %d、%s 这类占位符的模板；返回：输出了多少个字符（出错返回负数）。','%d 配 long 会读错位置（long 要 %ld，size_t 要 %zu）；%s 传了没有结尾 0 的数组，会一路打印到崩。另外嵌入式里 printf 通常要自己重定向到串口才能用。','printf("%d %s\\n", 42, "hi");', '平台提示：Linux 下直接能打；裸机上要先做 printf 重定向，否则什么也看不到（见“慎用区”）。'],
+['fmt','snprintf','像 printf，但先把结果装进一个有盖子的盒子，盒子满了自动截断，不会溢出去。','int snprintf(char *str, size_t size, const char *format, ...);','格式化到字符串，最多写 size-1 个字符再补 \\0。','size：盒子总大小（包含结尾 0）；返回：它“本来想写多少字”，可能大于等于 size。','返回值不是实际写进去的长度，拿它当下标用会越界。想知道有没有被截断，要判断 返回 >= size。','char buf[8]; int n = snprintf(buf, sizeof buf, "%s", "hello world");  // buf="hello w", n=11'],
+['fmt','sscanf','从一句话里按模板把数字和单词抠出来。','int sscanf(const char *str, const char *format, ...);','从字符串按格式解析数据。','返回：成功读到的项数（不是读了多少字符）。','用 %s 读字符串照样会溢出，要写 %7s 限长；返回值一定要检查，不检查就会拿没赋上值的变量去算。','int a, b; if (sscanf("12,34", "%d,%d", &a, &b) == 2) printf("%d\\n", a + b);'],
+['fmt','atoi','把一串数字字符变成真正的整数。','int atoi(const char *nptr);','字符串转 int。','返回：转出来的整数；开头不是数字就返回 0。','它没法告诉你“失败了”：输入 "abc" 和输入 "0" 都返回 0；数字太大超出 int 范围时结果没有保证。要靠谱就用 strtol。','int n = atoi("123");  // 123'],
+['fmt','strtol','同样是字符串转整数，但它会告诉你“我读到哪停了”，还能顺便转十六进制。','long strtol(const char *nptr, char **endptr, int base);','按指定进制把字符串转成 long，并能发现非法输入。','base：10 十进制、16 十六进制、0 自动判断；endptr：传出“停在哪”（不要就传 NULL）；返回：转换结果。','判断有没有转成功要看 *endptr：它等于原串开头，说明一个字都没转；它还停在中间，说明后面有垃圾字符。只传 NULL 就只能靠 errno，很容易漏判。','char *end; long v = strtol("0x1A", &end, 16);  // v=26, *end=\'\\0\''],
+
+/* ---------- 文件读写 ---------- */
+['file','fopen','敲门打开一个文件，拿到一张“取号单”，后面读写都要凭这张单子。','FILE *fopen(const char *path, const char *mode);','打开文件，返回文件指针。','mode："r" 读、"w" 清空重写、"a" 追加、前面加 b 表示二进制（"rb"）；返回：成功给 FILE*，失败给 NULL。','打开失败只返回 NULL，不判空后面 fprintf/fread 全崩；用 "w" 打开会立刻把原文件清空，哪怕你一个字都没写。','FILE *fp = fopen("a.txt", "r"); if (!fp) { perror("open"); return; }'],
+['file','fclose','把借来的东西还回去，顺便把没写完的内容冲出去。','int fclose(FILE *stream);','关闭文件，刷新缓冲区。','返回：成功 0，失败 EOF。','写文件不 fclose（或 fflush），最后一段数据可能还躺在缓冲区里没落盘，断电就没了；关完再拿这个指针读写是野指针。','fclose(fp); fp = NULL;'],
+['file','fread','从文件里整块整块地读，像用勺子定量舀。','size_t fread(void *ptr, size_t size, size_t nmemb, FILE *stream);','从文件读 nmemb 个、每个 size 字节的数据。','返回：真正读到的“元素个数”，不是字节数。','返回值要乘以 size 才是字节数；把返回值当字节数会少算。读到文件尾时返回值会小于 nmemb，这时 feof 才为真。','char buf[64]; size_t n = fread(buf, 1, sizeof buf, fp);  // size=1 时 n 就是字节数'],
+['file','fwrite','把内存里的一块数据整块倒进文件。','size_t fwrite(const void *ptr, size_t size, size_t nmemb, FILE *stream);','向文件写数据。','返回：成功写出的元素个数。','返回值小于 nmemb 说明没写全（磁盘满、权限问题），不检查就会以为写成功了；结构体直接写文件，换平台或换编译器可能读不回来（对齐和字节序不一样）。','int v[3] = {1,2,3}; fwrite(v, sizeof(int), 3, fp);'],
+['file','fseek','把文件里的“读书指针”拨到指定位置。','int fseek(FILE *stream, long offset, int whence);','移动文件读写位置。','whence：SEEK_SET 从头算、SEEK_CUR 从当前位置算、SEEK_END 从末尾算；返回：成功 0。','先写后读切换时中间要 fseek 或 fflush，否则位置和缓冲区可能对不上；文本模式下 offset 和字节数的对应关系不保证。','fseek(fp, 0, SEEK_END);'],
+['file','ftell','问一句“现在读到第几个字节了”。','long ftell(FILE *stream);','取当前读写位置（字节偏移）。','返回：从头算的字节偏移，出错返回 -1L。','用“fseek 到末尾 + ftell”取文件大小之后，别忘了把位置再 fseek 回 0，不然接着读是从末尾开始，什么也读不到。','fseek(fp, 0, SEEK_END); long sz = ftell(fp); fseek(fp, 0, SEEK_SET);'],
+['file','fprintf','跟 printf 一样排版，只是把结果写进文件或者串口。','int fprintf(FILE *stream, const char *format, ...);','按格式写数据到指定流。','stream：文件指针，或者 stderr；返回：写出的字符数。','调试信息写 stderr 不会被输出重定向搞丢；往文件写记得之后 fclose，不然日志可能少最后几行。','fprintf(stderr, "err=%d\\n", errno);'],
+['file','fgets','按“一行”从文件里取字，取到回车就停。','char *fgets(char *s, int size, FILE *stream);','读一行（最多 size-1 个字符）。','返回：成功给 s，到文件尾或出错给 NULL。','它会把换行 \\n 也一起存进来，直接拿来比较字符串会多一个字符对不上；一行超过 size-1 时只读到一半，剩下的下次再读。','char line[128]; while (fgets(line, sizeof line, fp)) printf("%s", line);'],
+
+/* ---------- C++ std::string ---------- */
+['string','size()','问一句“这个字符串里现在有几个字符”。','std::string::size_type std::string::size() const;','返回字符个数。','返回：无符号整数，不含结尾的 \\0（string 自己管着）。','size() 是无符号的，空串的 size()-1 会变成一个巨大的数；循环条件写成 i <= s.size()-1 就会越界。空串要先判 empty()。','std::string s = "hello"; std::cout << s.size();  // 5'],
+['string','empty()','问一句“这里面是空的吗”。','bool std::string::empty() const;','判断字符串是否为空。','返回：空为 true，不空为 false。','empty() 看的是长度不是容量；写“不为空”用 !s.empty()，别绕成 s.size() > 0 把自己的空串判断写错。','std::string s; if (s.empty()) puts("空");'],
+['string','c_str()','把 C++ 的字符串临时变成 C 语言那种“以 0 结尾的字符数组”，借出去用一下。','const char *std::string::c_str() const;','拿到只读的 C 风格字符指针，给老函数用。','返回：指向内部缓冲区的 const char*，保证以 \\0 结尾。','这个指针是“借的”：string 一旦被修改或扩容，它就可能失效，存下来下次用会崩；而且它是 const，不能拿去改内容。','std::string s = "a.txt"; FILE *fp = fopen(s.c_str(), "r");'],
+['string','substr()','从一句话里剪一段出来。','std::string std::string::substr(size_t pos = 0, size_t len = npos) const;','取从 pos 开始的 len 个字符。','pos：从第几个开始（从 0 数）；len：剪几个，默认剪到结尾；返回：新字符串。','pos 超过长度会抛 std::out_of_range，没人接程序直接终止；len 写太大反而没事（自动截到结尾）。用之前先看 pos < s.size()。','std::string s = "2026-11-10"; std::string y = s.substr(0, 4);  // 2026'],
+['string','find()','在一句话里找另一段话，找到就告诉你它从第几个字开始。','size_t std::string::find(const std::string& str, size_t pos = 0) const;','查找子串第一次出现的位置。','返回：下标；找不到返回 std::string::npos。','npos 是无符号的最大值，不是 -1，所以 if (s.find(x) >= 0) 永远成立；要写 if (s.find(x) != std::string::npos)。','std::string s = "a=1"; if (s.find(\'=\') != std::string::npos) puts("有等号");'],
+['string','append()','在末尾接一段内容，跟 += 差不多。','std::string& std::string::append(const std::string& str);','在末尾追加字符串。','返回：自己的引用，可以连着写。','append 只能接字符串或字符，接数字编不过（要先 std::to_string）；想拼“名字=数字”这种格式，用 snprintf 更省事。','std::string s = "ab"; s.append("cd");  // abcd'],
+['string','push_back()','在末尾塞一个字符。','void std::string::push_back(char c);','在末尾追加一个字符。','c：单个字符；无返回值。','只能塞 char，塞字符串编不过；不要和 vector 的 push_back 搞混，这里参数是字符不是元素类型。','std::string s = "ab"; s.push_back(\'c\');  // abc'],
+['string','clear()','把内容全倒掉，变回空串。','void std::string::clear();','清空字符串内容。','无返回值；长度变 0，容量通常不变。','clear() 之后，之前 c_str() 拿到的老指针就不能用了；清空不等于释放内存，别想着“清空一下就能省内存”。','std::string s = "abc"; s.clear();  // s.size() == 0'],
+['string','replace()','把中间某一段换成别的内容。','std::string& std::string::replace(size_t pos, size_t len, const std::string& str);','把从 pos 开始的 len 个字符替换成 str。','pos：起点；len：换掉几个；str：换成什么；返回：自己的引用。','pos 越界会抛 out_of_range；len 写太长会自动截到结尾，但结果可能和你脑子里想的不一样。','std::string s = "a=1"; s.replace(2, 1, "10");  // a=10'],
+['string','erase()','剪掉一段字符。','std::string& std::string::erase(size_t pos = 0, size_t len = npos);','删除从 pos 开始的 len 个字符。','pos：起点；len：删几个，默认删到结尾；返回：自己的引用。','在循环里“找到一个删一个”时，删完后面的字符会整体往前挪，i++ 会漏掉一个；删完要么不自增，要么重新 find。','std::string s = "a,b,c"; s.erase(1, 1);  // "ab,c"'],
+
+/* ---------- C++ std::vector ---------- */
+['vector','push_back()','往队伍末尾再排一个人。','void std::vector<T>::push_back(const T& value);','在末尾添加一个元素。','value：要加的元素（会复制一份）；无返回值。','容量满了它会去堆上重新找一块更大的地、把老元素全搬过去，之前保存的指针和迭代器全部失效；MCU 上堆小，这种“搬家”很容易失败。','std::vector<int> v; v.push_back(1); v.push_back(2);', '平台差异：Linux 上随便用；MCU 上先 reserve 或改用固定大小数组。'],
+['vector','pop_back()','把队伍最后一个人请出去。','void std::vector<T>::pop_back();','删除最后一个元素。','无参数无返回值；元素个数减 1。','它不检查空！空 vector 上 pop_back 是未定义行为，可能崩也可能悄悄改坏内存，调用前先判 !v.empty()。','std::vector<int> v{1,2}; v.pop_back();  // {1}'],
+['vector','size()','问一句“队里有几个人”。','size_t std::vector<T>::size() const;','返回元素个数。','返回：元素个数，无符号。','size() 是无符号，空的时候 size()-1 会变成巨大数；循环里拿 int i 和 size() 比，会冒出“有符号和无符号比较”的警告。','std::vector<int> v{1,2,3}; printf("%zu\\n", v.size());'],
+['vector','empty()','问一句“队是不是空的”。','bool std::vector<T>::empty() const;','判断是否为空。','返回：空为 true。','empty() 是 O(1)，别绕成 v.size() == 0；更不能拿它判断“内存有没有占着”，容量要看 capacity()。','if (v.empty()) puts("空");'],
+['vector','at()','按门牌号取东西，号码不存在会当场报警，而不是偷偷拿错。','T& std::vector<T>::at(size_t pos);','带越界检查的取元素。','pos：下标（从 0 开始）；返回：元素引用。','越界时它抛 std::out_of_range，没人接程序直接终止；[] 不检查，越界是悄悄读错内存，更难查。求稳就用 at。','std::vector<int> v{10,20}; printf("%d\\n", v.at(1));  // 20'],
+['vector','front()','看队伍最前面那个人。','T& std::vector<T>::front();','返回第一个元素的引用。','返回：首元素引用，可以直接修改。','空 vector 上调用 front() 是未定义行为；另外它返回引用，auto x = v.front() 拿到的是拷贝，改 x 改不到容器里。','std::vector<int> v{1,2}; v.front() = 9;  // {9,2}'],
+['vector','back()','看队伍最后一个人。','T& std::vector<T>::back();','返回最后一个元素的引用。','返回：尾元素引用。','空 vector 上 back() 同样未定义；想“取出再删掉”，顺序别反：先 v.back()，再 v.pop_back()。','std::vector<int> v{1,2}; printf("%d\\n", v.back());  // 2'],
+['vector','clear()','把队伍清空，但场地还留着。','void std::vector<T>::clear();','删除所有元素。','无返回值；size 变 0，capacity 一般不变。','clear() 不还内存，占着的堆还占着；真想还回去要 clear 再 shrink_to_fit（也不保证立刻生效）。清空后原来的指针和迭代器全部失效。','std::vector<int> v{1,2,3}; v.clear();  // size 0，capacity 还是 3'],
+['vector','resize()','把队伍改成指定人数，不够就补默认值，多了就赶走。','void std::vector<T>::resize(size_t count);','把元素个数改成 count。','count：目标个数；变长时新元素值初始化（int 补 0）。','把 vector 改小再改大，被删掉的元素不会“回来”，补进来的是 0；resize 还可能扩容，让之前的指针失效。','std::vector<int> v; v.resize(3);  // {0,0,0}'],
+['vector','begin() / end()','拿到队伍的头，和尾巴后面那一格，用来一圈圈走过去。','iterator std::vector<T>::begin();  iterator std::vector<T>::end();','取首元素迭代器和尾后迭代器，组成左闭右开区间。','begin 指向第一个；end 指向最后一个的下一格，不能解引用。','end() 不是最后一个元素，*v.end() 是错的；循环条件用 != end() 或 < end()，别用 <=。','for (auto it = v.begin(); it != v.end(); ++it) std::cout << *it;'],
+['vector','erase()','从队伍中间抽走一个人，后面的人自动往前补位。','iterator std::vector<T>::erase(iterator pos);','删除 pos 位置的元素，返回下一个元素的迭代器。','pos：要删的位置；返回：被删元素的下一个位置。','最经典的坑：循环里 v.erase(it) 之后还 it++，会跳过元素甚至越界。正确写法是 it = v.erase(it);，删的那次不自增。','for (auto it = v.begin(); it != v.end(); ) { if (*it == 2) it = v.erase(it); else ++it; }'],
+['vector','insert()','往队伍中间插一个人，后面的人整体往后挪。','iterator std::vector<T>::insert(iterator pos, const T& value);','在 pos 前面插入 value。','pos：插入位置（插在它前面）；返回：指向新元素的迭代器。','插入可能扩容搬家，插入前拿到的迭代器、指针、引用全部失效；边遍历边 insert，很容易越界。','std::vector<int> v{1,3}; v.insert(v.begin() + 1, 2);  // {1,2,3}'],
+['vector','reserve()','提前把场地占好，后面加人就不用反复搬家。','void std::vector<T>::reserve(size_t n);','预分配至少能放 n 个元素的容量。','n：容量；不改变 size。','reserve 只改容量不改元素个数，之后 v[0] 访问是越界（元素还没构造）；要能直接用，得 resize。','std::vector<int> v; v.reserve(100);  // capacity>=100, size==0'],
+
+/* ---------- C++ 输入输出 ---------- */
+['io','std::cin','从键盘（或者被重定向的输入）把东西读进来。','std::istream std::cin;','标准输入流，配合 >> 读数据。','>> 会跳过空白，遇到空格或换行就停；读取成功会返回流本身（可以拿来判断）。','读失败（比如要数字却输入字母）后流进入失败状态，后面所有读取都直接失败，要 cin.clear() 再 cin.ignore() 把坏字符清掉。','int n; std::cin >> n;', '平台差异：嵌入式里 cin 一般没接上任何设备，调试还是 printf 稳。'],
+['io','std::cout','往屏幕上吐东西，可以连着写。','std::ostream std::cout;','标准输出流，配合 << 输出。','返回流本身，可以链式写；不会自动换行。','浮点默认只打 6 位有效数字，要 setprecision；嵌入式里 cout 往往没重定向，打不出东西。','std::cout << "n=" << 3 << \'\\n\';', '平台差异：裸机上通常没实现 cout，别指望它出串口。'],
+['io','std::getline','读一整行，连空格都算进去，读到回车为止。','std::istream& std::getline(std::istream& is, std::string& str);','从流里读一行到 string（不含换行符）。','返回 is，可以判断成功；读到文件尾会失败。','和 cin >> 混用时，cin >> 会把回车留在缓冲区，紧接着的 getline 读到一个空串。中间要加 cin.ignore()。','std::string line; std::getline(std::cin, line);'],
+['io','std::cin.ignore()','把缓冲区里不要的字符（通常是回车）扔掉。','std::istream& std::istream::ignore(std::streamsize n = 1, int delim = EOF);','丢弃 n 个字符，或者一直丢到遇到 delim。','默认丢 1 个字符；cin.ignore(1000, \'\\n\') 是丢到换行为止。','cin >> 之后不 ignore 就直接 getline，会读到一个空行，看起来像“getline 坏了”；ignore 之前如果流已经失败，要先 clear()。','int n; std::cin >> n; std::cin.ignore(); std::string s; std::getline(std::cin, s);'],
+
+/* ---------- C++ 常用工具 ---------- */
+['tool','std::sort','把一排东西从小到大排好队。','void std::sort(RandomIt first, RandomIt last);','对区间 [first, last) 排序，默认升序。','first/last：开始位置和“最后一个的下一格”；第三个参数可以传比较函数。','last 要传 v.end() 而不是 v.end()-1；自定义比较函数必须返回 bool，写成 <= 会在有重复元素时崩。','std::vector<int> v{3,1,2}; std::sort(v.begin(), v.end());', '平台差异：MCU 上排序一般数据量小，注意别在中断里排。'],
+['tool','std::to_string','把数字变成字符串，方便拼进一句话里。','std::string std::to_string(int val);','把数值转成 std::string（int、long、double 都有对应的版本）。','返回：转好的字符串。','浮点固定保留 6 位小数，想去掉多余的 0 得自己处理；它内部可能申请堆内存，嵌入式高频调用要留意。','std::string s = "id=" + std::to_string(7);  // id=7', '平台差异：MCU 上更常用 snprintf 拼字符串，不占堆。'],
+['tool','std::stoi','把字符串里的数字抠出来变成 int。','int std::stoi(const std::string& str);','string 转 int。','返回：整数；会跳过前导空格，只转开头能认出来的部分。','输入 "abc" 会抛 std::invalid_argument，超出 int 范围抛 std::out_of_range，不接住程序直接终止；而 "12abc" 反而会“成功”返回 12。','int n = std::stoi("42");  // 42'],
+['tool','std::max','两个数里挑大的那个。','const T& std::max(const T& a, const T& b);','返回较大的一个。','返回：引用（只读）；两个参数类型必须一致。','std::max(1, v.size()) 编不过，int 和 size_t 是不同类型；要写成 std::max<size_t>(1, v.size())，或者先把类型统一。','int m = std::max(3, 7);  // 7'],
+['tool','std::min','两个数里挑小的那个。','const T& std::min(const T& a, const T& b);','返回较小的一个。','返回：引用（只读）；两个参数类型必须一致。','别把返回值接到普通引用上再改它，它是只读引用；同样的类型不一致问题会报一大段看不懂的模板错误。','int m = std::min(3, 7);  // 3'],
+['tool','std::make_unique','在堆上造一个对象，并交给一个会自动打扫的管家。','std::unique_ptr<T> std::make_unique(Args&&... args);','创建独占所有权的智能指针（C++14 起才有）。','args：构造 T 用的参数；返回：unique_ptr<T>。','它是 C++14 才有的，Keil AC5、gcc 4.8 默认的 C++11 编不过；unique_ptr 不能复制，只能 std::move 转让。','auto p = std::make_unique<int>(42); printf("%d\\n", *p);', '平台差异：Linux 上推荐用；MCU 老工具链多半用不了。'],
+['tool','std::swap','两个人手里的东西互换一下。','void std::swap(T& a, T& b);','交换两个同类型变量的值。','在 <utility> 里；无返回值。','数组不能直接 swap 内容（交换的是指针，对数组名用不了）；两个 vector 之间 swap 只换内部指针，很快。','int a = 1, b = 2; std::swap(a, b);  // a=2, b=1'],
+['tool','std::find','在一排东西里找一个，找到就把位置指给你。','InputIt std::find(InputIt first, InputIt last, const T& value);','在区间里从头到尾查找 value。','返回：指向第一个相等元素的迭代器；找不到返回 last。','找不到返回的是 last，不是 NULL；判断要写 it != v.end()，直接 *it 就崩。','auto it = std::find(v.begin(), v.end(), 7); if (it != v.end()) puts("有");'],
+['tool','std::reverse','把一排东西整体掉个头。','void std::reverse(BidirIt first, BidirIt last);','反转区间 [first, last)。','无返回值，原地修改。','s.rbegin()/rend() 是“反向遍历”，不是反转；真要反转得用 std::reverse(s.begin(), s.end())。','std::string s = "abc"; std::reverse(s.begin(), s.end());  // cba'],
+
+/* ---------- new / delete 配对 ---------- */
+['heap','new','跟系统临时借一块内存，在上面造一个对象。','T* p = new T;','在堆上创建一个对象。','返回：指向新对象的指针；失败抛 std::bad_alloc（老编译器可能返回 NULL）。','借了必须还（delete），漏一次就少一块内存；中断里、频繁调用的函数里别 new，堆会被切得七零八落。','int *p = new int(5); delete p;', '平台差异：Linux 应用层常用；MCU 上优先用静态变量，见“慎用区”。'],
+['heap','new[]','一次借一排连续的位置。','T* p = new T[n];','在堆上创建 n 个元素的数组。','返回：首元素指针；n 可以是运行期才知道的变量。','new[] 必须配 delete[]，写成 delete p 只析构第一个元素，是未定义行为；new int[5] 里的值不确定，要清零写 new int[5]()。','int *a = new int[10]();  // 全 0', '平台差异：MCU 上大数组一次 new 很容易失败，先算好大小静态分配。'],
+['heap','delete','把借来的单个东西还回去。','delete p;','释放 new 出来的单个对象。','无返回值；会调用析构函数。','只能 delete 由 new 出来的；delete 一个栈上变量的地址，或者同一个指针 delete 两次，都是未定义行为。删完把指针置 nullptr。','int *p = new int(1); delete p; p = nullptr;'],
+['heap','delete[]','把借来的一排位置整排还回去。','delete[] p;','释放 new[] 出来的数组。','无返回值；会对每个元素调析构。','new[] 配 delete、new 配 delete[]，都是未定义行为，可能只在你换台机器时才崩；删完同样要置 nullptr。','int *a = new int[3]; delete[] a; a = nullptr;'],
+
+/* ---------- 字符判断与数学 ---------- */
+['math','isdigit','看这个字符是不是 0~9 里的一个数字。','int isdigit(int c);','判断是否为数字字符。','c：字符的 ASCII 值；返回：是数字给非 0，不是给 0。','别把 char 直接传进去：char 在有些平台是有符号的，遇到大于 127 的字节会变成负数，行为不确定；稳妥写法是 (unsigned char)c。','if (isdigit(\'7\')) puts("是数字");'],
+['math','isalpha','看这个字符是不是英文字母。','int isalpha(int c);','判断是否为字母（a-z 或 A-Z）。','返回：是字母非 0，否则 0。','它只认英文，中文和数字都返回 0；参数同样建议先转成 unsigned char。','if (isalpha(\'A\')) puts("字母");'],
+['math','isspace','看这个字符是不是空格、回车、Tab 这一类空白。','int isspace(int c);','判断是否为空白字符。','空白包括空格、\\t、\\n、\\v、\\f、\\r；返回非 0 表示是。','它会匹配 \\n，所以“跳过空白读一行”时用错会把换行也吃掉，行就接不上了；另外它不只认空格。','char c = \'\\n\'; if (isspace(c)) puts("空白");'],
+['math','toupper','小写字母变大写，别的字符原样还给你。','int toupper(int c);','转成大写。','返回：转换后的字符（int），不是字母就原样返回。','它返回 int，塞回 char 要强转；而且它不改原变量，s[0] = toupper(s[0]) 必须赋值回去才生效。','char c = toupper(\'a\');  // \'A\''],
+['math','tolower','大写字母变小写。','int tolower(int c);','转成小写。','返回：转换后的字符（int）。','同样要赋值回去；比较用户输入前先统一大小写，否则 "YES" 和 "yes" 会被判不相等。','char c = tolower(\'A\');  // \'a\''],
+['math','abs','去掉负号，只留大小。','int abs(int j);','求整数绝对值。','返回：绝对值；INT_MIN 取绝对值会溢出。','abs 只处理 int：long 要用 labs，浮点要用 fabs；把 double 传给 abs 会先被截成整数，小数部分悄悄丢掉。','int d = abs(-5);  // 5'],
+['math','fabs','浮点数去掉负号。','double fabs(double x);','求浮点绝对值。','返回：绝对值（double）。','比较两个浮点数别写 a == b，要写 fabs(a - b) < 1e-6；它在 <math.h> 里，C++ 写 std::fabs。','double d = fabs(-1.5);  // 1.5'],
+['math','sqrt','开平方。','double sqrt(double x);','求平方根。','返回：x 的平方根；x 小于 0 返回 NaN。','开方前不判负数会得到 NaN，后面一路算下去全是 NaN 还查不出原因；链接时可能需要加 -lm。','double r = sqrt(9.0);  // 3'],
+['math','pow','算 x 的 y 次方。','double pow(double x, double y);','求幂。','返回：x 的 y 次方（double）。','pow 返回 double，算完再交给整数会丢精度；嵌入式里能用乘法就别用 pow，慢而且要把数学库链进来。','double v = pow(2, 10);  // 1024']
+];
+
+/* 手写区的“写调用 + 验坑”题 */
+var CALL = [
+{id:'strncpy-copy', card:'cstr:strncpy', title:'strncpy 抄字符串（会缺结尾 0）',
+ task:'把 <code>"hello world"</code> 抄进 <code>char buf[8]</code>，要求打印出来只有 <code>hello w</code>，不带乱码。写 3~4 行。',
+ answer:`char buf[8];
+strncpy(buf, "hello world", sizeof(buf) - 1);
+buf[sizeof(buf) - 1] = '\\0';
+printf("%s\\n", buf);   // hello w`,
+ trap:'源串比 n 长时，strncpy 不会帮你补 \\0。少了最后那句手动补 0，printf 会一路读到别人的内存里，打印出一串乱码甚至崩掉。'},
+{id:'memcpy-bytes', card:'cmem:memcpy', title:'memcpy 拷数组（单位是字节）',
+ task:'把 <code>int a[4] = {1,2,3,4}</code> 整个拷到 <code>int b[4]</code>，再打印 b。第三个参数别写错单位。',
+ answer:`int a[4] = {1,2,3,4}, b[4];
+memcpy(b, a, sizeof(a));        // 16 字节
+for (int i = 0; i < 4; i++) printf("%d ", b[i]);`,
+ trap:'第三个参数是字节数不是元素个数，写成 4 只拷了 1 个 int，剩下 3 个是随机垃圾。还有：数组当参数传进函数后 sizeof 只剩指针大小，那时必须额外传长度。'},
+{id:'memmove-shift', card:'cmem:memmove', title:'memmove 原地删首字符',
+ task:'<code>char s[] = "abcdef"</code>，把第一个字符删掉，让 s 原地变成 <code>bcdef</code>（不许新建数组）。',
+ answer:`char s[] = "abcdef";
+memmove(s, s + 1, strlen(s));   // 连同结尾 0 一起往前挪
+printf("%s\\n", s);              // bcdef`,
+ trap:'这种“自己盖自己”的搬家用 memcpy 可能得到 bbcdef：前面的字节先被覆盖，后面再读就错了。重叠必须用 memmove。'},
+{id:'memset-int', card:'cmem:memset', title:'memset 把 int 设成 1（会翻车）',
+ task:'先写 <code>memset</code> 把 <code>int buf[10]</code> 清零；再试着用 memset 把 <code>int x</code> 设成 1，打印看看是不是 1。',
+ answer:`int buf[10];
+memset(buf, 0, sizeof(buf));    // 全 0，正确用法
+int x = 0;
+memset(&x, 1, sizeof(x));       // 按字节涂 1
+printf("%d\\n", x);              // 16843009，不是 1`,
+ trap:'memset 按字节涂。int 有 4 个字节，全涂 1 得到 0x01010101 = 16843009。想把 int 设成某个值，只能老老实实赋值。'},
+{id:'snprintf-trunc', card:'fmt:snprintf', title:'snprintf 截断与返回值',
+ task:'用 <code>char buf[8]</code> 装 <code>"hello world"</code>，打印 buf 和返回值，并判断这次有没有被截断。',
+ answer:`char buf[8];
+int n = snprintf(buf, sizeof(buf), "%s", "hello world");
+printf("[%s] n=%d\\n", buf, n);          // [hello w] n=11
+if (n >= (int)sizeof(buf)) puts("被截断了");`,
+ trap:'返回值是“本来想写多长”（11），不是实际写进去的 7。拿它当下标会越界；判断截断要用 n >= size。'},
+{id:'sscanf-parse', card:'fmt:sscanf', title:'sscanf 拆键值对',
+ task:'从 <code>"temp=25,hum=60"</code> 里解析出两个整数并打印，要求检查返回值。',
+ answer:`int t = 0, h = 0;
+if (sscanf("temp=25,hum=60", "temp=%d,hum=%d", &t, &h) == 2)
+    printf("%d %d\\n", t, h);
+else
+    puts("格式对不上");`,
+ trap:'返回值是成功赋值的项数，不是字符数。不检查返回值，解析失败时 t、h 保持原值（所以要先初始化），你会拿旧数字继续算。'},
+{id:'atoi-vs-strtol', card:'fmt:strtol', title:'atoi 与 strtol 的区别',
+ task:'分别把 <code>"123abc"</code> 和 <code>"abc"</code> 用 atoi 转一下；再用 strtol 转 <code>"123abc"</code>，把“停在哪”也打印出来。',
+ answer:`printf("%d\\n", atoi("123abc"));   // 123，后面的 abc 被无视
+printf("%d\\n", atoi("abc"));      // 0，和输入 "0" 分不出来
+char *end;
+long v = strtol("123abc", &end, 10);
+printf("%ld 停在 [%s]\\n", v, end);  // 123 停在 [abc]`,
+ trap:'atoi 不报错，成功和失败都可能返回 0，你没法区分。strtol 靠 endptr 告诉你读到哪：end 等于原串开头，说明一个字都没转成功。'},
+{id:'strtok-split', card:'cstr:strtok', title:'strtok 按逗号切分',
+ task:'把 <code>"a,b,,c"</code> 用逗号切开，一段一段打印出来（用方括号包住看得清楚）。',
+ answer:`char s[] = "a,b,,c";        // 必须是能改的数组
+for (char *p = strtok(s, ","); p != NULL; p = strtok(NULL, ","))
+    printf("[%s]\\n", p);
+// [a] [b] [c]`,
+ trap:'strtok 会把逗号改成 \\0，所以传字符串常量会崩（那块内存不许写）；连续两个逗号会被当成一个分隔符，空段直接跳过。'},
+{id:'strstr-find', card:'cstr:strstr', title:'strstr 找子串',
+ task:'在 <code>"GET /index.html HTTP/1.1"</code> 里找 <code>"HTTP"</code>，把从它开始的剩余内容打印出来。',
+ answer:`const char *req = "GET /index.html HTTP/1.1";
+const char *p = strstr(req, "HTTP");
+if (p) printf("%s\\n", p);       // HTTP/1.1
+else   puts("没找到");`,
+ trap:'返回的是指针不是下标，不判 NULL 就 printf 会崩；想要下标写 p - req。'},
+{id:'fopen-fread', card:'file:fopen', title:'fopen + fread 读文件',
+ task:'打开 <code>test.txt</code> 读最多 64 字节并打印；打不开要报错并且不要继续往下读。',
+ answer:`FILE *fp = fopen("test.txt", "rb");
+if (!fp) { perror("fopen"); return 1; }
+char buf[65] = {0};
+size_t n = fread(buf, 1, 64, fp);
+printf("读到 %zu 字节: %s\\n", n, buf);
+fclose(fp);`,
+ trap:'fopen 失败只返回 NULL，不判空后面 fread 全崩；fread 返回的是元素个数，只有 size 传 1 时才等于字节数；读完要 fclose。'},
+{id:'vector-at', card:'vector:at()', title:'vector::at 越界会报警',
+ task:'<code>vector&lt;int&gt; v{1,2,3}</code>，先用 <code>at</code> 取下标 5 并接住异常，再用 <code>[]</code> 取下标 5 对比一下。',
+ answer:`std::vector<int> v{1,2,3};
+try {
+    printf("%d\\n", v.at(5));
+} catch (const std::out_of_range& e) {
+    printf("at 抓到了: %s\\n", e.what());
+}
+printf("%d\\n", v[5]);   // 越界，读到垃圾值，也可能直接崩`,
+ trap:'at 越界抛 out_of_range，没人接程序立即终止；[] 不检查，越界是“悄悄读错内存”，值随机、偶尔才崩，查起来最费劲。'},
+{id:'vector-erase', card:'vector:erase()', title:'vector::erase 边遍历边删',
+ task:'<code>vector&lt;int&gt; v{1,2,2,3}</code>，删掉所有等于 2 的元素，打印结果。',
+ answer:`std::vector<int> v{1,2,2,3};
+for (auto it = v.begin(); it != v.end(); ) {
+    if (*it == 2) it = v.erase(it);   // 用返回值接住
+    else ++it;
+}
+for (int x : v) printf("%d ", x);     // 1 3`,
+ trap:'erase 之后原来的 it 已经失效，还写 it++ 会跳过一个元素甚至越界（1 2 2 3 删完剩 1 2 3 就是症状）。正确做法是接返回值，删的那次不自增。'},
+{id:'c_str-lifetime', card:'string:c_str()', title:'c_str 的指针不能存',
+ task:'把一段 <code>std::string</code> 交给 fopen，然后演示“先存下 c_str 指针、再修改字符串”会发生什么。',
+ answer:`std::string name = "test.txt";
+FILE *fp = fopen(name.c_str(), "r");   // 当场借用，正确
+const char *p = name.c_str();
+name += "_long_long_long_name_that_reallocates";
+printf("%s\\n", p);   // p 可能已经指向被释放的旧内存`,
+ trap:'c_str() 借的是内部缓冲区。string 一改动（尤其是扩容搬家），指针就失效，继续用是未定义行为：可能乱码，也可能崩。要用就当场用。'},
+{id:'substr-parse', card:'string:substr()', title:'substr 拆日期',
+ task:'从 <code>"2026-11-10"</code> 里分别取出年、月、日三个数字并打印。',
+ answer:`std::string s = "2026-11-10";
+int y = std::stoi(s.substr(0, 4));
+int m = std::stoi(s.substr(5, 2));
+int d = std::stoi(s.substr(8, 2));
+printf("%d/%d/%d\\n", y, m, d);`,
+ trap:'substr 第一个参数是起点，第二个是“取几个”不是“到哪结束”；pos 超过长度会抛 out_of_range，不接住程序直接终止。'},
+{id:'new-array', card:'heap:new[]', title:'new[] 与 delete[] 配对',
+ task:'用 <code>new[]</code> 建 5 个 int，填 0~4，打印后释放；顺便看看不写 <code>()</code> 时里面是什么。',
+ answer:`int *p = new int[5]();        // 带 () 才清零
+for (int i = 0; i < 5; i++) p[i] = i;
+for (int i = 0; i < 5; i++) printf("%d ", p[i]);
+delete[] p;                    // 必须配 delete[]
+p = nullptr;`,
+ trap:'new[] 配 delete 是未定义行为，可能只析构第一个元素、把堆的内部记录写坏，崩在别的地方；new int[5] 不带括号时那些值是随机的。'},
+{id:'sort-both', card:'tool:std::sort', title:'sort 升序与降序',
+ task:'对 <code>{3,1,2}</code> 先升序排一次，再按从大到小排一次，各打印一遍。',
+ answer:`std::vector<int> v{3,1,2};
+std::sort(v.begin(), v.end());                                   // 1 2 3
+std::sort(v.begin(), v.end(), [](int a, int b){ return a > b; }); // 3 2 1`,
+ trap:'第二个参数要 end() 不是 end()-1；比较函数返回 bool，表示“a 该不该排在 b 前面”，写成 a >= b 会在有相等元素时越界崩溃。'},
+{id:'to-string-stoi', card:'tool:std::to_string', title:'to_string 与 stoi 来回转',
+ task:'把 42 转成字符串拼进 <code>"id="</code>，再把里面的数字转回来加 1 打印。',
+ answer:`std::string s = "id=" + std::to_string(42);
+int n = std::stoi(s.substr(3)) + 1;
+printf("%s %d\\n", s.c_str(), n);   // id=42 43`,
+ trap:'stoi 遇到 "abc" 抛 invalid_argument、超范围抛 out_of_range，不接住程序直接结束；而 "42abc" 会“成功”返回 42，别以为它帮你检查了整串。'},
+{id:'getline-ignore', card:'io:std::cin.ignore()', title:'cin >> 之后接 getline',
+ task:'先读一个整数，再读一整行带空格的文字，把两次读到的内容都打印出来。',
+ answer:`int n;
+std::cin >> n;
+std::cin.ignore(1000, '\\n');     // 把留在缓冲区的回车扔掉
+std::string line;
+std::getline(std::cin, line);
+std::cout << n << " [" << line << "]\\n";`,
+ trap:'少了 ignore，getline 会立刻读到 cin >> 留下的那个 \\n，拿到空串，看起来像“getline 失灵”。（如果流已经处于失败状态，要先 cin.clear()。）'},
+{id:'swap-two', card:'tool:std::swap', title:'std::swap 交换变量',
+ task:'交换 <code>int a=1, b=2</code>，再交换两个 string，最后一起打印。',
+ answer:`int a = 1, b = 2;
+std::swap(a, b);
+std::string x = "left", y = "right";
+std::swap(x, y);
+printf("%d %d %s %s\\n", a, b, x.c_str(), y.c_str());`,
+ trap:'交换两个数组的内容不能直接 swap（数组名不能赋值），要逐元素换；两个 vector 之间 swap 只换内部指针，不会挨个搬元素。'},
+{id:'sizeof-param', card:'cmem:memcpy', title:'sizeof 在函数参数里失效',
+ task:'写一个函数 <code>show(char s[])</code>，里面同时打印 <code>sizeof(s)</code> 和 <code>strlen(s)</code>，在 main 里传一个 32 字节的数组进去，看差别。',
+ answer:`void show(char s[]) {
+    printf("sizeof(s)=%zu strlen=%zu\\n", sizeof(s), strlen(s));
+}
+int main(void) {
+    char buf[32] = "hello";
+    show(buf);          // 8 5（64 位机器上指针是 8 字节）
+}`,
+ trap:'数组当参数传进去就退化成指针，sizeof 只剩指针大小，永远算不出数组长度。要在函数里知道长度，只能靠 strlen 或者额外传一个长度参数。'}
+];
+
+/* 慎用区 */
+var CARE = [
+{n:'malloc', plain:'临时跟系统借一块内存，用完必须还。',
+ when:'程序刚启动时一次性要一大块、这辈子都不还的缓冲区；或者数据量真的要到运行时才知道，而且这个平台的堆足够大。',
+ alt:'全局数组或 static 数组（编译时就分配好，最稳）；或者一开始就按最大需求写死大小。',
+ trap:'借不到会给你 NULL，不判空就往里写直接崩；借借还还多了，堆会被切成很多小碎块，之后明明总量还够，却再也借不到一块连续的大内存。'},
+{n:'calloc', plain:'跟 malloc 一样借内存，顺便帮你全部清零。',
+ when:'想一次借 n 个、并且保证每个字节都是 0（比如下标表、标志位表），省得自己再 memset。',
+ alt:'静态数组 + memset 清零，行为最好预测。',
+ trap:'它只是顺便清零，借不到一样返回 NULL；参数是“几个 × 每个多大”，顺序写反了结果一样，但读代码的人会以为你要干别的事。'},
+{n:'realloc', plain:'已经借了一块，发现不够大，再去找系统换一块更大的。',
+ when:'确实已经有一块动态内存，数据还要变多，才用它扩大；而且这块内存在整个程序里只有一处能碰到。',
+ alt:'一开始就按最大可能分配；或者用固定大小的内存池，永远不换大小。',
+ trap:'扩容可能要搬家：先找新地方、把老数据拷过去、再释放老地方，期间内存占用会短暂翻倍；最常见的错是忘了用返回值覆盖原指针，失败了还拿着老指针用。'},
+{n:'free', plain:'把借来的内存还回去。',
+ when:'你确实用 malloc / calloc / realloc 借过，而且这块内存真的不用了。',
+ alt:'能不用动态内存就不用；真要反复借还，用固定尺寸的内存池（只借还同一尺寸的块）。',
+ trap:'释放完指针还指着原地（野指针），再用就崩；同一块 free 两次会破坏堆的内部记录；free 一个栈上变量的地址更是直接完蛋。'},
+{n:'std::vector（MCU 上）', plain:'能自动变长的数组，容量不够时自己去堆上找更大的地方搬家。',
+ when:'在 MCU 上只建议“启动时 reserve 好、之后不再变长”的用法；真正需要动态增长的场景很少。',
+ alt:'std::array 或普通数组 + 一个长度变量；长度会变的队列用环形缓冲（ring buffer）。',
+ trap:'push_back 超出容量会翻倍扩容并搬家，堆被切碎后可能中途失败；很多 MCU 工程把异常关掉了，失败直接 abort；搬家还会让之前存的指针、迭代器全部失效。'},
+{n:'std::string（MCU 上）', plain:'会自动变长的字符串，拼一拼就可能去堆上重新要地方。',
+ when:'字符串短、数量固定，而且工具链的堆够用时可以考虑。',
+ alt:'char buf[64] + snprintf；或者自己写一个固定容量的字符串结构。',
+ trap:'每次拼接、每次 substr 都可能重新申请堆内存；字符串一改动，之前 c_str() 拿到的指针就失效。'},
+{n:'裸机 printf 重定向', plain:'printf 只会把字往“标准输出”里塞，裸机上没有这个出口，得你自己接一根管子到串口。',
+ when:'调试阶段想看到打印，就必须重定向（通常是实现 _write 或者 fputc 的底层函数）。Linux 上不用管，标准输出本来就有。',
+ alt:'自己写一个只支持 %d / %s / %x 的轻量打印函数；或者把日志塞进环形缓冲，由 DMA 或空闲中断慢慢发出去。',
+ trap:'没重定向就调用 printf，轻则一个字都不出，重则卡死在库里；用 semihosting 打印非常慢，会把时序打乱；千万别在中断里打印，串口发送是阻塞的。'},
+{n:'volatile（不是函数，但面试常问）', plain:'告诉编译器：这个变量可能被别人偷偷改（中断、硬件寄存器），每次用都得去内存重新读，别自作聪明优化。',
+ when:'中断服务函数和主循环共享的变量、映射到硬件寄存器的地址，必须加 volatile。',
+ alt:'需要“读一次不被打断”时 volatile 不够，要关中断或用原子操作；多线程共享还要加锁。',
+ trap:'volatile 不等于线程安全，也不保证原子性；memset / memcpy 不能直接用在 volatile 指针上（会丢掉 volatile 限定，读到的值可能不是你想要的）。漏加 volatile 的典型症状：中断里改了标志位，主循环 while(!flag) 永远出不来。'}
+];
+
+/* 了解即可 */
+var LATER = [
+{n:'std::map', t:'有序的键值表（红黑树），按名字查配置很方便；等真要写配置管理再学，现在数组或 switch 就够。'},
+{n:'std::unordered_map', t:'哈希表版键值表，查得快但更吃内存；同上，先放着。'},
+{n:'std::function', t:'能装下任意“可调用东西”的万能盒子，写回调时用；嵌入式现在直接用函数指针就够了。'},
+{n:'std::thread', t:'C++ 标准线程；Linux 嵌入式一般用 pthread，MCU 用 RTOS 任务，这个先别学。'},
+{n:'std::move', t:'把资源“转让”出去，避免拷贝；看不懂右值引用之前别用，用错了会拿到一个空对象。'},
+{n:'std::shared_ptr', t:'带引用计数的共享指针，最后一个人不用了才释放；多线程、生命周期复杂时才需要，MCU 上基本不用。'},
+{n:'std::string_view', t:'只看不拷贝的字符串“窗口”，解析日志很好用；C++17 才有，老工具链编不过。'},
+{n:'std::optional', t:'表示“可能没有值”，比拿 -1 当失败标记干净得多；C++17 才有。'},
+{n:'std::mutex', t:'互斥锁，保护多个线程共享的数据；等写多线程再学。'},
+{n:'std::endl', t:'换行 + 强制刷新缓冲区，比写 \'\\n\' 慢很多；平时写 \'\\n\' 就行。'},
+{n:'sprintf', t:'老式“格式化到字符串”，不检查长度；MCU 上一律用 snprintf 替代，别用它。'}
+];
+
+var G = {};
+GROUPS.forEach(function(g){ G[g.id] = g; });
+
+var CARDS = D.map(function(r, i){
+  return {
+    g:r[0], name:r[1], plain:r[2], p:r[3], use:r[4],
+    args:r[5], trap:r[6], ex:r[7], note:r[8] || '',
+    order:i, id:r[0] + ':' + r[1]
+  };
+});
+var BY_ID = {};
+CARDS.forEach(function(c){ BY_ID[c.id] = c; });
+
+/* ---------- 日期工具 ---------- */
+function pad(n){ return n < 10 ? '0' + n : '' + n; }
+function fmt(d){ return d.getFullYear() + '-' + pad(d.getMonth()+1) + '-' + pad(d.getDate()); }
+function todayStr(){ return fmt(new Date()); }
+function parseISO(s){ var p = s.split('-'); return new Date(+p[0], +p[1]-1, +p[2]); }
+function addDays(iso, n){ var d = parseISO(iso); d.setDate(d.getDate() + n); return fmt(d); }
+function gapDays(a, b){ return Math.round((parseISO(b) - parseISO(a)) / 86400000); }
+
+/* ---------- 状态 ---------- */
+function fresh(){ return {v:1, first:null, learned:{}, checkins:{}, hw:{}}; }
+var S = loadState();
+
+function loadState(){
+  try{
+    var raw = localStorage.getItem(KEY);
+    if(!raw) return fresh();
+    var o = JSON.parse(raw);
+    var base = fresh();
+    for(var k in o){ if(Object.prototype.hasOwnProperty.call(o,k)) base[k] = o[k]; }
+    if(!base.learned) base.learned = {};
+    if(!base.checkins) base.checkins = {};
+    if(!base.hw) base.hw = {};
+    return base;
+  }catch(e){ return fresh(); }
+}
+function save(){
+  try{ localStorage.setItem(KEY, JSON.stringify(S)); }catch(e){}
+}
+
+/* ---------- 派生数据 ---------- */
+function dayNo(){
+  if(!S.first) return 0;
+  return Math.max(1, gapDays(S.first, todayStr()) + 1);
+}
+function advanced(){ return dayNo() >= 8; }
+function quotaNew(){ return advanced() ? 15 : 10; }
+function quotaHw(){ return advanced() ? 6 : 4; }
+
+function learnedOn(d){
+  return CARDS.filter(function(c){
+    var r = S.learned[c.id];
+    return r && r.first === d;
+  });
+}
+function poolNew(){
+  return CARDS.filter(function(c){ return !S.learned[c.id]; });
+}
+function dueCards(){
+  var t = todayStr();
+  return CARDS.filter(function(c){
+    var r = S.learned[c.id];
+    return r && r.s < 6 && r.due && r.due <= t;
+  }).sort(function(a,b){
+    var ra = S.learned[a.id], rb = S.learned[b.id];
+    if(ra.due !== rb.due) return ra.due < rb.due ? -1 : 1;
+    return a.order - b.order;
+  });
+}
+function plannedNew(){
+  var left = Math.max(0, quotaNew() - learnedOn(todayStr()).length);
+  return poolNew().slice(0, left);
+}
+function streak(){
+  var d = S.checkins[todayStr()] ? todayStr() : addDays(todayStr(), -1);
+  var n = 0, guard = 0;
+  while(S.checkins[d] && guard++ < 4000){ n++; d = addDays(d, -1); }
+  return n;
+}
+
+/* ---------- 文案 ---------- */
+function renderStage(){
+  var d = dayNo(), el = document.getElementById('stage');
+  if(d === 0){
+    el.innerHTML = '<b>还没开始。</b>今天先学 10 张新卡 + 4 个动手题，第 8 天起自动变成 15 张 + 6 个。' +
+      '<span class="sub2">每天的量只影响“新卡”，复习永远按遗忘曲线走，不会因为加量变多。</span>';
+    return;
+  }
+  if(d < 8){
+    el.innerHTML = '<b>第 ' + d + ' 天（第一周节奏）</b>：每天 ' + quotaNew() + ' 张新卡 + ' + quotaHw() +
+      ' 个动手题（2 个写原型 + 2 个写调用）。<span class="sub2">再过 ' + (8 - d) + ' 天自动加到每天 15 张 + 6 个题，不是突然给你加活，是到点升级。</span>';
+  }else{
+    el.innerHTML = '<b>第 ' + d + ' 天（加量阶段）</b>：每天 ' + quotaNew() + ' 张新卡 + ' + quotaHw() +
+      ' 个动手题（2 个写原型 + 4 个写调用）。<span class="sub2">复习队列不受这个数影响，该来的一天都不会少。</span>';
+  }
+}
+
+/* ---------- 首页：今日任务 ---------- */
+function renderToday(){
+  var t = todayStr();
+  var due = dueCards();
+  var doneToday = learnedOn(t);
+  var quota = quotaNew();
+  var left = Math.max(0, quota - doneToday.length);
+  var rest = poolNew().slice(0, left);
+
+  document.getElementById('dueCount').textContent = due.length;
+  var dueChips = document.getElementById('dueChips');
+  if(due.length){
+    dueChips.innerHTML = due.map(function(c){
+      var over = gapDays(S.learned[c.id].due, t);
+      var cls = over > 0 ? 'chip due over' : 'chip due';
+      var tag = over > 0 ? '逾期' + over + '天' : '今天到期';
+      return '<span class="' + cls + '">' + esc(c.name) + ' · ' + tag + '</span>';
+    }).join('');
+    document.getElementById('dueHint').textContent = '到期 ' + due.length + ' 个。先把它们过完，新卡按钮才会解锁。';
+    document.getElementById('dueHint').className = 'hint';
+  }else{
+    dueChips.innerHTML = '<span class="chip empty">今天没有到期的，清爽</span>';
+    document.getElementById('dueHint').textContent = '按 1 / 2 / 4 / 7 / 15 / 30 天的点走，没到期就不用硬看。';
+    document.getElementById('dueHint').className = 'hint';
+  }
+  var rb = document.getElementById('btnReview');
+  rb.disabled = due.length === 0;
+  rb.textContent = due.length ? '开始复习（' + due.length + '）' : '今天不用复习';
+
+  document.getElementById('newLeft').textContent = rest.length;
+  var learnedChips = doneToday.map(function(c){
+    return '<span class="chip done">' + esc(c.name) + '</span>';
+  }).join('');
+  var restChips = rest.map(function(c){
+    return '<span class="chip new">' + esc(c.name) + '</span>';
+  }).join('');
+  document.getElementById('newChips').innerHTML = (learnedChips + restChips) ||
+    '<span class="chip empty">全部学完了</span>';
+
+  var nb = document.getElementById('btnNew');
+  var hint = document.getElementById('newHint');
+  if(!rest.length && !doneToday.length){
+    nb.disabled = true; nb.textContent = '没卡可学了';
+    hint.textContent = '所有必背卡片都已经进过复习队列了。';
+    hint.className = 'hint';
+  }else if(!rest.length){
+    nb.disabled = true; nb.textContent = '今天的新卡学完了';
+    hint.textContent = '今天已经学了 ' + doneToday.length + ' 张，明天的量明天再来。';
+    hint.className = 'hint';
+  }else if(due.length){
+    nb.disabled = true; nb.textContent = '先复习再学新卡';
+    hint.textContent = '还有 ' + due.length + ' 个到期的没看，按钮先锁着——这是故意的，先复习才记得住。';
+    hint.className = 'hint warn';
+  }else{
+    nb.disabled = false; nb.textContent = '开始学新卡（' + rest.length + '）';
+    hint.textContent = '今天额度 ' + quota + ' 张，已学 ' + doneToday.length + '，还剩 ' + rest.length + ' 张。';
+    hint.className = 'hint';
+  }
+}
+
+/* ---------- 进度面板 ---------- */
+function renderPanel(){
+  var learned = CARDS.filter(function(c){ return S.learned[c.id]; });
+  var mastered = learned.filter(function(c){ return S.learned[c.id].s >= 6; }).length;
+  var t = todayStr();
+  var left = Math.max(0, quotaNew() - learnedOn(t).length);
+
+  document.getElementById('statLearned').textContent = learned.length + ' / ' + CARDS.length;
+  document.getElementById('statNewLeft').textContent = left + ' 张';
+  document.getElementById('statStreak').textContent = streak() + ' 天';
+  document.getElementById('statMastered').textContent = mastered + ' 张';
+
+  var meta = document.getElementById('panelMeta');
+  meta.textContent = S.first
+    ? '开始于 ' + S.first + ' · 第 ' + dayNo() + ' 天 · 今天新学 ' + learnedOn(t).length + ' 张'
+    : '还没开始，学第一张卡就开始算天数';
+
+  var hw = hwToday(false);
+  if(hw){
+    var n = Object.keys(hw.done).length;
+    document.getElementById('panelHw').textContent =
+      '今天的动手题：' + hw.keys.length + ' 个里做完 ' + n + ' 个' +
+      (n >= hw.keys.length && hw.keys.length ? '（今天的动手任务收工）' : '');
+  }
+
+  var html = '';
+  GROUPS.forEach(function(g){
+    var list = CARDS.filter(function(c){ return c.g === g.id; });
+    var doneN = list.filter(function(c){ return S.learned[c.id]; }).length;
+    var rows = list.map(function(c){
+      var r = S.learned[c.id];
+      var dots = '', stat = '', cls = 'pstat';
+      for(var i = 0; i < 6; i++){
+        var k = 'dot';
+        if(r){
+          if(r.s >= 6 || i < r.s) k += ' done';
+          else if(i === r.s) k += ' cur';
+        }
+        dots += '<i class="' + k + '"></i>';
+      }
+      if(!r){ stat = '未学'; }
+      else if(r.s >= 6){ stat = '已拿下'; cls += ' ok'; }
+      else if(r.due <= t){ stat = '该复习'; cls += ' warn'; }
+      else { stat = '下次 ' + r.due.slice(5); }
+      return '<div class="prow"><span class="pn">' + esc(c.name) + '</span>' +
+             '<span class="dots">' + dots + '</span>' +
+             '<span class="' + cls + '">' + stat + '</span></div>';
+    }).join('');
+    html += '<details class="grp"><summary>' + g.name + ' <span>' + doneN + ' / ' + list.length + ' 已学</span></summary>' + rows + '</details>';
+  });
+  document.getElementById('panelList').innerHTML = html;
+}
+
+/* ---------- 慎用 / 了解 ---------- */
+function renderCare(){
+  document.getElementById('careList').innerHTML = CARE.map(function(x){
+    return '<details class="care"><summary><b>' + esc(x.n) + '</b><span>什么时候才用 ▾</span></summary>' +
+      '<div class="carebody">' +
+      '<p class="plainline">' + esc(x.plain) + '</p>' +
+      '<p><b>什么时候才用：</b>' + esc(x.when) + '</p>' +
+      '<p><b>替代方案：</b>' + esc(x.alt) + '</p>' +
+      '<p class="trapbox"><b>坑：</b>' + esc(x.trap) + '</p>' +
+      '</div></details>';
+  }).join('');
+}
+function renderLater(){
+  document.getElementById('laterList').innerHTML = LATER.map(function(x){
+    return '<div class="prow" style="padding:9px 2px"><span class="pn" style="font-family:inherit;font-size:13px;color:#dfe8f3;flex:none;width:118px">' +
+      esc(x.n) + '</span><span style="flex:1;font-size:12.5px;color:#8d9bab;white-space:normal">' + esc(x.t) + '</span></div>';
+  }).join('');
+}
+
+/* ---------- 手写区 ---------- */
+var PROTO_PRI = ['strncpy','memcpy','snprintf','strtol','strtok','strstr','fread','strcat','strcmp','memmove',
+  'std::sort','std::getline','std::stoi','std::to_string','std::make_unique','std::max','std::min','std::swap',
+  'std::find','std::reverse','c_str()','substr()','at()','erase()','strlen'];
+
+function quizable(c){
+  var opens = (c.p.match(/\(/g) || []).length;
+  var closes = (c.p.match(/\)/g) || []).length;
+  return opens === 1 && closes === 1 && c.p.indexOf('=') < 0;
+}
+function prioOf(c){
+  var i = PROTO_PRI.indexOf(c.name);
+  return i < 0 ? 99 : i;
+}
+function hwPool(){
+  var t = todayStr(), out = [], seen = {};
+  function add(c){ if(c && !seen[c.id]){ seen[c.id] = 1; out.push(c); } }
+  learnedOn(t).forEach(add);
+  dueCards().forEach(add);
+  plannedNew().forEach(add);
+  if(!out.length) CARDS.slice(0, 10).forEach(add);
+  return out;
+}
+function genHwKeys(){
+  var pool = hwPool();
+  var nCall = advanced() ? 4 : 2;
+  var nProto = 2;
+  var callIds = pool.map(function(c){ return c.id; });
+
+  var prefer = CALL.filter(function(x){ return callIds.indexOf(x.card) >= 0; });
+  var other = CALL.filter(function(x){ return callIds.indexOf(x.card) < 0; });
+  var calls = prefer.concat(other).slice(0, nCall).map(function(x){ return 'c:' + x.id; });
+
+  var quiz = pool.filter(quizable).sort(function(a,b){ return prioOf(a) - prioOf(b); });
+  var protos = [];
+  quiz.forEach(function(c){
+    if(protos.length < nProto && calls.indexOf('c:' + c.id) < 0) protos.push('p:' + c.id);
+  });
+  quiz.forEach(function(c){
+    if(protos.length < nProto && protos.indexOf('p:' + c.id) < 0) protos.push('p:' + c.id);
+  });
+  return calls.concat(protos);
+}
+function hwToday(create){
+  if(create === undefined) create = true;
+  var t = todayStr();
+  if(!S.hw[t] && create){
+    S.hw[t] = {keys:genHwKeys(), done:{}};
+    save();
+  }
+  return S.hw[t] || null;
+}
+function renderHw(){
+  var data = hwToday();
+  var box = document.getElementById('hwList');
+  if(!data){ box.innerHTML = ''; return; }
+  var sig = data.keys.join('|');
+  if(box.dataset.sig !== sig){
+    box.dataset.sig = sig;
+    box.innerHTML = data.keys.map(function(k){ return taskHTML(k); }).join('');
+    box.querySelectorAll('.hwcard').forEach(function(el){
+      var k = el.dataset.key;
+      if(data.done[k]) el.classList.add('done');
+      var btn = el.querySelector('.check');
+      btn.addEventListener('click', function(){ doCheck(k, el); });
+    });
+  }
+  updateHwStats();
+}
+function updateHwStats(){
+  var data = hwToday();
+  var n = data ? Object.keys(data.done).length : 0;
+  document.getElementById('hwDone').textContent = n;
+  document.getElementById('hwTotal').textContent = data ? data.keys.length : 0;
+  document.getElementById('hwCompose').textContent = advanced()
+    ? '2 个写原型 + 4 个写调用'
+    : '2 个写原型 + 2 个写调用';
+}
+function taskHTML(key){
+  if(key.indexOf('p:') === 0){
+    var c = BY_ID[key.slice(2)];
+    if(!c) return '';
+    return '<div class="hwcard" data-key="' + esc(key) + '">' +
+      '<div class="hwhead"><span class="hwtype">写原型</span><span class="hwtitle">' + esc(c.name) + '</span></div>' +
+      '<p class="hwask">它干的事：' + esc(c.use) + '<br>把它的“门牌号码”默写出来：返回类型 + 函数名 + 每个参数的类型（有 const 就写上）。</p>' +
+      '<textarea spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="返回类型 名字(参数类型 参数名, ...);"></textarea>' +
+      '<div class="hwactions"><button class="btn ghost check" type="button">对一下答案</button></div>' +
+      '<div class="hwres"></div></div>';
+  }
+  var t = null;
+  CALL.forEach(function(x){ if('c:' + x.id === key) t = x; });
+  if(!t) return '';
+  return '<div class="hwcard" data-key="' + esc(key) + '">' +
+    '<div class="hwhead"><span class="hwtype call">写调用 + 验坑</span><span class="hwtitle">' + esc(t.title) + '</span></div>' +
+    '<p class="hwask">' + t.task + '</p>' +
+    '<textarea spellcheck="false" autocapitalize="off" autocorrect="off" placeholder="在这里写 3~8 行代码"></textarea>' +
+    '<div class="hwactions"><button class="btn ghost check" type="button">写完了，看参考</button></div>' +
+    '<div class="hwres"></div></div>';
+}
+function doCheck(key, el){
+  var res = el.querySelector('.hwres');
+  if(key.indexOf('p:') === 0){
+    var c = BY_ID[key.slice(2)];
+    var txt = el.querySelector('textarea').value;
+    if(!txt.trim()){
+      res.innerHTML = '<div class="verdict ng">一个字都没写。先默写，再来看答案。</div>';
+      return;
+    }
+    res.innerHTML = protoResult(txt, c);
+  }else{
+    var t = null;
+    CALL.forEach(function(x){ if('c:' + x.id === key) t = x; });
+    res.innerHTML = '<div class="brow"><div class="k">参考代码</div><pre>' + esc(t.answer) + '</pre></div>' +
+      '<div class="trapbox" style="margin-top:6px"><b>这段代码暴露的坑：</b>' + esc(t.trap) + '</div>' +
+      '<p class="hint" style="margin-top:8px">不用一字一样，能做对、能说出坑在哪就算过。</p>';
+  }
+  var data = hwToday();
+  data.done[key] = 1;
+  save();
+  el.classList.add('done');
+  updateHwStats();
+  renderPanel();
+}
+function normSig(s){
+  return String(s || '')
+    .replace(/\s+/g, '')
+    .replace(/(?:std::)?string::size_type/g, 'size_t')
+    .replace(/std::/g, '')
+    .replace(/;$/, '');
+}
+function splitSig(s){
+  s = String(s || '').trim();
+  var open = s.indexOf('(');
+  if(open < 0) return {ret:s, name:'', params:'', tail:''};
+  var close = s.lastIndexOf(')');
+  var head = s.slice(0, open).trim();
+  var params = s.slice(open + 1, close).trim();
+  var tail = s.slice(close + 1).trim();
+  var parts = head.split(/\s+/);
+  var name = parts.length > 1 ? parts.pop() : head;
+  return {ret:parts.join(' '), name:name, params:params, tail:tail};
+}
+function splitParams(p){
+  if(!p || normSig(p) === 'void') return [];
+  return p.split(',').map(function(x){ return x.trim(); }).filter(Boolean);
+}
+function protoResult(user, c){
+  var ans = splitSig(c.p);
+  var got = splitSig(user);
+  var checks = [];
+  var ansRet = normSig(ans.ret), gotRet = normSig(got.ret);
+  checks.push({label:'返回类型', ok:ansRet === gotRet, got:got.ret || '（没写）', exp:ans.ret});
+
+  var ansName = normSig(ans.name).split('::').pop();
+  var gotName = normSig(got.name).split('::').pop();
+  checks.push({label:'函数名', ok:!!gotName && gotName === ansName, got:got.name ? got.name.split('::').pop() : '（没写）', exp:ans.name.split('::').pop()});
+
+  var ap = splitParams(ans.params), gp = splitParams(got.params);
+  checks.push({label:'参数个数', ok:ap.length === gp.length, got:gp.length + ' 个', exp:ap.length + ' 个'});
+  var m = Math.max(ap.length, gp.length);
+  for(var i = 0; i < m; i++){
+    checks.push({
+      label:'第 ' + (i+1) + ' 个参数',
+      ok: i < ap.length && i < gp.length && normSig(ap[i]) === normSig(gp[i]),
+      got: i < gp.length ? gp[i] : '（缺）',
+      exp: i < ap.length ? ap[i] : '（多余）'
+    });
+  }
+  var ac = (normSig(c.p).match(/const/g) || []).length;
+  var gc = (normSig(user).match(/const/g) || []).length;
+  checks.push({label:'const 修饰', ok:ac === gc, got:gc + ' 处', exp:ac + ' 处'});
+
+  var allOk = checks.every(function(x){ return x.ok; });
+  var rows = checks.map(function(x){
+    return '<div class="chk ' + (x.ok ? 'ok' : 'ng') + '"><span class="mark">' + (x.ok ? '✓' : '✗') + '</span>' +
+      '<span class="lbl">' + x.label + '</span><span class="val">' +
+      (x.ok ? '对了' : '你：' + esc(x.got) + ' ｜ 标准：' + esc(x.exp)) + '</span></div>';
+  }).join('');
+  return '<div class="verdict ' + (allOk ? 'ok' : 'ng') + '">' +
+    (allOk ? '全对，这张卡的原型你可以拿下了。' : '有地方不一样，注意看下面标红的项。') + '</div>' +
+    rows +
+    '<div class="brow" style="margin-top:10px"><div class="k">标准原型</div><pre>' + esc(c.p) + '</pre></div>';
+}
+
+/* ---------- 学习浮层 ---------- */
+var ses = null;
+var flashEl = document.getElementById('flash');
+var studyEl = document.getElementById('study');
+
+function openStudy(mode){
+  var q = mode === 'review' ? dueCards() : plannedNew();
+  if(!q.length) return;
+  ses = {mode:mode, queue:q, i:0, flip:false};
+  studyEl.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  document.getElementById('finish').classList.add('hidden');
+  document.getElementById('flash').style.display = '';
+  document.getElementById('grades').classList.add('hidden');
+  document.getElementById('gradeHint').classList.remove('hidden');
+  renderStudy();
+}
+function closeStudy(){
+  studyEl.classList.add('hidden');
+  document.body.style.overflow = '';
+  ses = null;
+  renderAll();
+}
+function bindGrades(){
+  var box = document.getElementById('grades');
+  box.innerHTML = ses.mode === 'review'
+    ? '<button data-g="good" type="button"><b>记得</b><small>往后走一个点</small></button>' +
+      '<button data-g="fuzzy" type="button"><b>模糊</b><small>明天再看一次</small></button>' +
+      '<button data-g="forgot" type="button"><b>忘了</b><small>从第 1 天重排</small></button>'
+    : '<button data-g="learn" type="button"><b>学会了</b><small>算进今天的新卡</small></button>' +
+      '<button data-g="again" type="button"><b>再看一遍</b><small>排到队尾，等下再翻</small></button>';
+  box.className = 'grades' + (ses.mode === 'review' ? '' : ' two');
+  Array.prototype.forEach.call(box.querySelectorAll('button'), function(b){
+    b.addEventListener('click', function(){ grade(b.dataset.g); });
+  });
+}
+function renderStudy(){
+  if(!ses) return;
+  if(ses.i >= ses.queue.length){ renderFinish(); return; }
+  var card = ses.queue[ses.i];
+  var g = G[card.g];
+
+  document.getElementById('studyMode').innerHTML = ses.mode === 'review'
+    ? '复习 · <b>' + g.name + '</b>'
+    : '新学 · <b>' + g.name + '</b>';
+  document.getElementById('studyPos').textContent = (ses.i + 1) + ' / ' + ses.queue.length;
+  document.getElementById('studyBar').style.width = ((ses.i) / ses.queue.length * 100) + '%';
+
+  document.getElementById('fTag').textContent = ses.mode === 'review' ? '复习 · 必背' : '新卡 · 必背';
+  var fn = document.getElementById('fName');
+  fn.textContent = card.name;
+  fn.className = 'fname' + (card.name.length > 16 ? ' sm' : '');
+
+  document.getElementById('bBody').innerHTML =
+    '<p class="plainline">' + esc(card.plain) + '</p>' +
+    '<div class="brow"><div class="k">原型（要几个参数、什么类型、返回什么）</div><pre class="code">' + esc(card.p) + '</pre></div>' +
+    '<div class="brow"><div class="k">干嘛用的</div><p>' + esc(card.use) + '</p></div>' +
+    '<div class="brow"><div class="k">参数 / 返回值</div><p class="small">' + esc(card.args) + '</p></div>' +
+    '<div class="brow trap"><div class="k">最容易踩的坑</div><p>' + esc(card.trap) + '</p></div>' +
+    '<div class="brow"><div class="k">一行示例</div><pre class="code">' + esc(card.ex) + '</pre></div>' +
+    (card.note ? '<div class="bnote">' + esc(card.note) + '</div>' : '');
+
+  var f = document.getElementById('flash');
+  f.classList.remove('flipped');
+  f.style.display = '';
+  document.getElementById('bBody').scrollTop = 0;
+  ses.flip = false;
+  document.getElementById('gradeHint').classList.remove('hidden');
+  document.getElementById('gradeHint').textContent = '先点卡片翻面，看完再选';
+  bindGrades();
+  document.getElementById('grades').classList.add('hidden');
+}
+function toggleFlip(){
+  if(!ses || ses.i >= ses.queue.length) return;
+  ses.flip = !ses.flip;
+  document.getElementById('flash').classList.toggle('flipped', ses.flip);
+  if(ses.flip){
+    document.getElementById('gradeHint').classList.add('hidden');
+    document.getElementById('grades').classList.remove('hidden');
+  }else{
+    document.getElementById('gradeHint').classList.remove('hidden');
+    document.getElementById('grades').classList.add('hidden');
+  }
+}
+function grade(kind){
+  if(!ses || ses.i >= ses.queue.length) return;
+  var card = ses.queue[ses.i];
+  var t = todayStr();
+
+  if(ses.mode === 'review'){
+    var r = S.learned[card.id];
+    if(!r) return;
+    if(kind === 'good'){
+      r.s = r.s + 1;
+      if(r.s >= 6){ r.s = 6; r.due = null; }
+      else{
+        var next = addDays(r.d0, IV[r.s]);
+        var min = addDays(t, 1);
+        r.due = next > min ? next : min;
+      }
+    }else if(kind === 'fuzzy'){
+      r.due = addDays(t, 1);
+    }else{
+      r.d0 = t; r.s = 0; r.due = addDays(t, 1);
+    }
+    r.n = (r.n || 0) + 1;
+  }else{
+    if(kind === 'learn'){
+      if(!S.learned[card.id]){
+        S.learned[card.id] = {first:t, d0:t, s:0, due:addDays(t, 1), n:0};
+      }
+      if(!S.first) S.first = t;
+    }else{
+      ses.queue.push(card);
+    }
+  }
+  S.checkins[t] = 1;
+  save();
+  ses.i++;
+  ses.flip = false;
+  renderStudy();
+  renderToday();
+  renderPanel();
+}
+function renderFinish(){
+  document.getElementById('flash').style.display = 'none';
+  document.getElementById('grades').classList.add('hidden');
+  document.getElementById('gradeHint').classList.add('hidden');
+  document.getElementById('finish').classList.remove('hidden');
+  document.getElementById('studyBar').style.width = '100%';
+  document.getElementById('studyPos').textContent = ses.queue.length + ' / ' + ses.queue.length;
+
+  var title = document.getElementById('finishTitle');
+  var text = document.getElementById('finishText');
+  var next = document.getElementById('finishNext');
+
+  if(ses.mode === 'review'){
+    title.textContent = '复习完了，去学新卡吧';
+    text.textContent = '这一轮过了 ' + ses.queue.length + ' 张。系统已经给每张卡排好了下一次的日子，到点首页会提醒你。';
+    var rest = plannedNew();
+    if(rest.length){
+      next.classList.remove('hidden');
+      next.textContent = '接着学今天的新卡（' + rest.length + '）';
+      next.onclick = function(){ ses = null; openStudy('new'); };
+    }else{
+      next.classList.add('hidden');
+    }
+  }else{
+    title.textContent = '今天的新卡学完了';
+    text.textContent = '新学的卡明天会第一次回来找你（第 1 个复习点）。今天可以收工了。';
+    next.classList.add('hidden');
+  }
+}
+
+/* ---------- 事件 ---------- */
+document.getElementById('btnReview').addEventListener('click', function(){ openStudy('review'); });
+document.getElementById('btnNew').addEventListener('click', function(){ openStudy('new'); });
+document.getElementById('studyClose').addEventListener('click', closeStudy);
+document.getElementById('finishHome').addEventListener('click', closeStudy);
+flashEl.addEventListener('click', toggleFlip);
+document.getElementById('cancelReset').addEventListener('click', function(){
+  document.getElementById('modal').classList.add('hidden');
+});
+document.getElementById('confirmReset').addEventListener('click', function(){
+  S = fresh();
+  try{ localStorage.removeItem(KEY); }catch(e){}
+  document.getElementById('modal').classList.add('hidden');
+  document.getElementById('hwList').dataset.sig = '';
+  ses = null;
+  studyEl.classList.add('hidden');
+  document.body.style.overflow = '';
+  renderAll();
+});
+document.getElementById('btnReset').addEventListener('click', function(){
+  document.getElementById('modal').classList.remove('hidden');
+});
+document.addEventListener('keydown', function(e){
+  if(studyEl.classList.contains('hidden')) return;
+  if(e.key === ' ' || e.key === 'Enter'){ e.preventDefault(); toggleFlip(); }
+  if(ses && ses.flip && (e.key === '1' || e.key === '2' || e.key === '3')){
+    var gs = ses.mode === 'review' ? ['good','fuzzy','forgot'] : ['learn','again'];
+    var idx = +e.key - 1;
+    if(gs[idx]) grade(gs[idx]);
+  }
+});
+
+function esc(s){
+  return String(s == null ? '' : s)
+    .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+function renderAll(){
+  renderStage();
+  renderToday();
+  renderPanel();
+  renderCare();
+  renderLater();
+  renderHw();
+  document.getElementById('badgeMust').textContent = CARDS.length;
+  document.getElementById('badgeCare').textContent = CARE.length;
+  document.getElementById('badgeLater').textContent = LATER.length;
+  document.getElementById('badgeTotal').textContent = CARDS.length + CARE.length + LATER.length;
+  updateHwStats();
+}
+
+renderAll();
+})();
+</script>
+</body>
+</html>
