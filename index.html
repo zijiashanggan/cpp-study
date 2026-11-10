@@ -147,6 +147,16 @@
     border: 1px solid #2b3540;
   }
 
+  .head-btns { display: flex; gap: 8px; flex: none; }
+  .pr-tag {
+    font-size: 11.5px; font-weight: 400; color: #a9c1f5;
+    padding: 2px 9px; border-radius: 999px;
+    background: rgba(122,162,247,.12);
+    border: 1px solid rgba(122,162,247,.28);
+    white-space: nowrap;
+  }
+  .pr-title { margin-top: 32px; }
+  #practice2::before { background: linear-gradient(180deg, #c792ea, #7aa2f7); }
   .nav { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
   .nav a {
     font-size: 12.5px; color: #a9c1f5; text-decoration: none;
@@ -259,7 +269,7 @@
     margin-bottom: 13px;
     scroll-margin-top: 78px;
   }
-  #practice { scroll-margin-top: 10px; }
+  #practice1, #practice2 { scroll-margin-top: 10px; }
   .q-head { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
   .badge {
     font-size: 11px; padding: 2px 9px; border-radius: 999px;
@@ -467,6 +477,8 @@
     h1 { font-size: 21px; }
     .sub { font-size: 13px; }
     .again { padding: 7px 12px; font-size: 12.5px; }
+    .head-btns { width: 100%; }
+    .head-btns .again { flex: 1; }
     .card, .q { padding: 14px; border-radius: 12px; }
     pre.code { font-size: 12px; padding: 10px 11px; line-height: 1.7; }
     .q-text { font-size: 14px; }
@@ -489,20 +501,25 @@
         <p class="sub">给刚学完 C、正在转 C++ 的嵌入式初学者：先把「引用」这一条主线吃透，后面看 STM32 库函数才不会发懵。</p>
         <p class="only">本页只保留当前阶段必学内容，其余等学完对象生命周期再补。</p>
       </div>
-      <button class="again" id="againTop">再来一轮</button>
+      <div class="head-btns">
+        <button class="again" id="againTop1">Day 1 刷题</button>
+        <button class="again" id="againTop2">Day 2 刷题</button>
+      </div>
     </div>
     <div class="tags">
       <span class="tag">C 已学完</span>
       <span class="tag">嵌入式方向</span>
       <span class="tag">Day 1</span>
       <span class="tag">Day 2</span>
-      <span class="tag">题库 84 道</span>
-      <span class="tag">每轮随机 20 题</span>
+      <span class="tag">Day 1 题库 56 道</span>
+      <span class="tag">Day 2 题库 28 道</span>
+      <span class="tag">两套练习各自独立</span>
     </div>
     <div class="nav">
       <a href="#day1">Day 1 · 引用</a>
       <a href="#day2">Day 2 · 内存 / 类型</a>
-      <a href="#practice">直接刷题</a>
+      <a href="#practice1">Day 1 练习</a>
+      <a href="#practice2">Day 2 练习</a>
     </div>
   </header>
 
@@ -649,6 +666,20 @@ int&amp; getS() { return s; }            // 也安全</code></pre>
     <p>比如写 <code>const int a = 10; int&amp; r = a;</code> 就会撞上这条报错：a 已经被封条封住了，不许再贴一张能改的纸条。</p>
   </div>
 
+  <!-- ===== Day 1 练习（独立一套） ===== -->
+  <div class="sec-title pr-title" id="practice1">Day 1 练习<span class="pr-tag">只抽 Day 1 的题 · 独立计分</span></div>
+  <p class="sec-desc">从 Day 1 的 <b>56</b> 道题里随机抽 <b>8 单选 + 4 填空 + 3 判断 + 3 代码</b>，题目顺序和选项都打乱，同一轮不重复。这一套的进度、得分、错题、报告只算 Day 1，和下面 Day 2 那一套互不影响。</p>
+
+  <div class="stats">
+    <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg1">0 / 18</div></div>
+    <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore1">0</div></div>
+    <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate1">—</div></div>
+    <button class="again" id="againBar1">再来一轮</button>
+  </div>
+
+  <div id="qlist1"></div>
+  <div id="summary1"></div>
+
   <div class="sec-title" id="day2">Day 2 · 内存、类型与函数规则</div>
   <p class="sec-desc">还是箱子那套比喻。Day 2 多了一个新东西：门牌号能自己申请、自己归还（new / delete）。</p>
 
@@ -787,6 +818,20 @@ g(1);                       // 二义性：编译器不知道选谁</code></pre>
     <p class="terms">术语对照：正式叫「函数重载（overload）」，两个候选都匹配叫「二义性调用（ambiguous call）」。</p>
   </div>
 
+  <!-- ===== Day 2 练习（独立一套） ===== -->
+  <div class="sec-title pr-title" id="practice2">Day 2 练习<span class="pr-tag">只抽 Day 2 的题 · 独立计分</span></div>
+  <p class="sec-desc">从 Day 2 的 <b>28</b> 道题里随机抽 <b>6 单选 + 3 填空 + 2 判断 + 3 代码</b>，同样打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 2，和上面 Day 1 那一套互不影响。</p>
+
+  <div class="stats">
+    <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg2">0 / 14</div></div>
+    <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore2">0</div></div>
+    <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate2">—</div></div>
+    <button class="again" id="againBar2">再来一轮</button>
+  </div>
+
+  <div id="qlist2"></div>
+  <div id="summary2"></div>
+
   <section class="check">
     <h3>怎么判断自己真的会了</h3>
     <ol>
@@ -796,20 +841,6 @@ g(1);                       // 二义性：编译器不知道选谁</code></pre>
     </ol>
     <p class="check-tip">提醒一句：网页刷题只能暴露盲点，不能替代动手。刷十轮，不如自己从零敲一遍。</p>
   </section>
-
-  <!-- ===== 练习 ===== -->
-  <div class="sec-title" id="practice">练习</div>
-  <p class="sec-desc">每轮从题库随机抽 <b>9 道单选 + 4 道填空 + 3 道判断 + 4 道代码题</b>，题目和选项顺序都是打乱的，同一轮不会重复。代码题把空填进输入框，回车提交即可。点「再来一轮」重新抽题并清零计分。</p>
-
-  <div class="stats">
-    <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg">0 / 20</div></div>
-    <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore">0</div></div>
-    <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate">—</div></div>
-    <button class="again" id="againBar">再来一轮</button>
-  </div>
-
-  <div id="qlist"></div>
-  <div id="summary"></div>
 
   <footer>做完这一页，Day 2 就可以进「类与对象、构造与析构」了。</footer>
 </div>
@@ -1709,9 +1740,6 @@ code: [
 /* ============================================================
    随机抽题 / 打乱
    ============================================================ */
-var ROUND_SPEC = { single: 9, fill: 4, judge: 3, code: 4 };
-/* 每轮里 day1 : day2 的配额，凑不够就从另一天补 */
-var DAY_MIX = { single: [5, 4], fill: [2, 2], judge: [2, 1], code: [2, 2] };
 var LABEL = { single: '单选', fill: '填空', judge: '判断', code: '代码' };
 var LETTERS = 'ABCDEFG';
 
@@ -1761,35 +1789,38 @@ function prepare(base, type) {
   };
 }
 
-/* 一轮练习的运行时状态 */
-var R = { list: [], ans: {}, draft: {}, startedAt: 0 };
+/* 两套完全独立的练习：Day 1 只抽 day1 的题，Day 2 只抽 day2 的题 */
+var TRACKS = {
+  d1: {
+    id: 'd1', name: 'Day 1', day: 'day1',
+    spec: { single: 8, fill: 4, judge: 3, code: 3 },
+    dom: { list: 'qlist1', prog: 'stProg1', score: 'stScore1', rate: 'stRate1',
+           sum: 'summary1', again: 'againBar1', root: 'practice1' },
+    R: { list: [], ans: {}, draft: {}, startedAt: 0 }
+  },
+  d2: {
+    id: 'd2', name: 'Day 2', day: 'day2',
+    spec: { single: 6, fill: 3, judge: 2, code: 3 },
+    dom: { list: 'qlist2', prog: 'stProg2', score: 'stScore2', rate: 'stRate2',
+           sum: 'summary2', again: 'againBar2', root: 'practice2' },
+    R: { list: [], ans: {}, draft: {}, startedAt: 0 }
+  }
+};
 
 function dayOf(b) {
   return b.day === 'day2' ? 'day2' : 'day1';
 }
 
-/* 按 day 配额抽题：先各天各抽各的，不够再从剩下的里补，保证两个 day 都覆盖到 */
-function pickMix(list, total, mix) {
-  var d1 = list.filter(function (b) { return dayOf(b) === 'day1'; });
-  var d2 = list.filter(function (b) { return dayOf(b) === 'day2'; });
-  var picked = sample(d1, Math.min(mix[0], d1.length))
-    .concat(sample(d2, Math.min(mix[1], d2.length)));
-  var rest = list.filter(function (b) { return picked.indexOf(b) < 0; });
-  var need = total - picked.length;
-  if (need > 0) picked = picked.concat(sample(rest, need));
-  return picked;
-}
-
-function startRound(spec) {
-  spec = spec || ROUND_SPEC;
+function startRound(t) {
   var items = [];
-  ['single', 'fill', 'judge', 'code'].forEach(function (t) {
-    pickMix(BANK[t], spec[t], DAY_MIX[t]).forEach(function (b) {
-      items.push(prepare(b, t));
+  ['single', 'fill', 'judge', 'code'].forEach(function (type) {
+    var pool = BANK[type].filter(function (b) { return dayOf(b) === t.day; });
+    sample(pool, Math.min(t.spec[type], pool.length)).forEach(function (b) {
+      items.push(prepare(b, type));
     });
   });
-  R = { list: shuffle(items), ans: {}, draft: {}, startedAt: Date.now() };
-  render();
+  t.R = { list: shuffle(items), ans: {}, draft: {}, startedAt: Date.now() };
+  render(t);
 }
 
 /* ============================================================
@@ -1821,8 +1852,8 @@ function stripHtml(s) {
   return (d.textContent || '').replace(/\s+/g, ' ').trim();
 }
 
-function buildQ(p, i) {
-  var st = R.ans[p.key];
+function buildQ(t, p, i) {
+  var st = t.R.ans[p.key];
   var card = document.createElement('div');
   card.className = 'q';
 
@@ -1859,7 +1890,7 @@ function buildQ(p, i) {
         if (k === p.ansIdx) btn.classList.add('correct');
         else if (k === st.user) btn.classList.add('wrong');
       } else {
-        btn.addEventListener('click', function () { pick(p, k); });
+        btn.addEventListener('click', function () { pick(t, p, k); });
       }
       body.appendChild(btn);
     });
@@ -1879,7 +1910,7 @@ function buildQ(p, i) {
         if (k === p.ansIdx) btn.classList.add('correct');
         else if (k === st.user) btn.classList.add('wrong');
       } else {
-        btn.addEventListener('click', function () { pick(p, k); });
+        btn.addEventListener('click', function () { pick(t, p, k); });
       }
       row.appendChild(btn);
     });
@@ -1896,14 +1927,14 @@ function buildQ(p, i) {
     var inp = document.createElement('input');
     inp.type = 'text';
     inp.placeholder = p.type === 'code' ? '填入空白处的代码，回车提交' : '输入答案，回车提交';
-    inp.value = st ? st.raw : (R.draft[p.key] || '');
-    inp.addEventListener('input', function () { R.draft[p.key] = inp.value; });
+    inp.value = st ? st.raw : (t.R.draft[p.key] || '');
+    inp.addEventListener('input', function () { t.R.draft[p.key] = inp.value; });
     if (st) {
       inp.disabled = true;
       inp.classList.add(st.ok ? 'correct' : 'wrong');
     } else {
       inp.addEventListener('keydown', function (e) {
-        if (e.key === 'Enter') submitFill(p, inp.value);
+        if (e.key === 'Enter') submitFill(t, p, inp.value);
       });
     }
     var sbtn = document.createElement('button');
@@ -1911,7 +1942,7 @@ function buildQ(p, i) {
     sbtn.className = 'submit';
     sbtn.textContent = st ? '已提交' : '提交';
     if (st) sbtn.disabled = true;
-    else sbtn.addEventListener('click', function () { submitFill(p, inp.value); });
+    else sbtn.addEventListener('click', function () { submitFill(t, p, inp.value); });
     frow.appendChild(inp);
     frow.appendChild(sbtn);
     body.appendChild(frow);
@@ -1932,16 +1963,16 @@ function buildQ(p, i) {
   return card;
 }
 
-function pick(p, k) {
+function pick(t, p, k) {
   var ok = (k === p.ansIdx);
   var userText = (p.type === 'judge')
     ? (k === 0 ? '对' : '错')
     : (LETTERS[k] + '. ' + stripHtml(p.options[k].text));
-  R.ans[p.key] = { ok: ok, user: k, userText: userText, raw: '' };
-  render();
+  t.R.ans[p.key] = { ok: ok, user: k, userText: userText, raw: '' };
+  render(t);
 }
 
-function submitFill(p, val) {
+function submitFill(t, p, val) {
   var slot = document.querySelector('[data-slot="' + p.key + '"]');
   if (norm(val) === '') {
     if (slot) slot.innerHTML = '<div class="hint">先写点什么再提交。</div>';
@@ -1951,38 +1982,43 @@ function submitFill(p, val) {
   var ok = p.answers.some(function (a) {
     return p.type === 'code' ? normCode(a) === normCode(val) : norm(a) === v;
   });
-  R.ans[p.key] = { ok: ok, user: val, userText: val, raw: val };
-  render();
+  t.R.ans[p.key] = { ok: ok, user: val, userText: val, raw: val };
+  render(t);
 }
 
-function render() {
-  var list = document.getElementById('qlist');
+function render(t) {
+  var list = document.getElementById(t.dom.list);
   list.innerHTML = '';
-  R.list.forEach(function (p, i) {
-    var card = buildQ(p, i);
+  t.R.list.forEach(function (p, i) {
+    var card = buildQ(t, p, i);
     card.querySelector('.fb-slot').setAttribute('data-slot', p.key);
     list.appendChild(card);
   });
-  updateStats();
-  updateSummary();
+  updateStats(t);
+  updateSummary(t);
 }
 
-function updateStats() {
-  var total = R.list.length;
-  var done = Object.keys(R.ans).length;
-  var right = R.list.filter(function (p) { return R.ans[p.key] && R.ans[p.key].ok; }).length;
-  document.getElementById('stProg').textContent = done + ' / ' + total;
-  document.getElementById('stScore').textContent = right;
-  document.getElementById('stRate').textContent = done ? Math.round(right / done * 100) + '%' : '—';
-  document.getElementById('bar').style.width = (done / total * 100) + '%';
+function updateStats(t) {
+  var total = t.R.list.length;
+  var done = Object.keys(t.R.ans).length;
+  var right = t.R.list.filter(function (p) { return t.R.ans[p.key] && t.R.ans[p.key].ok; }).length;
+  document.getElementById(t.dom.prog).textContent = done + ' / ' + total;
+  document.getElementById(t.dom.score).textContent = right;
+  document.getElementById(t.dom.rate).textContent = done ? Math.round(right / done * 100) + '%' : '—';
+  var allDone = 0, allTotal = 0;
+  Object.keys(TRACKS).forEach(function (k) {
+    allDone += Object.keys(TRACKS[k].R.ans).length;
+    allTotal += TRACKS[k].R.list.length;
+  });
+  document.getElementById('bar').style.width = (allTotal ? allDone / allTotal * 100 : 0) + '%';
 }
 
-function updateSummary() {
-  var box = document.getElementById('summary');
-  var total = R.list.length;
-  var done = Object.keys(R.ans).length;
-  var right = R.list.filter(function (p) { return R.ans[p.key] && R.ans[p.key].ok; }).length;
-  var wrong = R.list.filter(function (p) { return R.ans[p.key] && !R.ans[p.key].ok; });
+function updateSummary(t) {
+  var box = document.getElementById(t.dom.sum);
+  var total = t.R.list.length;
+  var done = Object.keys(t.R.ans).length;
+  var right = t.R.list.filter(function (p) { return t.R.ans[p.key] && t.R.ans[p.key].ok; }).length;
+  var wrong = t.R.list.filter(function (p) { return t.R.ans[p.key] && !t.R.ans[p.key].ok; });
 
   if (done < total) {
     box.className = '';
@@ -1991,23 +2027,23 @@ function updateSummary() {
   }
 
   var html = '<div class="sum-card">';
-  html += '<h3>' + (wrong.length === 0 ? '全部答对，收工。' : '这一轮做完了') + '</h3>';
+  html += '<h3>' + t.name + ' 练习：' + (wrong.length === 0 ? '全部答对，收工。' : '这一轮做完了') + '</h3>';
   html += '<div class="sum-score">对 <b>' + right + '</b> 道，错 <b style="color:#ff7b72">' + wrong.length +
           '</b> 道　（本轮 ' + total + ' 题，得分 ' + right + ' / ' + total +
           '，正确率 ' + Math.round(right / total * 100) + '%）</div>';
 
   if (wrong.length === 0) {
-    html += '<p class="sum-note">引用这条主线你已经清楚了。可以点「再来一轮」换一批题检验一下，或者直接进 Day 2：类与对象、构造与析构。</p>';
+    html += '<p class="sum-note">' + t.name + ' 这一套你已经拿下了。点「再来一轮」换一批题再验一遍，或者往上回去看另一天的练习。</p>';
   } else {
-    html += '<p class="sum-note">下面是本轮错题，先看解析再重做。错的大多是「引用不能改绑」和「名字查找规则」这两个坑。</p>';
-    html += '<div class="wrong-head"><span>本轮错题（' + wrong.length + ' 道）</span>' +
+    html += '<p class="sum-note">下面是「' + t.name + '」这一轮的错题，先看解析再重做（只影响 ' + t.name + ' 这套，另一套不受影响）。</p>';
+    html += '<div class="wrong-head"><span>' + t.name + ' 本轮错题（' + wrong.length + ' 道）</span>' +
             '<button type="button" class="btn-ghost" data-export="1">导出错题报告</button></div>';
     html += '<ul class="wrong-list">';
     wrong.forEach(function (p) {
-      var idx = R.list.indexOf(p) + 1;
+      var idx = t.R.list.indexOf(p) + 1;
       var raw = stripHtml(p.q);
       if (raw.length > 46) raw = raw.slice(0, 46) + '…';
-      var st = R.ans[p.key];
+      var st = t.R.ans[p.key];
       html += '<li>' +
                 '<div class="wq">' + idx + '. ' + raw + '</div>' +
                 '<div class="wa">你的答案：<span class="bad">' + st.userText + '</span>　' +
@@ -2022,34 +2058,34 @@ function updateSummary() {
 
   html += '<div class="btn-row">';
   if (wrong.length > 0) {
-    html += '<button class="btn-main" id="redo">重做错题（' + wrong.length + ' 道）</button>';
+    html += '<button class="btn-main" id="redo' + t.id + '">重做错题（' + wrong.length + ' 道）</button>';
   }
-  html += '<button class="btn-main" id="againSum">再来一轮</button>';
+  html += '<button class="btn-main" id="againSum' + t.id + '">再来一轮</button>';
   html += '<button class="btn-ghost" type="button" data-export="1">导出错题报告</button>';
   html += '</div>';
 
-  html += '<div class="notice" id="notice"></div>';
-  html += '<div class="export" id="exportBox"></div>';
+  html += '<div class="notice" id="notice' + t.id + '"></div>';
+  html += '<div class="export" id="exportBox' + t.id + '"></div>';
   html += '</div>';
 
   box.className = 'show';
   box.innerHTML = html;
 
-  var redo = document.getElementById('redo');
+  var redo = document.getElementById('redo' + t.id);
   if (redo) {
     redo.addEventListener('click', function () {
-      // 只保留错题，重新随机排序（选项也重新打乱）
+      // 只保留这一套的错题，重新随机排序（选项也重新打乱）
       var items = wrong.map(function (p) { return prepare(findBase(p), p.type); });
-      R = { list: shuffle(items), ans: {}, draft: {}, startedAt: Date.now() };
-      render();
-      document.getElementById('practice').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      t.R = { list: shuffle(items), ans: {}, draft: {}, startedAt: Date.now() };
+      render(t);
+      document.getElementById(t.dom.root).scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   }
-  var again = document.getElementById('againSum');
-  if (again) again.addEventListener('click', goNewRound);
+  var again = document.getElementById('againSum' + t.id);
+  if (again) again.addEventListener('click', function () { goNewRound(t); });
 
   Array.prototype.forEach.call(box.querySelectorAll('[data-export]'), function (btn) {
-    btn.addEventListener('click', openExport);
+    btn.addEventListener('click', function () { openExport(t); });
   });
 }
 
@@ -2076,23 +2112,24 @@ function rightAnswerLine(p) {
   return LETTERS[p.ansIdx] + '. ' + stripHtml(p.options[p.ansIdx].text);
 }
 
-function buildReport(wrong) {
-  var total = R.list.length;
-  var right = R.list.filter(function (p) { return R.ans[p.key] && R.ans[p.key].ok; }).length;
+function buildReport(t, wrong) {
+  var total = t.R.list.length;
+  var right = t.R.list.filter(function (p) { return t.R.ans[p.key] && t.R.ans[p.key].ok; }).length;
   var L = [];
 
-  L.push('# C++ 第一天 · 错题报告');
+  L.push('# ' + t.name + ' 练习 · 错题报告');
   L.push('');
   L.push('- 日期：' + todayStr());
+  L.push('- 练习范围：' + t.name + ' 题库（只含 ' + t.name + ' 的题）');
   L.push('- 本轮题量：' + total + ' 题（答对 ' + right + ' 题，答错 ' + wrong.length + ' 题）');
   L.push('- 得分：' + right + ' / ' + total + '（正确率 ' + Math.round(right / total * 100) + '%）');
-  if (R.startedAt) L.push('- 用时：' + fmtDuration(Date.now() - R.startedAt));
+  if (t.R.startedAt) L.push('- 用时：' + fmtDuration(Date.now() - t.R.startedAt));
   L.push('');
-  L.push('> 本报告由「C++ 第一天重点 + 练习」页面自动生成，可直接交给老师看。');
+  L.push('> 本报告由「C++ 学习页」的 ' + t.name + ' 练习区自动生成，可直接交给老师看。');
   L.push('');
 
   wrong.forEach(function (p, i) {
-    var st = R.ans[p.key];
+    var st = t.R.ans[p.key];
     L.push('---');
     L.push('');
     L.push('## ' + (i + 1) + '. [' + LABEL[p.type] + '] ' + stripHtml(p.q));
@@ -2141,8 +2178,8 @@ function buildReport(wrong) {
   return L.join('\n');
 }
 
-function showNotice(msg) {
-  var n = document.getElementById('notice');
+function showNotice(t, msg) {
+  var n = document.getElementById('notice' + t.id);
   if (!n) return;
   n.textContent = msg;
   n.className = 'notice show';
@@ -2152,52 +2189,52 @@ function showNotice(msg) {
   }, 3200);
 }
 
-function openExport() {
-  var wrong = R.list.filter(function (p) { return R.ans[p.key] && !R.ans[p.key].ok; });
+function openExport(t) {
+  var wrong = t.R.list.filter(function (p) { return t.R.ans[p.key] && !t.R.ans[p.key].ok; });
 
   if (wrong.length === 0) {
-    showNotice('本轮全对，没有错题');
+    showNotice(t, '本轮全对，没有错题');
     return;
   }
 
-  var box = document.getElementById('exportBox');
+  var box = document.getElementById('exportBox' + t.id);
   if (!box) return;
 
   box.innerHTML =
-    '<div class="export-head">错题报告（Markdown）<span class="export-meta">' + wrong.length + ' 道错题</span></div>' +
-    '<textarea id="exportText" readonly spellcheck="false"></textarea>' +
+    '<div class="export-head">' + t.name + ' 错题报告（Markdown）<span class="export-meta">' + wrong.length + ' 道错题</span></div>' +
+    '<textarea id="exportText' + t.id + '" readonly spellcheck="false"></textarea>' +
     '<div class="btn-row">' +
-      '<button type="button" class="btn-main" id="copyBtn">复制到剪贴板</button>' +
-      '<button type="button" class="btn-main" id="dlBtn">下载 .md 文件</button>' +
-      '<button type="button" class="btn-ghost" id="hideExport">收起</button>' +
+      '<button type="button" class="btn-main" id="copyBtn' + t.id + '">复制到剪贴板</button>' +
+      '<button type="button" class="btn-main" id="dlBtn' + t.id + '">下载 .md 文件</button>' +
+      '<button type="button" class="btn-ghost" id="hideExport' + t.id + '">收起</button>' +
     '</div>' +
-    '<div class="export-tip" id="exportTip"></div>';
+    '<div class="export-tip" id="exportTip' + t.id + '"></div>';
 
-  document.getElementById('exportText').value = buildReport(wrong);
+  document.getElementById('exportText' + t.id).value = buildReport(t, wrong);
   box.className = 'export show';
 
-  document.getElementById('copyBtn').addEventListener('click', copyReport);
-  document.getElementById('dlBtn').addEventListener('click', downloadReport);
-  document.getElementById('hideExport').addEventListener('click', function () {
+  document.getElementById('copyBtn' + t.id).addEventListener('click', function () { copyReport(t); });
+  document.getElementById('dlBtn' + t.id).addEventListener('click', function () { downloadReport(t); });
+  document.getElementById('hideExport' + t.id).addEventListener('click', function () {
     box.className = 'export';
   });
 
   box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-function exportTip(text, cls) {
-  var tip = document.getElementById('exportTip');
+function exportTip(t, text, cls) {
+  var tip = document.getElementById('exportTip' + t.id);
   if (!tip) return;
   tip.textContent = text;
   tip.className = 'export-tip ' + (cls || '');
 }
 
-function copyReport() {
-  var ta = document.getElementById('exportText');
+function copyReport(t) {
+  var ta = document.getElementById('exportText' + t.id);
   if (!ta) return;
   var text = ta.value;
 
-  function done() { exportTip('已复制，直接粘贴给老师就行。', 'ok'); }
+  function done() { exportTip(t, '已复制，直接粘贴给老师就行。', 'ok'); }
 
   function manual() {
     ta.focus();
@@ -2205,7 +2242,7 @@ function copyReport() {
     var copied = false;
     try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
     if (copied) done();
-    else exportTip('浏览器不让自动复制，内容已经选中了，按 Ctrl+C（Mac 按 Command+C）手动复制即可。', 'warn');
+    else exportTip(t, '浏览器不让自动复制，内容已经选中了，按 Ctrl+C（Mac 按 Command+C）手动复制即可。', 'warn');
   }
 
   if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -2215,10 +2252,10 @@ function copyReport() {
   }
 }
 
-function downloadReport() {
-  var ta = document.getElementById('exportText');
+function downloadReport(t) {
+  var ta = document.getElementById('exportText' + t.id);
   if (!ta) return;
-  var name = '错题报告_' + todayStr() + '.md';
+  var name = t.name.replace(/\s+/g, '') + '_错题报告_' + todayStr() + '.md';
   var blob = new Blob([ta.value], { type: 'text/markdown;charset=utf-8' });
   var url = URL.createObjectURL(blob);
   var a = document.createElement('a');
@@ -2228,7 +2265,7 @@ function downloadReport() {
   a.click();
   document.body.removeChild(a);
   setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
-  exportTip('已下载：' + name, 'ok');
+  exportTip(t, '已下载：' + name, 'ok');
 }
 
 function findBase(p) {
@@ -2239,20 +2276,23 @@ function findBase(p) {
   return null;
 }
 
-function goNewRound() {
-  startRound(ROUND_SPEC);
-  document.getElementById('practice').scrollIntoView({ behavior: 'smooth', block: 'start' });
+function goNewRound(t) {
+  startRound(t);
+  document.getElementById(t.dom.root).scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-document.getElementById('againTop').addEventListener('click', goNewRound);
-document.getElementById('againBar').addEventListener('click', goNewRound);
+document.getElementById('againTop1').addEventListener('click', function () { goNewRound(TRACKS.d1); });
+document.getElementById('againTop2').addEventListener('click', function () { goNewRound(TRACKS.d2); });
+document.getElementById('againBar1').addEventListener('click', function () { goNewRound(TRACKS.d1); });
+document.getElementById('againBar2').addEventListener('click', function () { goNewRound(TRACKS.d2); });
 
 /* 页面里静态写的知识卡片代码块，统一过高亮 */
 document.querySelectorAll('pre.code > code').forEach(function (node) {
   node.innerHTML = hl(node.textContent);
 });
 
-startRound(ROUND_SPEC);
+startRound(TRACKS.d1);
+startRound(TRACKS.d2);
 </script>
 </body>
 </html>
