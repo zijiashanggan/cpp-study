@@ -40,23 +40,23 @@
 
   .sec{margin-top:26px}
   .sec h2{font-size:15.5px;margin:0 0 11px;display:flex;align-items:baseline;gap:9px;flex-wrap:wrap}
-  .sec h2 em{font-style:normal;color:#7d8b9c;font-size:12px;font-weight:400}
+  .sec h2 em{font-style:normal;color:#a3b1c2;font-size:13px;font-weight:400}
 
   .panel{background:#161b22;border:1px solid #243040;border-radius:14px;padding:15px}
   .panel + .panel{margin-top:11px}
   .taskline{display:flex;justify-content:space-between;align-items:center;gap:12px}
-  .label{font-size:12px;color:#8d9bab;letter-spacing:.5px}
+  .label{font-size:13px;color:#a3b1c2;letter-spacing:.4px}
   .cnt{font-size:23px;font-weight:700;line-height:1.25}
-  .cnt small{font-size:12.5px;font-weight:400;color:#8d9bab;margin-left:3px}
-  .hint{font-size:12.5px;color:#8d9bab;margin:9px 0 0}
-  .hint.warn{color:#f0c674}
+  .cnt small{font-size:13px;font-weight:400;color:#a3b1c2;margin-left:3px}
+  .hint{font-size:13px;line-height:1.75;color:#a3b1c2;margin:9px 0 0}
+  .hint.warn{color:#f7d38f}
   .chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
   .chip{font-size:12px;padding:3px 9px;border-radius:7px;background:#0f151d;border:1px solid #243040;color:#c7d2df}
   .chip.new{color:#5eead4;border-color:rgba(94,234,212,.28)}
   .chip.due{color:#f0c674;border-color:rgba(240,198,116,.3)}
   .chip.over{color:#f7768e;border-color:rgba(247,118,142,.35)}
   .chip.done{opacity:.48;text-decoration:line-through}
-  .chip.empty{color:#6f7d8d;border-style:dashed}
+  .chip.empty{color:#a3b1c2;border-style:dashed}
 
   .btn{
     font-family:inherit;font-size:13.5px;padding:9px 16px;border-radius:10px;border:1px solid #2c3a4b;
@@ -74,7 +74,7 @@
   .stats{display:grid;grid-template-columns:repeat(2,1fr);gap:9px}
   .stat{background:#0f151d;border:1px solid #243040;border-radius:11px;padding:11px 12px}
   .stat b{display:block;font-size:20px;line-height:1.35}
-  .stat span{font-size:11.5px;color:#8d9bab}
+  .stat span{font-size:13px;line-height:1.6;color:#a3b1c2}
 
   details.grp{border:1px solid #243040;border-radius:11px;background:#121820;margin-bottom:7px;overflow:hidden}
   details.grp summary{
@@ -82,7 +82,7 @@
     display:flex;justify-content:space-between;align-items:center;gap:10px;
   }
   details.grp summary::-webkit-details-marker{display:none}
-  details.grp summary span{color:#7d8b9c;font-size:11.5px;font-weight:400}
+  details.grp summary span{color:#a3b1c2;font-size:12.5px;font-weight:400}
   details.grp[open] summary{border-bottom:1px solid #243040;background:#0f151d}
   .prow{display:flex;align-items:center;gap:9px;padding:7px 13px;font-size:12.5px}
   .prow + .prow{border-top:1px solid rgba(36,48,64,.5)}
@@ -91,7 +91,7 @@
   .dot{width:8px;height:8px;border-radius:50%;background:#27313f}
   .dot.done{background:#3fb950}
   .dot.cur{background:#f0c674;box-shadow:0 0 0 2px rgba(240,198,116,.2)}
-  .pstat{width:94px;text-align:right;flex:none;font-size:11px;color:#8d9bab}
+  .pstat{width:100px;text-align:right;flex:none;font-size:12px;line-height:1.5;color:#a3b1c2}
   .pstat.warn{color:#f7768e}
   .pstat.ok{color:#7ee787}
 
@@ -99,18 +99,18 @@
   details.care summary{padding:11px 13px;font-size:13.5px;cursor:pointer;list-style:none;color:#e3d3ac;
     display:grid;grid-template-columns:1fr auto;gap:3px 10px;align-items:baseline}
   details.care summary::-webkit-details-marker{display:none}
-  details.care summary span{font-size:11.5px;color:#8d9bab}
+  details.care summary span{font-size:13px;line-height:1.65;color:#a3b1c2}
   details.care summary .cgo{white-space:nowrap}
   details.care summary .csub{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:3px 9px;min-width:0}
-  details.care summary .csub i{font-style:normal;font-size:11px;color:#6e8095;
+  details.care summary .csub i{font-style:normal;font-size:12.5px;line-height:1.6;color:#c3d0de;
     font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;overflow-wrap:anywhere}
-  details.care summary .csub em{font-style:normal;font-size:11.5px;color:#a8bccf}
+  details.care summary .csub em{font-style:normal;font-size:12.5px;line-height:1.6;color:#b6c3d2}
   details.care[open] summary{border-bottom:1px solid #243040}
   .carebody{padding:12px 14px;font-size:13px;color:#c7d2df}
   .carebody p{margin:0 0 9px}
   .carebody p:last-child{margin-bottom:0}
   .carebody b{color:#e6edf3}
-  .carebody p.sayl{font-size:12.5px;color:#c7d2df;padding:8px 11px;border-radius:8px;background:#0f151d;border:1px solid #22303f}
+  .carebody p.sayl{font-size:13px;line-height:1.75;color:#d3dce7;padding:8px 11px;border-radius:8px;background:#0f151d;border:1px solid #22303f}
   .carebody p.sayl b{color:#5eead4}
   .carebody p.sayl + p.sayl b{color:#a9c1f5}
   .plainline{
@@ -120,13 +120,13 @@
   .trapbox{padding:10px 12px;border-left:3px solid rgba(247,118,142,.65);border-radius:0 8px 8px 0;background:rgba(247,118,142,.06)}
   .trapbox b{color:#f7768e}
 
-  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:11.5px;color:#8d9bab;margin-top:4px}
+  .legend{display:flex;gap:16px;flex-wrap:wrap;font-size:13px;line-height:1.8;color:#a3b1c2;margin-top:6px}
   .legend i{display:inline-block;width:14px;height:3px;border-radius:2px;margin-right:5px;vertical-align:middle}
 
   .hwcard{border:1px solid #243040;border-radius:12px;background:#121820;padding:13px;margin-bottom:10px}
   .hwcard.done{border-color:rgba(126,231,135,.3)}
   .hwhead{display:flex;align-items:center;gap:9px;margin-bottom:7px;flex-wrap:wrap}
-  .hwtype{font-size:10.5px;padding:2px 8px;border-radius:6px;background:rgba(122,162,247,.14);color:#a9c1f5;border:1px solid rgba(122,162,247,.28)}
+  .hwtype{font-size:11.5px;padding:2px 8px;border-radius:6px;background:rgba(122,162,247,.14);color:#a9c1f5;border:1px solid rgba(122,162,247,.28)}
   .hwtype.call{background:rgba(240,198,116,.12);color:#f0c674;border-color:rgba(240,198,116,.28)}
   .hwtitle{font-size:13.5px;font-weight:600}
   .hwask{font-size:13px;color:#b6c3d2;margin:0 0 9px}
@@ -155,7 +155,7 @@
   .verdict.ok{background:rgba(126,231,135,.1);color:#9be8a4;border:1px solid rgba(126,231,135,.3)}
   .verdict.ng{background:rgba(240,198,116,.09);color:#e8cb8b;border:1px solid rgba(240,198,116,.28)}
 
-  footer{margin-top:34px;padding-top:16px;border-top:1px solid #1c2532;font-size:12px;color:#6f7d8d;line-height:1.9}
+  footer{margin-top:34px;padding-top:16px;border-top:1px solid #1c2532;font-size:12.5px;line-height:1.95;color:#9aa7b6}
 
   /* ============ 学习浮层 ============ */
   .study{
@@ -169,7 +169,7 @@
     width:34px;height:34px;border-radius:10px;border:1px solid #2a3646;background:#141b24;color:#c7d2df;
     font-size:20px;line-height:1;cursor:pointer;flex:none;font-family:inherit;
   }
-  .study-meta{flex:1;display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:#8d9bab;padding-right:4px}
+  .study-meta{flex:1;display:flex;justify-content:space-between;align-items:baseline;font-size:12.5px;color:#a3b1c2;padding-right:4px}
   .study-meta b{color:#5eead4;font-weight:600}
   .study-bar{position:absolute;left:2px;right:2px;bottom:2px;height:2px;background:#1b2532;border-radius:2px;overflow:hidden}
   .study-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,#5eead4,#7aa2f7);transition:width .3s}
@@ -188,10 +188,10 @@
   .tag{font-size:11.5px;color:#5eead4;border:1px solid rgba(94,234,212,.3);background:rgba(94,234,212,.08);padding:2px 9px;border-radius:999px;margin-bottom:16px}
   .fname{font-size:clamp(26px,8vw,44px);font-weight:700;letter-spacing:.5px;line-height:1.25;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
   .fname.sm{font-size:clamp(19px,5.6vw,30px)}
-  /* 正面的音标：次要信息，颜色压暗；长音标允许换行、绝不出框 */
-  .fiparow{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:9px;max-width:100%}
-  .fipa{min-width:0;max-width:100%;font-size:clamp(10.5px,3.2vw,12.5px);line-height:1.5;
-    color:#6e8095;letter-spacing:.2px;font-weight:400;
+  /* 正面的音标：要看清，亮度不低于术语名；长音标允许换行、绝不出框 */
+  .fiparow{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:10px;max-width:100%}
+  .fipa{min-width:0;max-width:100%;font-size:clamp(13px,3.7vw,14px);line-height:1.65;
+    color:#cfdae7;letter-spacing:.1px;font-weight:400;
     font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
     overflow-wrap:anywhere;word-break:break-word}
   .spk{flex:0 0 auto;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;
@@ -208,15 +208,15 @@
     transition:.18s;z-index:99}
   #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   /* 正面的一行中文含义：比音标亮一点，但仍然让函数名当主角 */
-  .fmean{margin-top:5px;max-width:100%;font-size:clamp(12.5px,3.9vw,15px);line-height:1.45;
-    color:#a8bccf;font-weight:400;overflow-wrap:anywhere}
-  .fhint{position:absolute;bottom:20px;left:0;right:0;font-size:12px;color:#6f7d8d}
+  .fmean{margin-top:6px;max-width:100%;font-size:clamp(13px,3.9vw,15px);line-height:1.55;
+    color:#b6c3d2;font-weight:400;overflow-wrap:anywhere}
+  .fhint{position:absolute;bottom:20px;left:0;right:0;font-size:12.5px;line-height:1.6;color:#9aa7b6}
   .bscroll{overflow-y:auto;-webkit-overflow-scrolling:touch;padding:16px 16px 22px}
   .bscroll .plainline{font-size:13.5px}
   .brow{margin-bottom:12px}
-  .brow .k{font-size:11px;color:#7d8b9c;letter-spacing:.6px;margin-bottom:3px}
-  .brow p{margin:0;font-size:13.5px;color:#d3dce7}
-  .brow p.small{font-size:12.5px;color:#b6c3d2}
+  .brow .k{font-size:12.5px;line-height:1.55;color:#a3b1c2;letter-spacing:.4px;margin-bottom:4px}
+  .brow p{margin:0;font-size:13.5px;line-height:1.75;color:#d3dce7}
+  .brow p.small{font-size:13px;line-height:1.7;color:#b6c3d2}
   .brow .code{margin:5px 0 0}
   .brow.trap p{color:#f2c3cb}
   .brow.trap .k{color:#f7768e}
@@ -230,7 +230,7 @@
     border:1px solid rgba(122,162,247,.2);font-size:12.5px;color:#a9c1f5;
   }
   .study-foot{flex:none;padding-top:10px}
-  .study-foot .hint{text-align:center;margin:0;font-size:12px}
+  .study-foot .hint{text-align:center;margin:0;font-size:12.5px;line-height:1.6}
   .grades{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
   .grades.two{grid-template-columns:repeat(2,1fr)}
   .grades.hidden,.hint.hidden,.finish.hidden{display:none}
@@ -239,7 +239,7 @@
     color:#dfe8f3;cursor:pointer;display:flex;flex-direction:column;gap:2px;align-items:center;
   }
   .grades button b{font-size:14px}
-  .grades button small{font-size:10.5px;color:#8d9bab}
+  .grades button small{font-size:11.5px;line-height:1.5;color:#a3b1c2}
   .grades button[data-g="good"]{border-color:rgba(126,231,135,.35);background:rgba(126,231,135,.09)}
   .grades button[data-g="good"] b{color:#9be8a4}
   .grades button[data-g="fuzzy"]{border-color:rgba(240,198,116,.35);background:rgba(240,198,116,.08)}
@@ -254,7 +254,7 @@
   .modal.hidden{display:none}
   .modal-card{background:#161b22;border:1px solid #2c3a4b;border-radius:16px;padding:18px;max-width:360px;width:100%}
   .modal-card h3{margin:0 0 8px;font-size:16.5px}
-  .modal-card p{margin:0 0 14px;font-size:13px;color:#9aa7b6}
+  .modal-card p{margin:0 0 14px;font-size:13px;line-height:1.8;color:#b6c3d2}
   .modal-actions{display:flex;gap:9px}
   .modal-actions .btn{flex:1}
 
@@ -267,32 +267,32 @@
     font-size:13px;line-height:1.4;padding:9px 10px;font-family:inherit}
   .aiq:focus{outline:none;border-color:rgba(94,234,212,.45)}
   .aisend{flex:none;padding:9px 14px}
-  .aians{margin-top:9px;padding-top:9px;border-top:1px dashed #243040;font-size:13px;line-height:1.72;
+  .aians{margin-top:9px;padding-top:9px;border-top:1px dashed #243040;font-size:13px;line-height:1.8;
     color:#d3dce7;max-height:26vh;overflow:auto;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
   .aians.hidden{display:none}
   .aians.err{color:#f2c3cb}
-  .aians .who{display:block;font-size:11px;color:#6e8095;margin-bottom:4px}
-  .ainote{font-size:11px;color:#6e8095;margin-top:7px;line-height:1.6}
-  .linkbtn{background:none;border:0;padding:0;color:#7aa2f7;font-size:11px;cursor:pointer;
+  .aians .who{display:block;font-size:12px;line-height:1.6;color:#9aa7b6;margin-bottom:5px}
+  .ainote{font-size:12.5px;color:#9aa7b6;margin-top:8px;line-height:1.75}
+  .linkbtn{background:none;border:0;padding:0;color:#8fb4ff;font-size:12.5px;cursor:pointer;
     font-family:inherit;text-decoration:underline}
   .modal-card.wide{max-width:420px;max-height:86vh;overflow:auto}
-  .fld{margin-bottom:9px}
-  .fld label{display:block;font-size:11.5px;color:#8d9bab;margin-bottom:4px}
+  .fld{margin-bottom:10px}
+  .fld label{display:block;font-size:12.5px;line-height:1.6;color:#a3b1c2;margin-bottom:5px}
   .fld input,.fld select{width:100%;background:#0b1118;border:1px solid #2a3646;border-radius:8px;
     color:#e6edf3;font-size:13px;padding:9px 10px;font-family:inherit}
   .fld input:focus,.fld select:focus{outline:none;border-color:rgba(94,234,212,.45)}
   .chipset{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:11px}
-  .pbtn{font-size:12px;padding:6px 10px;border-radius:8px;border:1px solid #2c3a4b;background:#0f151d;
+  .pbtn{font-size:12.5px;line-height:1.5;padding:7px 11px;border-radius:8px;border:1px solid #2c3a4b;background:#0f151d;
     color:#c7d2df;cursor:pointer;font-family:inherit}
   .pbtn.on{color:#5eead4;border-color:rgba(94,234,212,.45);background:rgba(94,234,212,.1)}
-  .note{font-size:11.5px;color:#8d9bab;background:#0f151d;border:1px solid #22303f;border-radius:8px;
-    padding:8px 10px;margin-bottom:9px;line-height:1.7}
+  .note{font-size:12.5px;line-height:1.8;color:#a3b1c2;background:#0f151d;border:1px solid #22303f;border-radius:8px;
+    padding:9px 11px;margin-bottom:9px}
   .note.hidden{display:none}
   .note b{color:#e6edf3}
-  .note.warn{color:#f0c674;border-color:rgba(240,198,116,.32);background:rgba(240,198,116,.06)}
-  .note code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#cfe3ff;
+  .note.warn{color:#f7d38f;border-color:rgba(247,211,143,.4);background:rgba(247,211,143,.09)}
+  .note code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.6;color:#dbe9ff;
     background:#0b1118;border:1px solid #243040;border-radius:5px;padding:1px 4px}
-  .note pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;color:#cfe3ff;
+  .note pre{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;line-height:1.7;color:#dbe9ff;
     background:#0b1118;border:1px solid #243040;border-radius:6px;padding:7px 8px;margin:6px 0;
     white-space:pre-wrap;word-break:break-all}
   .note ol{margin:6px 0 0;padding-left:18px}
