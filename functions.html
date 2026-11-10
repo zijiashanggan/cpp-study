@@ -463,7 +463,7 @@ var D = [
 
 /* ---------- C 内存 ---------- */
 ['cmem','memcpy','按字节数搬家，不认里面装的是字还是数字，只认多少个字节。','void *memcpy(void *dest, const void *src, size_t n);','把 n 个字节从 src 复制到 dest。','n：字节数（不是元素个数）；返回：dest。','两块内存如果重叠（比如在同一个数组里往前挪），它可能先把自己盖掉再复制，结果一半是错的，这种要用 memmove；另外给数组算大小要 sizeof(数组)，但数组当参数传进函数后就只剩指针大小。','int a[3] = {1,2,3}, b[3]; memcpy(b, a, sizeof(a));'],
-['cmem','memmove','同样是搬家，但它会先看看会不会撞到自己，撞到就换个顺序搬。','void *memmove(void *dest, const void *src, size_t n);','复制 n 个字节，允许源和目标重叠。','参数同 memcpy；返回：dest。','它比 memcpy 慢一点点，只在真的可能重叠时才用；在同一个数组里做删除、插入、整体挪位，一定要用它。','char s[] = "abcdef"; memmove(s, s + 1, 5);  // "bcdef"'],
+['cmem','memmove','同样是搬家，但它会先看看会不会撞到自己，撞到就换个顺序搬。','void *memmove(void *dest, const void *src, size_t n);','复制 n 个字节，允许源和目标重叠。','参数同 memcpy；返回：dest。','它比 memcpy 慢一点点，只在真的可能重叠时才用；在同一个数组里做删除、插入、整体挪位，一定要用它，而且字节数要把结尾的 \\0 也算进去。','char s[] = "abcdef"; memmove(s, s + 1, strlen(s));  // "bcdef"'],
 ['cmem','memset','拿一支笔，把一整块内存涂成同一个字节。','void *memset(void *s, int c, size_t n);','把 n 个字节都设成 c。','c：按字节填的值（0~255）；n：字节数；返回：s。','它是“按字节”涂的。想让 int x 变成 1 而写 memset(&x, 1, sizeof x) 是错的：4 个字节全涂 1，拼出来是 16843009。平时只该用它清零或者填 0xFF。','int a[10]; memset(a, 0, sizeof(a));  // 全部变 0'],
 ['cmem','memcmp','拿两段内存逐字节对一遍，看是不是一样。','int memcmp(const void *s1, const void *s2, size_t n);','比较 n 个字节的内容。','返回：小于 0、等于 0、大于 0。','它按字节比，结构体里有“空隙”（为了对齐留的填充字节）时，两个成员都一样的结构体也可能被判不相等；比较结构体最好逐个成员比。','if (memcmp(a, b, sizeof(a)) == 0) puts("一样");'],
 
