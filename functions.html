@@ -189,10 +189,24 @@
   .fname{font-size:clamp(26px,8vw,44px);font-weight:700;letter-spacing:.5px;line-height:1.25;word-break:break-word;font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}
   .fname.sm{font-size:clamp(19px,5.6vw,30px)}
   /* 正面的音标：次要信息，颜色压暗；长音标允许换行、绝不出框 */
-  .fipa{margin-top:9px;max-width:100%;font-size:clamp(10.5px,3.2vw,12.5px);line-height:1.5;
+  .fiparow{display:flex;align-items:center;justify-content:center;gap:7px;margin-top:9px;max-width:100%}
+  .fipa{min-width:0;max-width:100%;font-size:clamp(10.5px,3.2vw,12.5px);line-height:1.5;
     color:#6e8095;letter-spacing:.2px;font-weight:400;
     font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
-    overflow-wrap:anywhere;word-break:break-word;padding:0 4px}
+    overflow-wrap:anywhere;word-break:break-word}
+  .spk{flex:0 0 auto;width:40px;height:40px;min-width:40px;padding:0;border-radius:50%;
+    border:1px solid #2b3a4d;background:#141c26;color:#8fa7bd;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;
+    -webkit-tap-highlight-color:transparent;transition:.15s}
+  .spk:active{transform:scale(.94)}
+  .spk.on{color:#5eead4;border-color:#2f6f63;background:#12211f}
+  .spk.off{opacity:.42}
+  .spk.sm{width:36px;height:36px;min-width:36px;vertical-align:middle;margin-left:6px}
+  #toast{position:fixed;left:50%;bottom:82px;transform:translateX(-50%) translateY(8px);
+    max-width:88vw;padding:10px 16px;border-radius:10px;font-size:13px;text-align:center;
+    background:#1b2430;border:1px solid #2f3d4f;color:#dfe8f2;opacity:0;pointer-events:none;
+    transition:.18s;z-index:99}
+  #toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
   /* 正面的一行中文含义：比音标亮一点，但仍然让函数名当主角 */
   .fmean{margin-top:5px;max-width:100%;font-size:clamp(12.5px,3.9vw,15px);line-height:1.45;
     color:#a8bccf;font-weight:400;overflow-wrap:anywhere}
@@ -419,7 +433,10 @@
         <div class="face front">
           <div class="tag" id="fTag">必背</div>
           <div class="fname" id="fName">strlen</div>
-          <div class="fipa" id="fIpa"></div>
+          <div class="fiparow">
+            <span class="fipa" id="fIpa"></span>
+            <button class="spk" id="fSpk" type="button" aria-label="朗读这个函数名"><svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+          </div>
           <div class="fmean" id="fMean"></div>
           <div class="fhint">点一下卡片，看背面</div>
         </div>
@@ -840,7 +857,7 @@ if (p != std::string::npos) {   // 找不到返回 npos，不能跟 0 比
 }`
 },
 'string:append()': {
-  s: 'ap-pend ｜ /əˈpend/ ｜ 阿-盆德',
+  s: 'append ｜ /əˈpend/ ｜ 阿-盆德',
   o: '**append** —— 英文 append（追加、附加），在末尾接内容。',
   e: `std::string s = "ab";     // 起步内容
 s.append("cd");          // 在末尾接上 cd，效果跟 s += "cd" 差不多
@@ -863,14 +880,14 @@ std::cout << s.size() << "\\n";  // 0
 // 清空不等于还内存，容量一般还留着`
 },
 'string:replace()': {
-  s: 're-place ｜ /rɪˈpleɪs/ ｜ 瑞-普雷斯',
+  s: 'replace ｜ /rɪˈpleɪs/ ｜ 瑞-普雷斯',
   o: '**replace** —— 英文 replace（替换），把一段换成另一段。',
   e: `std::string s = "a=1";    // 想把它改成 a=10
 s.replace(2, 1, "10");    // 从下标 2 开始，换掉 1 个字符，换成 "10"
 std::cout << s << "\\n";   // a=10（长度变了，后面的字符会自动往后挪）`
 },
 'string:erase()': {
-  s: 'e-rase ｜ /ɪˈreɪz/ ｜ 伊-瑞兹',
+  s: 'erase ｜ /ɪˈreɪz/ ｜ 伊-瑞兹',
   o: '**erase** —— 英文 erase（擦掉、删除），剪掉一段字符。',
   e: `std::string s = "a,b,c";    // 逗号分隔的一串
 s.erase(1, 1);            // 从下标 1 开始，删 1 个字符（那个逗号）
@@ -942,7 +959,7 @@ printf("%zu %zu\\n", v.size(), v.capacity());   // 0 3：个数 0，容量还是
 // 原来的指针和迭代器这时全部失效`
 },
 'vector:resize()': {
-  s: 're-size ｜ /riːˈsaɪz/ ｜ 瑞-赛兹',
+  s: 'resize ｜ /riːˈsaɪz/ ｜ 瑞-赛兹',
   o: '**re** **size** —— re 是“重新”，size 是“大小”，重新指定元素个数。',
   e: `std::vector<int> v;                // 一开始是空的
 v.resize(3);                              // 变成 3 个元素，新补的 int 是 0
@@ -950,7 +967,7 @@ printf("%d %d %d\\n", v[0], v[1], v[2]);   // 0 0 0
 // 改小再改大，被删掉的元素不会“回来”，补进来的还是 0`
 },
 'vector:begin() / end()': {
-  s: 'be-gin / end ｜ /bɪˈɡɪn/ /end/ ｜ 比-金 / 恩德',
+  s: 'begin / end ｜ /bɪˈɡɪn/ /end/ ｜ 比-金 / 恩德',
   o: '**begin** / **end** —— begin 是“开始”，end 是“结尾”，注意它指最后一个的下一格。',
   e: `std::vector<int> v{1, 2, 3};   // 三个元素
 for (auto it = v.begin(); it != v.end(); ++it) {   // end() 是最后一格的下一格
@@ -959,7 +976,7 @@ for (auto it = v.begin(); it != v.end(); ++it) {   // end() 是最后一格的�
 // 不能写 *v.end()，它并不指向任何元素`
 },
 'vector:erase()': {
-  s: 'e-rase ｜ /ɪˈreɪz/ ｜ 伊-瑞兹',
+  s: 'erase ｜ /ɪˈreɪz/ ｜ 伊-瑞兹',
   o: '**erase** —— 英文 erase（擦掉），从中间抽走一个元素。',
   e: `std::vector<int> v{1, 2, 2, 3};   // 两个 2 挨着，最容易删漏
 for (auto it = v.begin(); it != v.end(); ) {   // 注意这里不写 ++it
@@ -969,7 +986,7 @@ for (auto it = v.begin(); it != v.end(); ) {   // 注意这里不写 ++it
 // 写成 erase(it); it++; 会跳过一个元素`
 },
 'vector:insert()': {
-  s: 'in-sert ｜ /ɪnˈsɜːt/ ｜ 印-瑟特',
+  s: 'insert ｜ /ɪnˈsɜːt/ ｜ 印-瑟特',
   o: '**insert** —— 英文 insert（插入），插到指定位置的前面。',
   e: `std::vector<int> v{1, 3};   // 中间缺了个 2
 v.insert(v.begin() + 1, 2);   // 插在下标 1 前面，也就是 1 和 3 中间
@@ -977,7 +994,7 @@ v.insert(v.begin() + 1, 2);   // 插在下标 1 前面，也就是 1 和 3 中�
 // 插入可能扩容搬家，之前拿到的迭代器和指针全部失效`
 },
 'vector:reserve()': {
-  s: 're-serve ｜ /rɪˈzɜːv/ ｜ 瑞-泽夫',
+  s: 'reserve ｜ /rɪˈzɜːv/ ｜ 瑞-泽夫',
   o: '**reserve** —— 英文 reserve（预留），提前把容量占好，省得后面反复搬家。',
   e: `std::vector<int> v;                // 空 vector，容量一开始是 0
 v.reserve(100);                                // 一次占好能放 100 个元素的地
@@ -1007,7 +1024,7 @@ std::getline(std::cin, line);   // 读到回车为止，存进去的内容不含
 // 前面若用 cin >> 读过东西，缓冲区里还留着回车，这里会读到空串`
 },
 'io:std::cin.ignore()': {
-  s: 'ig-nore ｜ /ɪɡˈnɔː/ ｜ 伊格-诺',
+  s: 'ignore ｜ /ɪɡˈnɔː/ ｜ 伊格-诺',
   o: '**ignore** —— 英文 ignore（忽略），把缓冲区里不要的字符丢掉。',
   e: `int n;                         // 先读一个整数
 std::cin >> n;                 // 回车会留在缓冲区里
@@ -1054,7 +1071,7 @@ try {
 // 类型不一致会报一大段看不懂的模板错误，先把两边类型统一`
 },
 'tool:std::make_unique': {
-  s: 'make-u-nique ｜ /meɪk juːˈniːk/ ｜ 梅克-尤-尼克',
+  s: 'make-unique ｜ /meɪk juːˈniːk/ ｜ 梅克-尤-尼克',
   o: '**make** **unique** —— make 是“造出来”，unique 是“独占的”，造一个只有你能管的对象。',
   e: `auto p = std::make_unique<int>(42);   // 在堆上造一个 int，值是 42
 printf("%d\\n", *p);                    // 42，用 * 把值取出来
@@ -1078,7 +1095,7 @@ if (it != v.end()) {                          // 找不到返回的是 end()，�
 }`
 },
 'tool:std::reverse': {
-  s: 're-verse ｜ /rɪˈvɜːs/ ｜ 瑞-沃斯',
+  s: 'reverse ｜ /rɪˈvɜːs/ ｜ 瑞-沃斯',
   o: '**reverse** —— 英文 reverse（反转、颠倒）。',
   e: `std::string s = "abc";   // 倒过来之前的原样
 std::reverse(s.begin(), s.end());   // 原地把区间倒过来，不产生新字符串
@@ -1104,7 +1121,7 @@ delete[] a;                // new[] 必须配 delete[]
 a = nullptr;               // 置空，防止变成野指针`
 },
 'heap:delete': {
-  s: 'de-lete ｜ /dɪˈliːt/ ｜ 迪-利特',
+  s: 'delete ｜ /dɪˈliːt/ ｜ 迪-利特',
   o: '**delete** —— 英文 delete（删除），把 new 出来的单个对象还回去。',
   e: `int *p = new int(1);   // 在堆上要一个 int，值是 1
 delete p;        // 还掉这一个对象，顺便调用它的析构函数
@@ -1122,7 +1139,7 @@ a = nullptr;           // 置空，防止野指针
 
 /* ---------- 字符判断与数学 ---------- */
 'math:isdigit': {
-  s: 'is-di-git ｜ /ɪz ˈdɪdʒɪt/ ｜ 伊兹-迪吉特',
+  s: 'is-digit ｜ /ɪz ˈdɪdʒɪt/ ｜ 伊兹-迪吉特',
   o: '**is** **digit** —— is 是“是不是”，digit 是“数字（0~9 的一位）”。',
   e: `char c = '7';                         // 待判断的字符
 if (isdigit((unsigned char)c)) {   // 先转无符号，防止参数字节大于 127 时变负数
@@ -1130,7 +1147,7 @@ if (isdigit((unsigned char)c)) {   // 先转无符号，防止参数字节大于
 }`
 },
 'math:isalpha': {
-  s: 'is-al-pha ｜ /ɪz ˈælfə/ ｜ 伊兹-阿尔法',
+  s: 'is-alpha ｜ /ɪz ˈælfə/ ｜ 伊兹-阿尔法',
   o: '**is** **alpha** —— alpha 是希腊字母表第一个字母，这里指“英文字母”。',
   e: `char c = 'A';                         // 待判断的字符
 if (isalpha((unsigned char)c)) {   // 只认 a-z 和 A-Z，中文和数字都返回 0
@@ -1146,14 +1163,14 @@ if (isspace((unsigned char)c)) {   // 换行也算空白，扫行的时候小心
 }`
 },
 'math:toupper': {
-  s: 'to-up-per ｜ /tuː ˈʌpə/ ｜ 图-阿珀',
+  s: 'to-upper ｜ /tuː ˈʌpə/ ｜ 图-阿珀',
   o: '**to** **upper** —— to 是“变成”，upper 是“大写的（upper case）”。',
   e: `char c = 'a';               // 小写字母
 c = (char)toupper(c);   // 它返回 int 且不改原变量，必须赋值回去
 printf("%c\\n", c);      // A`
 },
 'math:tolower': {
-  s: 'to-low-er ｜ /tuː ˈləʊə/ ｜ 图-楼尔',
+  s: 'to-lower ｜ /tuː ˈləʊə/ ｜ 图-楼尔',
   o: '**to** **lower** —— to 是“变成”，lower 是“小写的（lower case）”。',
   e: `char c = 'A';               // 大写字母
 c = (char)tolower(c);   // 同样要赋值回去才生效
@@ -1963,11 +1980,114 @@ function bindGrades(){
     b.addEventListener('click', function(){ grade(b.dataset.g); });
   });
 }
+/* ---------- 语音播读：只用浏览器自带的 speechSynthesis，不加载任何音频 ---------- */
+var VOICE = { v:null, off:false, tried:false };
+var SPKCARD = null;
+var SPKTIMER = null;
+var SPK_SVG = '<svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M4 9v6h4l5 4V5L8 9H4z" fill="currentColor"/><path d="M16.5 8.5a4.5 4.5 0 0 1 0 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>';
+function toast(msg){
+  var t = document.getElementById('toast');
+  if(!t){ t = document.createElement('div'); t.id = 'toast'; document.body.appendChild(t); }
+  t.textContent = msg;
+  t.className = 'show';
+  clearTimeout(t._h);
+  t._h = setTimeout(function(){ t.className = ''; }, 2400);
+}
+function pickVoice(){
+  VOICE.tried = true;
+  if(!('speechSynthesis' in window)){ VOICE.off = true; paintSpk(); return; }
+  var list = [];
+  try { list = window.speechSynthesis.getVoices() || []; } catch(e){ list = []; }
+  if(!list.length) return;                     // 语音列表还没加载完，等 voiceschanged 再试
+  var en = list.filter(function(v){ return /^en([-_]|$)/i.test(v.lang || ''); });
+  var us = en.filter(function(v){ return /^en[-_]us/i.test(v.lang || ''); });
+  VOICE.v = us[0] || en[0] || null;
+  VOICE.off = !VOICE.v;
+  paintSpk();
+}
+function paintSpk(){
+  var bs = document.querySelectorAll('.spk');
+  for(var i = 0; i < bs.length; i++){
+    bs[i].classList.toggle('off', VOICE.off);
+    bs[i].title = VOICE.off ? '这台设备没装英文语音' : '朗读这个函数名';
+  }
+}
+function setSpkOn(on){
+  var bs = document.querySelectorAll('.spk');
+  for(var i = 0; i < bs.length; i++) bs[i].classList.toggle('on', on);
+}
+function stopSpeak(){
+  if(SPKTIMER){ clearTimeout(SPKTIMER); SPKTIMER = null; }
+  try { if('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch(e){}
+  setSpkOn(false);
+}
+/* 取“怎么念”里的英文读法，比如 str-len / s-n-print-f / begin / end */
+function engHead(say){
+  var t = (say || '').split('｜')[0] || '';
+  return t.replace(/（[^）]*）/g, '').replace(/^两种都常见[：:]/, '').trim();
+}
+/* 分段计划：按词源拆开念，最后整词再念一遍 */
+function speakPlan(card){
+  if(!card) return [];
+  var head = engHead(card.say).toLowerCase();
+  var parts = head.indexOf('/') > -1
+    ? head.split('/').map(function(x){ return x.trim(); })
+    : head.split(/[^a-z]+/);
+  parts = parts.filter(Boolean);
+  var whole = String(card.name).toLowerCase()
+    .replace(/std::/g, '').replace(/\(\)/g, '').replace(/_/g, ' ')
+    .replace(/\s*\/\s*/g, ' and ').replace(/\./g, ' ')
+    .replace(/[^a-z ]/g, '').replace(/\s+/g, ' ').trim();
+  if(!parts.length) parts = whole ? [whole] : [];
+  var list = [];
+  parts.forEach(function(p, i){
+    list.push({ t:p, d: (i === parts.length - 1 ? 420 : 280) });
+  });
+  if(parts.length > 1 && whole && parts.indexOf(whole) < 0) list.push({ t:whole, d:0 });
+  return list;
+}
+function speakCard(card){
+  if(!card) return;
+  if(!('speechSynthesis' in window)){ toast('这台设备不支持语音播读'); return; }
+  if(!VOICE.tried) pickVoice();
+  if(VOICE.off){ toast('这台设备没装英文语音，念不了'); return; }
+  stopSpeak();                                  // 连点先停掉上一句，绝不叠音
+  var plan = speakPlan(card);
+  if(!plan.length) return;
+  var i = 0;
+  setSpkOn(true);
+  function step(){
+    if(i >= plan.length){ setSpkOn(false); return; }
+    var it = plan[i++];
+    var u = new SpeechSynthesisUtterance(it.t);
+    u.lang = 'en-US';
+    if(VOICE.v) u.voice = VOICE.v;
+    u.rate = 0.82; u.pitch = 1; u.volume = 1;
+    u.onend = function(){ if(it.d) SPKTIMER = setTimeout(step, it.d); else step(); };
+    u.onerror = function(){ stopSpeak(); };
+    try { window.speechSynthesis.speak(u); } catch(e){ stopSpeak(); }
+  }
+  step();
+}
+document.addEventListener('click', function(e){
+  var b = e.target && e.target.closest ? e.target.closest('.spk') : null;
+  if(!b) return;
+  e.stopPropagation();                          // 别让它同时触发翻面
+  e.preventDefault();
+  speakCard(SPKCARD);
+}, true);
+if('speechSynthesis' in window){
+  pickVoice();
+  window.speechSynthesis.onvoiceschanged = pickVoice;
+  setTimeout(pickVoice, 1200);                  // 有些浏览器列表是异步来的
+}
+
 function renderStudy(){
   if(!ses) return;
   if(ses.i >= ses.queue.length){ renderFinish(); return; }
   var card = ses.queue[ses.i];
   var g = G[card.g];
+  stopSpeak();                                  // 换卡先掐掉上一张还在念的
 
   document.getElementById('studyMode').innerHTML = ses.mode === 'review'
     ? '复习 · <b>' + g.name + '</b>'
@@ -1981,17 +2101,19 @@ function renderStudy(){
   fn.className = 'fname' + (card.name.length > 16 ? ' sm' : '');
   document.getElementById('fIpa').textContent = ipaOf(card.say);
   document.getElementById('fMean').textContent = card.t || '';
+  SPKCARD = card;
 
   document.getElementById('bBody').innerHTML =
     '<p class="plainline">' + esc(card.plain) + '</p>' +
     '<div class="brow"><div class="k">原型（要几个参数、什么类型、返回什么）</div><pre class="code">' + esc(card.p) + '</pre></div>' +
-    (card.say ? '<div class="brow say"><div class="k">怎么念</div><p class="small">' + esc(card.say) + '</p></div>' : '') +
+    (card.say ? '<div class="brow say"><div class="k">怎么念<button class="spk sm" type="button" aria-label="朗读这个函数名">' + SPK_SVG + '</button></div><p class="small">' + esc(card.say) + '</p></div>' : '') +
     (card.from ? '<div class="brow from"><div class="k">名字怎么来的</div><p class="small">' + md(card.from) + '</p></div>' : '') +
     '<div class="brow"><div class="k">干嘛用的</div><p>' + esc(card.use) + '</p></div>' +
     '<div class="brow"><div class="k">参数 / 返回值</div><p class="small">' + esc(card.args) + '</p></div>' +
     '<div class="brow trap"><div class="k">最容易踩的坑</div><p>' + esc(card.trap) + '</p></div>' +
     '<div class="brow"><div class="k">一行示例</div><pre class="code">' + esc(card.ex) + '</pre></div>' +
     (card.note ? '<div class="bnote">' + esc(card.note) + '</div>' : '');
+  paintSpk();                                   // 背面的小喇叭刚生成，补上灰态
 
   var f = document.getElementById('flash');
   f.classList.remove('flipped');
