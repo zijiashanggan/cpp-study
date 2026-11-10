@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 <meta name="theme-color" content="#0d1117">
 <title>C/C++ 必背函数记忆卡 · 嵌入式软件方向</title>
 <style>
@@ -161,7 +161,7 @@
   .study{
     position:fixed;inset:0;z-index:100;background:#0b1016;display:flex;flex-direction:column;
     padding:calc(env(safe-area-inset-top) + 8px) 12px calc(env(safe-area-inset-bottom) + 10px);
-    height:100vh;height:100dvh;
+    height:100vh;height:100dvh;height:var(--vvh,100dvh);
   }
   .study.hidden{display:none}
   .study-top{display:flex;align-items:center;gap:10px;flex:none;padding:2px 2px 8px;position:relative}
@@ -267,12 +267,26 @@
     font-size:13px;line-height:1.4;padding:9px 10px;font-family:inherit}
   .aiq:focus{outline:none;border-color:rgba(94,234,212,.45)}
   .aisend{flex:none;padding:9px 14px}
-  .aians{margin-top:9px;padding-top:9px;border-top:1px dashed #243040;font-size:13px;line-height:1.8;
-    color:#d3dce7;max-height:26vh;overflow:auto;white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
-  .aians.hidden{display:none}
-  .aians.err{color:#f2c3cb}
-  .aians .who{display:block;font-size:12px;line-height:1.6;color:#9aa7b6;margin-bottom:5px}
-  .ainote{font-size:12.5px;color:#9aa7b6;margin-top:8px;line-height:1.75}
+  /* 聊天记录：自己靠右、AI 靠左，超出高度自己滚 */
+  .aichat{margin-top:9px;padding-top:9px;border-top:1px dashed #243040;
+    max-height:min(30vh,240px);overflow-y:auto;-webkit-overflow-scrolling:touch;
+    overscroll-behavior:contain;display:flex;flex-direction:column;gap:8px;
+    font-size:13px;line-height:1.75}
+  .aichat.hidden{display:none}
+  .aichat::-webkit-scrollbar{width:4px}
+  .aichat::-webkit-scrollbar-thumb{background:#2a3646;border-radius:2px}
+  .msg{max-width:88%;padding:7px 11px;border-radius:12px;
+    white-space:pre-wrap;word-break:break-word;overflow-wrap:anywhere}
+  .msg.me{align-self:flex-end;background:rgba(94,234,212,.12);border:1px solid rgba(94,234,212,.3);
+    color:#d8f6ef;border-bottom-right-radius:4px}
+  .msg.ai{align-self:flex-start;background:#0f151d;border:1px solid #243040;
+    color:#d3dce7;border-bottom-left-radius:4px}
+  .msg.ai.err{background:rgba(247,118,142,.08);border-color:rgba(247,118,142,.32);color:#f2c3cb}
+  .msg .who{display:block;font-size:11.5px;line-height:1.5;color:#8b98a8;margin-bottom:3px}
+  .msg.pending{color:#9aa7b6}
+  .ainote{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px;
+    font-size:12.5px;color:#9aa7b6;margin-top:8px;line-height:1.75}
+  .ainote .grow{flex:1;min-width:190px}
   .linkbtn{background:none;border:0;padding:0;color:#8fb4ff;font-size:12.5px;cursor:pointer;
     font-family:inherit;text-decoration:underline}
   .modal-card.wide{max-width:420px;max-height:86vh;overflow:auto}
@@ -497,12 +511,16 @@
     <div class="aiwrap" id="aiWrap">
       <button class="btn ghost big" id="aiToggle" type="button">问 AI（用你自己的 key）</button>
       <div class="aibody hidden" id="aiBody">
+        <div class="aichat hidden" id="aiLog"></div>
         <div class="airow">
           <input class="aiq" id="aiQ" type="text" maxlength="200" enterkeyhint="send" placeholder="就这张卡问一句…">
           <button class="btn primary aisend" id="aiSend" type="button">问</button>
         </div>
-        <div class="aians hidden" id="aiAns"></div>
-        <div class="ainote">回答来自你自己填的模型，烧的是你自己的额度。key 只存在这台设备，不上传。 · <button class="linkbtn" id="aiCfgBtn" type="button">设置</button></div>
+        <div class="ainote">
+          <span class="grow">只带这张卡 + 最近 5 轮（超出丢最早的），烧的是你自己的额度；key 只存这台设备，不上传。</span>
+          <button class="linkbtn" id="aiClearChat" type="button">清空对话</button>
+          <button class="linkbtn" id="aiCfgBtn" type="button">设置</button>
+        </div>
       </div>
     </div>
   </div>
@@ -2333,6 +2351,8 @@ var AICFG = (function(){
 var AI_BUSY = false;
 var AI_ABORT = null;
 var AI_SEQ = 0;
+var AI_HIST = [];        // 当前这张卡的对话：{role,content}
+var AI_MAX_MSGS = 10;    // 最近 5 轮（一问一答算 2 条），超出丢最早的
 
 function aiPreset(id){
   for(var i = 0; i < AI_PRESETS.length; i++) if(AI_PRESETS[i].id === id) return AI_PRESETS[i];
@@ -2410,18 +2430,108 @@ function aiErrText(err){
   if(/Failed to fetch|NetworkError|Load failed/i.test(m)) return '连不上：可能被 CORS 拦了，或网络不通。本机 Ollama 要设 OLLAMA_ORIGINS 并重启 Ollama。';
   return '出错了：' + m;
 }
-function aiReset(){
+function aiLogEl(){ return document.getElementById('aiLog'); }
+function aiScrollDown(){
+  var l = aiLogEl();
+  if(l) l.scrollTop = l.scrollHeight;
+}
+function aiBubble(who, text, extra, noWho){
+  var log = aiLogEl();
+  if(!log) return null;
+  log.classList.remove('hidden');
+  var d = document.createElement('div');
+  d.className = 'msg ' + who + (extra ? ' ' + extra : '');
+  if(who === 'ai' && !noWho){
+    var h = document.createElement('span');
+    h.className = 'who';
+    h.textContent = aiName() + ' · ' + (AICFG.model || '');
+    d.appendChild(h);
+  }
+  var t = document.createElement('span');
+  t.className = 'txt';
+  t.textContent = text;
+  d.appendChild(t);
+  log.appendChild(d);
+  aiScrollDown();
+  return d;
+}
+function aiSetBusy(on){
+  AI_BUSY = on;
+  var btn = document.getElementById('aiSend');
+  if(!btn) return;
+  btn.disabled = on;
+  btn.textContent = on ? '问…' : '问';
+}
+function aiClearChat(){
   if(AI_BUSY && AI_ABORT){ try{ AI_ABORT.abort(); }catch(e){} }
-  var b = document.getElementById('aiAns');
-  if(b){ b.className = 'aians hidden'; b.textContent = ''; }
+  AI_SEQ++;
+  AI_ABORT = null;
+  aiSetBusy(false);
+  AI_HIST = [];
+  var log = aiLogEl();
+  if(log){ log.innerHTML = ''; log.classList.add('hidden'); }
+  toast('这张卡的对话已清空');
+}
+function aiReset(){
+  // 换卡 / 离开学习浮层：这张卡的对话作废，在途请求也丢掉
+  if(AI_BUSY && AI_ABORT){ try{ AI_ABORT.abort(); }catch(e){} }
+  AI_SEQ++;
+  AI_ABORT = null;
+  aiSetBusy(false);
+  AI_HIST = [];
+  var log = aiLogEl();
+  if(log){ log.innerHTML = ''; log.classList.add('hidden'); log.scrollTop = 0; }
   var q = document.getElementById('aiQ');
   if(q) q.value = '';
 }
+/* 优先按 SSE 流式读，服务商不支持流就退回整段 JSON */
+function aiReadAnswer(res, onDelta){
+  var ct = String(res.headers.get('content-type') || '');
+  if(!res.body || !res.body.getReader || ct.indexOf('event-stream') < 0){
+    return res.text().then(function(t){
+      var out = '';
+      try{
+        var data = JSON.parse(t);
+        var c = data.choices && data.choices[0];
+        out = (c && ((c.message && c.message.content) || c.text)) || '';
+      }catch(e){ throw new Error('返回的不是 JSON，base URL 可能填错了'); }
+      if(!out) throw new Error('模型返回了空内容');
+      onDelta(out, out);
+      return out;
+    });
+  }
+  var reader = res.body.getReader();
+  var dec = new TextDecoder('utf-8');
+  var buf = '', out = '';
+  function pump(){
+    return reader.read().then(function(r){
+      if(r.done){
+        if(!out) throw new Error('模型返回了空内容');
+        return out;
+      }
+      buf += dec.decode(r.value, { stream:true });
+      var lines = buf.split(/\r?\n/);
+      buf = lines.pop();
+      for(var i = 0; i < lines.length; i++){
+        var ln = lines[i];
+        if(ln.indexOf('data:') !== 0) continue;
+        var p = ln.slice(5).trim();
+        if(!p || p === '[DONE]') continue;
+        var j;
+        try{ j = JSON.parse(p); }catch(e){ continue; }
+        var d = j.choices && j.choices[0] && (j.choices[0].delta || j.choices[0].message);
+        var piece = (d && typeof d.content === 'string') ? d.content : '';
+        if(piece){ out += piece; onDelta(piece, out); }
+      }
+      return pump();
+    });
+  }
+  return pump();
+}
 function askAI(){
   if(AI_BUSY) return;
-  var ans = document.getElementById('aiAns');
-  var btn = document.getElementById('aiSend');
-  var q = (document.getElementById('aiQ').value || '').trim().slice(0, 200);
+  var input = document.getElementById('aiQ');
+  var q = (input.value || '').trim().slice(0, 200);
   var card = SPKCARD;
   if(!card) return;
   if(!AICFG.key){
@@ -2429,69 +2539,84 @@ function askAI(){
     openAiCfg();
     return;
   }
-  if(!q){ toast('先写一句要问什么'); document.getElementById('aiQ').focus(); return; }
+  if(!q){ toast('先写一句要问什么'); input.focus(); return; }
   if(!AICFG.base || !AICFG.model){ openAiCfg(); toast('base URL 或模型名还没填'); return; }
 
   var sys = '你是 C/C++ 嵌入式方向的助教。学生正在背一张函数卡，只围绕这张卡回答，用中文。' +
-    '先给结论，再给一个最小可运行的例子；不确定就直说不确定。回答控制在 200 字以内，不要展开无关知识。';
+    '先给结论，再给一个最小可运行的例子；不确定就直说不确定。回答控制在 200 字以内，不要展开无关知识。' +
+    '\n\n当前这张卡：\n' + aiContext(card);
+  // 只带这张卡的上下文 + 最近 5 轮，聊多久都不会越来越贵
+  var msgs = [{ role:'system', content: sys }]
+    .concat(AI_HIST.slice(-AI_MAX_MSGS))
+    .concat([{ role:'user', content: q }]);
   var body = {
     model: AICFG.model,
-    messages: [
-      { role:'system', content: sys },
-      { role:'user', content: '这张卡的内容：\n' + aiContext(card) + '\n\n学生的问题：' + q }
-    ],
+    messages: msgs,
     max_tokens: 400,
     temperature: 0.3,
-    stream: false
+    stream: true
   };
   var url = String(AICFG.base).replace(/\/+$/, '') + '/chat/completions';
   var seq = ++AI_SEQ;
 
-  AI_BUSY = true;
-  btn.disabled = true;
-  btn.textContent = '问…';
-  ans.className = 'aians';
-  ans.textContent = '等它回…';
-  AI_ABORT = ('AbortController' in window) ? new AbortController() : null;
-  var timer = setTimeout(function(){ if(AI_ABORT) AI_ABORT.abort(); }, 25000);
+  input.value = '';                              // 先清空，失败再填回去
+  var uBub = aiBubble('me', q);
+  var aBub = aiBubble('ai', '正在想…', 'pending');
+  var txtEl = aBub ? aBub.querySelector('.txt') : null;
+  var got = false;
 
-  function done(){
-    if(seq !== AI_SEQ) return;                  // 已经被新的一次提问顶替
-    clearTimeout(timer);
-    AI_BUSY = false;
-    btn.disabled = false;
-    btn.textContent = '问';
-    AI_ABORT = null;
-  }
+  aiSetBusy(true);
+  AI_ABORT = ('AbortController' in window) ? new AbortController() : null;
+  var first = setTimeout(function(){ if(!got && AI_ABORT) AI_ABORT.abort(); }, 25000);
+  var hard = setTimeout(function(){ if(AI_ABORT) AI_ABORT.abort(); }, 90000);
+
+  function stopTimers(){ clearTimeout(first); clearTimeout(hard); }
+  function drop(el){ if(el && el.parentNode) el.parentNode.removeChild(el); }
+
   fetch(url, {
     method:'POST',
     headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer ' + AICFG.key },
     body: JSON.stringify(body),
     signal: AI_ABORT ? AI_ABORT.signal : undefined
   }).then(function(r){
-    return r.text().then(function(t){
-      if(!r.ok){
+    if(!r.ok){
+      return r.text().then(function(t){
         var msg = '';
         try{ var j = JSON.parse(t); msg = (j.error && (j.error.message || j.error.code)) || ''; }catch(e){}
         throw new Error('HTTP ' + r.status + (msg ? '：' + String(msg).slice(0, 120) : ''));
-      }
-      var data;
-      try{ data = JSON.parse(t); }catch(e){ throw new Error('返回的不是 JSON，base URL 可能填错了'); }
-      var c = data.choices && data.choices[0];
-      var out = (c && ((c.message && c.message.content) || c.text)) || '';
-      if(!out) throw new Error('模型返回了空内容');
-      return out;
+      });
+    }
+    if(aBub) aBub.classList.remove('pending');
+    return aiReadAnswer(r, function(piece, all){
+      if(seq !== AI_SEQ) return;
+      got = true;
+      clearTimeout(first);                       // 首字到了，不再按首字超时算
+      if(txtEl) txtEl.textContent = all;
+      aiScrollDown();
     });
   }).then(function(txt){
-    done();
-    if(card !== SPKCARD) return;               // 中途换卡了，答案就不贴到新卡上
-    ans.className = 'aians';
-    ans.innerHTML = '<span class="who">' + esc(aiName()) + ' · ' + esc(AICFG.model) + '</span>' + esc(txt.trim());
-  }).catch(function(err){
-    done();
+    if(seq !== AI_SEQ) return;                   // 已被换卡/清空/新提问顶替
+    stopTimers();
+    aiSetBusy(false);
+    AI_ABORT = null;
     if(card !== SPKCARD) return;
-    ans.className = 'aians err';
-    ans.textContent = aiErrText(err);
+    var clean = String(txt || '').trim();
+    if(txtEl) txtEl.textContent = clean;
+    if(aBub) aBub.classList.remove('pending');
+    AI_HIST.push({ role:'user', content:q });
+    AI_HIST.push({ role:'assistant', content:clean });
+    if(AI_HIST.length > AI_MAX_MSGS) AI_HIST = AI_HIST.slice(-AI_MAX_MSGS);
+    aiScrollDown();
+  }).catch(function(err){
+    if(seq !== AI_SEQ) return;
+    stopTimers();
+    aiSetBusy(false);
+    AI_ABORT = null;
+    if(card !== SPKCARD) return;
+    drop(aBub); drop(uBub);                      // 失败的这一问一答不留在聊天里
+    aiBubble('ai', aiErrText(err), 'err', true); // 历史保留，只多一条错误提示
+    if(!(input.value || '').trim()) input.value = q;  // 问题还给你，能直接重试
+    aiScrollDown();
   });
 }
 
@@ -2527,6 +2652,7 @@ document.getElementById('aiToggle').addEventListener('click', function(){
   }
 });
 document.getElementById('aiSend').addEventListener('click', askAI);
+document.getElementById('aiClearChat').addEventListener('click', aiClearChat);
 document.getElementById('aiQ').addEventListener('keydown', function(e){
   if(e.key === 'Enter'){ e.preventDefault(); e.stopPropagation(); askAI(); }
 });
@@ -2559,6 +2685,17 @@ document.getElementById('aiClear').addEventListener('click', function(){
   paintAiCfg();
   toast('这台设备上的 key 已清除');
 });
+/* 手机键盘弹出时把学习浮层缩到可见高度，输入框不会被键盘盖住 */
+function fitStudyViewport(){
+  var vv = window.visualViewport;
+  if(!vv) return;
+  document.documentElement.style.setProperty('--vvh', Math.round(vv.height) + 'px');
+}
+if(window.visualViewport){
+  window.visualViewport.addEventListener('resize', fitStudyViewport);
+  window.visualViewport.addEventListener('scroll', fitStudyViewport);
+  fitStudyViewport();
+}
 document.addEventListener('keydown', function(e){
   var tg = e.target;
   if(tg && /^(INPUT|TEXTAREA|SELECT)$/.test(tg.tagName || '')) return;
