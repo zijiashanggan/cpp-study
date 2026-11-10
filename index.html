@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>C++ 第一天重点 + 练习</title>
+<style>
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: #0d1117;
+    color: #e6edf3;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    line-height: 1.75;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: "";
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: 420px;
+    background: radial-gradient(70% 100% at 50% 0%, rgba(94,234,212,.10), transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  #bar {
+    position: fixed; top: 0; left: 0;
+    height: 3px; width: 0;
+    background: linear-gradient(90deg, #5eead4, #7aa2f7);
+    z-index: 50;
+    transition: width .35s ease;
+  }
+  .wrap { max-width: 880px; margin: 0 auto; padding: 0 18px; position: relative; z-index: 1; }
+
+  header { padding: 48px 0 26px; position: relative; }
+  .head-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+  h1 { font-size: 26px; margin: 0 0 10px; letter-spacing: .4px; }
+  .sub { color: #98a4b3; font-size: 14.5px; margin: 0; }
+  .tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .tag {
+    font-size: 12px; padding: 3px 10px; border-radius: 999px;
+    background: rgba(122,162,247,.12);
+    border: 1px solid rgba(122,162,247,.28);
+    color: #a9c1f5;
+  }
+  .again {
+    flex: none;
+    background: rgba(94,234,212,.12);
+    border: 1px solid rgba(94,234,212,.38);
+    color: #5eead4;
+    padding: 9px 16px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s, transform .1s;
+  }
+  .again:hover { background: rgba(94,234,212,.22); }
+  .again:active { transform: scale(.97); }
+
+  .sec-title {
+    display: flex; align-items: center; gap: 10px;
+    margin: 34px 0 14px;
+    font-size: 18px;
+  }
+  .sec-title::before {
+    content: ""; width: 4px; height: 18px; border-radius: 2px;
+    background: linear-gradient(180deg, #5eead4, #7aa2f7);
+  }
+  .sec-desc { color: #8b97a6; font-size: 13.5px; margin: -6px 0 16px; }
+
+  .card {
+    background: #151b23;
+    border: 1px solid #232b36;
+    border-radius: 14px;
+    padding: 18px 18px 16px;
+    margin-bottom: 16px;
+  }
+  .card h3 {
+    font-size: 16.5px; margin: 0 0 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .n {
+    flex: none;
+    width: 24px; height: 24px; border-radius: 7px;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 600;
+    background: rgba(94,234,212,.14);
+    color: #5eead4;
+    border: 1px solid rgba(94,234,212,.28);
+  }
+  .concl {
+    border-left: 3px solid #5eead4;
+    background: rgba(94,234,212,.06);
+    padding: 10px 13px;
+    border-radius: 0 8px 8px 0;
+    font-size: 14.5px;
+    margin: 0 0 12px;
+    color: #d5e6e2;
+  }
+  .concl b { color: #5eead4; font-weight: 600; }
+
+  pre.code {
+    background: #0a0e13;
+    border: 1px solid #212934;
+    border-radius: 10px;
+    padding: 12px 14px;
+    overflow-x: auto;
+    margin: 12px 0;
+    font-size: 13px;
+    line-height: 1.8;
+    -webkit-overflow-scrolling: touch;
+  }
+  pre.code code {
+    font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Consolas, "Courier New", monospace;
+    color: #c9d4e0;
+    white-space: pre;
+  }
+  .k { color: #c792ea; }
+  .t { color: #7dd3fc; }
+  .s { color: #a5e075; }
+  .c { color: #5c6b7a; font-style: italic; }
+  .n { color: #f0a868; }
+
+  ul.pts { margin: 10px 0 0; padding-left: 18px; font-size: 14px; color: #b9c4d1; }
+  ul.pts li { margin: 5px 0; }
+  ul.pts code, p code, .q-text code, .why code, .wa code, .sum-note code {
+    font-family: ui-monospace, Consolas, monospace;
+    background: rgba(255,255,255,.07);
+    border: 1px solid rgba(255,255,255,.08);
+    border-radius: 5px;
+    padding: 1px 5px;
+    font-size: .92em;
+    color: #7dd3fc;
+  }
+
+  .only {
+    display: inline-block;
+    margin: 12px 0 0;
+    font-size: 12.5px;
+    color: #7d8896;
+    padding: 4px 11px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.035);
+    border: 1px solid #2b3540;
+  }
+
+  .nav { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  .nav a {
+    font-size: 12.5px; color: #a9c1f5; text-decoration: none;
+    padding: 4px 11px; border-radius: 999px;
+    background: rgba(122,162,247,.1);
+    border: 1px solid rgba(122,162,247,.25);
+  }
+  .nav a:hover { background: rgba(122,162,247,.2); }
+  .sec-title[id] { scroll-margin-top: 16px; }
+  .keep {
+    margin: 12px 0 0;
+    font-size: 13.5px;
+    color: #a5e075;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background: rgba(165,224,117,.07);
+    border-left: 3px solid #a5e075;
+  }
+
+  .terms {
+    margin: 12px 0 0;
+    padding-top: 9px;
+    border-top: 1px dashed #232b36;
+    font-size: 11.5px;
+    line-height: 1.7;
+    color: #5c6b7a;
+  }
+  .terms b { color: #7d8896; font-weight: 500; }
+  .terms code {
+    font-family: ui-monospace, Consolas, monospace;
+    font-size: 10.5px;
+    color: #7d8896;
+    background: rgba(255,255,255,.045);
+    border-radius: 4px;
+    padding: 0 4px;
+  }
+
+  .gloss {
+    background: rgba(255,255,255,.022);
+    border: 1px solid #232b36;
+    border-radius: 12px;
+    padding: 15px 16px;
+    margin: 22px 0 4px;
+    font-size: 13px;
+    line-height: 1.8;
+    color: #8b97a6;
+  }
+  .gloss h4 {
+    margin: 0 0 7px;
+    font-size: 13.5px;
+    color: #b9c4d1;
+    font-weight: 600;
+  }
+  .gloss p { margin: 0 0 8px; }
+  .gloss p:last-child { margin-bottom: 0; }
+  .gloss pre.code { margin: 9px 0; }
+  .gloss .say { color: #a5e075; }
+  .gloss .say::before { content: "人话："; color: #5c6b7a; }
+
+  .check {
+    background: #151b23;
+    border: 1px solid #232b36;
+    border-radius: 14px;
+    padding: 16px 18px 14px;
+    margin: 26px 0 4px;
+  }
+  .check h3 {
+    margin: 0 0 10px;
+    font-size: 16.5px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .check ol { margin: 0; padding-left: 20px; font-size: 14px; color: #b9c4d1; }
+  .check ol li { margin: 8px 0; }
+  .check ol b { color: #5eead4; font-weight: 600; }
+  .check-tip {
+    margin: 13px 0 0;
+    font-size: 12.5px;
+    color: #c9a227;
+    padding: 9px 12px;
+    border-radius: 9px;
+    background: rgba(210,153,34,.06);
+    border: 1px solid rgba(210,153,34,.2);
+  }
+
+  /* ===== 练习区 ===== */
+  .stats {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; gap: 10px; flex-wrap: wrap; align-items: center;
+    background: rgba(13,17,23,.9);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid #232b36;
+    border-radius: 12px;
+    padding: 11px 14px;
+    margin-bottom: 16px;
+  }
+  .stat { flex: 1; min-width: 78px; }
+  .stat .lab { font-size: 11.5px; color: #7d8896; letter-spacing: .3px; }
+  .stat .val { font-size: 17px; font-weight: 600; color: #5eead4; font-variant-numeric: tabular-nums; }
+  .stat .val.blue { color: #7aa2f7; }
+  .stats .again { padding: 7px 13px; font-size: 12.5px; }
+
+  .q {
+    background: #151b23;
+    border: 1px solid #232b36;
+    border-radius: 13px;
+    padding: 16px 16px 14px;
+    margin-bottom: 13px;
+    scroll-margin-top: 78px;
+  }
+  #practice { scroll-margin-top: 10px; }
+  .q-head { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
+  .badge {
+    font-size: 11px; padding: 2px 9px; border-radius: 999px;
+    border: 1px solid; letter-spacing: .3px;
+  }
+  .b-single { color: #7aa2f7; border-color: rgba(122,162,247,.35); background: rgba(122,162,247,.1); }
+  .b-fill   { color: #d29922; border-color: rgba(210,153,34,.35); background: rgba(210,153,34,.1); }
+  .b-judge  { color: #c792ea; border-color: rgba(199,146,234,.35); background: rgba(199,146,234,.1); }
+  .q-idx { font-size: 12px; color: #6b7684; }
+  .q-text { font-size: 14.5px; color: #dde5ee; margin-bottom: 4px; }
+
+  .opt {
+    display: block; width: 100%; text-align: left;
+    background: #111823;
+    border: 1px solid #232b36;
+    color: #cfd9e5;
+    padding: 10px 13px;
+    border-radius: 9px;
+    margin: 8px 0;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: border-color .15s, background .15s, transform .1s;
+  }
+  .opt:hover:not(:disabled) { border-color: #3a4a5f; background: #151f2c; }
+  .opt:active:not(:disabled) { transform: scale(.995); }
+  .opt:disabled { cursor: default; }
+  .opt .ok { color: #6b7684; margin-right: 6px; font-family: ui-monospace, Consolas, monospace; }
+  .opt.correct { border-color: #3fb950; background: rgba(63,185,80,.12); color: #d7f5dd; }
+  .opt.correct .ok { color: #3fb950; }
+  .opt.wrong { border-color: #f85149; background: rgba(248,81,73,.1); color: #ffd9d6; }
+  .opt.wrong .ok { color: #f85149; }
+
+  .fill-row { display: flex; gap: 8px; margin-top: 10px; }
+  .fill-row input {
+    flex: 1; min-width: 0;
+    background: #0a0e13;
+    border: 1px solid #2a3341;
+    border-radius: 9px;
+    padding: 10px 13px;
+    color: #e6edf3;
+    font-size: 14px;
+    font-family: ui-monospace, Consolas, monospace;
+    outline: none;
+    transition: border-color .15s;
+  }
+  .fill-row input:focus { border-color: #5eead4; }
+  .fill-row input.correct { border-color: #3fb950; color: #a5e075; }
+  .fill-row input.wrong { border-color: #f85149; color: #ffb3ae; }
+  .fill-row input:disabled { opacity: .9; }
+  .submit {
+    flex: none;
+    background: rgba(94,234,212,.13);
+    border: 1px solid rgba(94,234,212,.35);
+    color: #5eead4;
+    border-radius: 9px;
+    padding: 0 18px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .submit:hover:not(:disabled) { background: rgba(94,234,212,.22); }
+  .submit:disabled { opacity: .45; cursor: default; }
+
+  .fb { margin-top: 11px; font-size: 13.5px; padding: 10px 13px; border-radius: 9px; animation: pop .22s ease; }
+  @keyframes pop { from { opacity: 0; transform: translateY(-4px); } to { opacity: 1; transform: none; } }
+  .fb.ok { background: rgba(63,185,80,.09); border: 1px solid rgba(63,185,80,.3); }
+  .fb.no { background: rgba(248,81,73,.08); border: 1px solid rgba(248,81,73,.3); }
+  .fb .head { font-weight: 600; margin-bottom: 3px; }
+  .fb.ok .head { color: #56d364; }
+  .fb.no .head { color: #ff7b72; }
+  .fb .ansline { color: #b9c4d1; font-size: 13px; margin-bottom: 4px; }
+  .fb .ansline b { color: #a5e075; font-weight: 600; }
+  .fb .why { color: #98a4b3; font-size: 13px; }
+  .hint { font-size: 12.5px; color: #d29922; margin-top: 8px; }
+
+  #summary { display: none; margin-top: 22px; }
+  #summary.show { display: block; animation: pop .3s ease; }
+  .sum-card {
+    background: linear-gradient(180deg, rgba(94,234,212,.07), rgba(21,27,35,0)), #151b23;
+    border: 1px solid rgba(94,234,212,.3);
+    border-radius: 14px;
+    padding: 20px;
+  }
+  .sum-card h3 { margin: 0 0 6px; font-size: 18px; }
+  .sum-score { font-size: 15px; color: #b9c4d1; margin-bottom: 4px; }
+  .sum-score b { color: #5eead4; font-size: 22px; font-variant-numeric: tabular-nums; }
+  .sum-note { font-size: 13.5px; color: #8b97a6; margin: 6px 0 16px; }
+  .wrong-list { list-style: none; padding: 0; margin: 0; }
+  .wrong-list li {
+    border-top: 1px solid #232b36;
+    padding: 12px 0 4px;
+    font-size: 13.5px;
+  }
+  .wrong-list .wq { color: #dde5ee; margin-bottom: 4px; }
+  .wrong-list .wa { font-size: 12.5px; color: #8b97a6; }
+  .wrong-list .wa .bad { color: #ff7b72; }
+  .wrong-list .wa .good { color: #56d364; }
+  .wrong-list .ww { font-size: 12.5px; color: #7d8896; margin-top: 4px; }
+
+  .wrong-head {
+    display: flex; align-items: center; justify-content: space-between; gap: 10px;
+    margin: 14px 0 2px;
+    padding-top: 14px;
+    border-top: 1px solid #232b36;
+    font-size: 13.5px;
+    color: #b9c4d1;
+  }
+  .sum-tip {
+    font-size: 12.5px;
+    color: #7d8896;
+    margin: 14px 0 0;
+    padding: 9px 12px;
+    border-radius: 9px;
+    background: rgba(122,162,247,.06);
+    border: 1px solid rgba(122,162,247,.18);
+  }
+  .btn-ghost {
+    background: rgba(122,162,247,.1);
+    border: 1px solid rgba(122,162,247,.32);
+    color: #a9c1f5;
+    padding: 7px 13px;
+    border-radius: 8px;
+    font-size: 12.5px;
+    font-family: inherit;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background .15s;
+  }
+  .btn-ghost:hover { background: rgba(122,162,247,.2); }
+
+  .notice {
+    display: none;
+    margin-top: 12px;
+    font-size: 13px;
+    padding: 9px 13px;
+    border-radius: 9px;
+    background: rgba(210,153,34,.1);
+    border: 1px solid rgba(210,153,34,.32);
+    color: #e3b341;
+  }
+  .notice.show { display: block; animation: pop .2s ease; }
+
+  .export {
+    display: none;
+    margin-top: 14px;
+    padding: 14px;
+    border: 1px solid #232b36;
+    border-radius: 12px;
+    background: #0f151d;
+  }
+  .export.show { display: block; animation: pop .2s ease; }
+  .export-head {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13.5px; color: #b9c4d1; margin-bottom: 10px;
+  }
+  .export-meta { font-size: 11.5px; color: #7d8896; }
+  .export textarea {
+    width: 100%;
+    height: 260px;
+    resize: vertical;
+    background: #0a0e13;
+    border: 1px solid #2a3341;
+    border-radius: 9px;
+    color: #c9d4e0;
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Courier New", monospace;
+    font-size: 12px;
+    line-height: 1.7;
+    padding: 11px 12px;
+    outline: none;
+  }
+  .export textarea:focus { border-color: #5eead4; }
+  .export .btn-row { margin-top: 10px; }
+  .export-tip { font-size: 12.5px; color: #8b97a6; margin-top: 8px; min-height: 18px; }
+  .export-tip.ok { color: #56d364; }
+  .export-tip.warn { color: #e3b341; }
+  .btn-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+  .btn-main {
+    background: rgba(94,234,212,.14);
+    border: 1px solid rgba(94,234,212,.4);
+    color: #5eead4;
+    padding: 9px 18px;
+    border-radius: 9px;
+    font-size: 14px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .btn-main:hover { background: rgba(94,234,212,.24); }
+
+  footer {
+    text-align: center;
+    color: #5c6b7a;
+    font-size: 12.5px;
+    padding: 40px 0 50px;
+    border-top: 1px solid #1d242e;
+    margin-top: 40px;
+  }
+
+  @media (max-width: 600px) {
+    header { padding: 34px 0 18px; }
+    h1 { font-size: 21px; }
+    .sub { font-size: 13px; }
+    .again { padding: 7px 12px; font-size: 12.5px; }
+    .card, .q { padding: 14px; border-radius: 12px; }
+    pre.code { font-size: 12px; padding: 10px 11px; line-height: 1.7; }
+    .q-text { font-size: 14px; }
+    .opt { font-size: 13.5px; padding: 10px 11px; }
+    .stat .val { font-size: 15px; }
+    .fill-row { flex-direction: column; }
+    .submit { padding: 9px 0; }
+    .sum-card { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+<div id="bar"></div>
+
+<div class="wrap">
+  <header>
+    <div class="head-top">
+      <div>
+        <h1>C++ 第一天重点 + 练习</h1>
+        <p class="sub">给刚学完 C、正在转 C++ 的嵌入式初学者：先把「引用」这一条主线吃透，后面看 STM32 库函数才不会发懵。</p>
+        <p class="only">本页只保留当前阶段必学内容，其余等学完对象生命周期再补。</p>
+      </div>
+      <button class="again" id="againTop">再来一轮</button>
+    </div>
+    <div class="tags">
+      <span class="tag">C 已学完</span>
+      <span class="tag">嵌入式方向</span>
+      <span class="tag">Day 1</span>
+      <span class="tag">Day 2</span>
+      <span class="tag">题库 72 道</span>
+      <span class="tag">每轮随机 15 题</span>
+    </div>
+    <div class="nav">
+      <a href="#day1">Day 1 · 引用</a>
+      <a href="#day2">Day 2 · 内存 / 类型</a>
+      <a href="#practice">直接刷题</a>
+    </div>
+  </header>
+
+  <div class="sec-title" id="day1">Day 1 · 引用这条主线</div>
+  <p class="sec-desc">每个卡片一句话结论 + 最小示例。先看结论，再读代码，不要背。</p>
+
+  <!-- 1 -->
+  <div class="card">
+    <h3><span class="n">1</span>引用：同一个箱子又贴了一张纸条</h3>
+    <p class="concl"><code>int&amp; r = a;</code> 不是在旁边又造一个箱子，而是<b>给 a 那个箱子再贴一张写着 r 的纸条</b>。撕哪张纸条，箱子都还是同一个。</p>
+    <pre class="code"><code>int a = 10;      // 造一个箱子，贴上纸条 a，里面放 10
+int&amp; r = a;       // 给同一个箱子再贴一张纸条 r
+
+r = 99;          // 顺着 r 找到箱子，把里面的 10 换成 99
+                 // 所以 a 也是 99 —— 本来就是同一个箱子
+
+int b = 20;      // 另一个箱子，里面放 20
+r = b;           // 这句是"把 b 里的 20 倒进 r 管的那个箱子"，
+                 // 不是"把 r 的纸条撕下来贴到 b 上"
+                 // 结果：a = 20，b 还是 20</code></pre>
+    <ul class="pts">
+      <li><b>必须当场贴</b>：写 <code>int&amp; r;</code> 等于说"我要贴张纸条"，却没说贴哪个箱子，编译器不知道贴哪儿，直接不给你过。</li>
+      <li><b>贴了撕不掉</b>：<code>r = b;</code> 是把 b 里的东西倒进 a，纸条原地不动。真想换箱子，只能改用门牌号（指针）。</li>
+      <li><b>不能对着空气贴</b>：没有"空引用"这回事。要表示"可能没有箱子"，得用门牌号（指针）。</li>
+    </ul>
+    <p class="keep">记住这句就行：引用不是新箱子，是同一口箱子上的第二张纸条。</p>
+    <p class="terms">术语对照：正式叫「引用（reference）」，教材上的准确说法是"变量的别名，不额外占用存储空间"。</p>
+  </div>
+
+  <!-- 2 -->
+  <div class="card">
+    <h3><span class="n">2</span>三种 swap：抄一份 / 递门牌号 / 递原件</h3>
+    <p class="concl">想让函数真的把外面两个箱子的东西互换，就得<b>把原件递进去</b>；抄一份给他，他改得再热闹，你的箱子也没动一下。</p>
+    <pre class="code"><code>// ① 抄一份给他改
+void swap1(int x, int y) { int t = x; x = y; y = t; }
+// 调用 swap1(m, n);  —— 复印两份递进去
+// 里面换的是复印件，函数一结束复印件就扔了，m、n 一点没变
+
+// ② 递门牌号：他得照着号码找过去、开门，才能搬东西
+void swap2(int* x, int* y) {
+    if (x == nullptr || y == nullptr) return; // 先问一句：号码是不是空的
+    int t = *x; *x = *y; *y = t;              // 照着门牌号找过去开门
+}
+// 调用 swap2(&amp;m, &amp;n);  —— 得自己先抄两个门牌号
+
+// ③ 递原件：拿到的是同一口箱子，直接倒腾
+void swap3(int&amp; x, int&amp; y) { int t = x; x = y; y = t; }
+// 调用 swap3(m, n);   —— 跟传普通变量一样，最省事</code></pre>
+    <ul class="pts">
+      <li>抄一份（值传递）：改的是复印件，外面毫无变化。</li>
+      <li>递门牌号（指针）：能改到外面，但调用要写 <code>&amp;</code>，函数里要写 <code>*</code>，还得先问号码空不空。</li>
+      <li>递原件（引用）：能改到外面，写法和普通变量一模一样，也没有"空"的问题。</li>
+      <li><b>那什么时候还得用门牌号？</b>比如读写寄存器：硬件那边根本没有箱子给你贴纸条，只有一个地址（像 0x40020000 这种），这时候只能拿门牌号去找。</li>
+    </ul>
+    <p class="keep">记住这句就行：互换两个变量直接写引用版，别自己折腾门牌号。</p>
+    <p class="terms">术语对照：这三个版本依次叫「值传递」「地址传递（指针）」「引用传递（pass by reference）」。</p>
+  </div>
+
+  <!-- 3 -->
+  <div class="card">
+    <h3><span class="n">3</span>const T&amp;：把原件递给他看，但不许改</h3>
+    <p class="concl">传一大串字符这种大东西，复印一份太费劲。<code>const 类型&amp;</code> 就是<b>把原件递过去让他看</b>，<code>const</code> 是贴在上面的封条，谁都不许动。</p>
+    <pre class="code"><code>void show(const std::string&amp; s) {  // 递原件 + 贴封条
+    // s += "!";     // 想改？封条拦着，编译直接报错
+    std::cout &lt;&lt; s;   // 只能看
+}
+
+show(name);          // 没有复印，直接把 name 那口箱子递过去
+
+const int&amp; r = 10;   // 可以：给 10 这个临时箱子贴封条，再贴纸条
+// int&amp; r = 10;      // 不行：普通纸条不许贴到临时箱子上</code></pre>
+    <ul class="pts">
+      <li>只写 <code>std::string s</code>：每次调用都要复印一整串字符，又慢又占地方。</li>
+      <li>加引用但不加 const：不复印了，可函数里能顺手把你的东西改了，很危险。</li>
+      <li>加 const：既不复印，也改不了——两头都占到。</li>
+    </ul>
+    <p class="keep">记住这句就行：只看看、不打算改的大东西，参数就写成 <code>const 类型&amp;</code>。</p>
+    <p class="terms">术语对照：正式叫「常量引用」，作用是不拷贝、不可修改，常用于函数形参。</p>
+  </div>
+
+  <!-- 4 -->
+  <div class="card">
+    <h3><span class="n">4</span>cout、endl、::：箭头、"冲水"和"谁家的"</h3>
+    <p class="concl"><code>cout &lt;&lt;</code> 的箭头朝右，<b>把东西塞进屏幕</b>；<code>endl</code> 是换行 + 冲水，串口想快就用 <code>'\n'</code>；<code>::</code> 读作<b>"谁家的"</b>。</p>
+    <pre class="code"><code>int a = 0;
+std::cout &lt;&lt; "请输入：";      // 箭头朝右：把字塞进屏幕
+std::cin  &gt;&gt; a;               // 箭头朝左：把键盘敲的塞进箱子 a
+
+std::cout &lt;&lt; a &lt;&lt; '\n';        // 只换行，不冲水 —— 快
+std::cout &lt;&lt; a &lt;&lt; std::endl;    // 换行 + 冲水，马上送出去 —— 慢一点</code></pre>
+    <ul class="pts">
+      <li><b>endl 是换行 + 冲水</b>：冲水就是把攒在管子里的字立刻推出去；<code>'\n'</code> 只换行，攒够了一起走。</li>
+      <li>串口打印几十行时，一行冲一次水就得等一次硬件，明显拖时间，所以用 <code>'\n'</code>。</li>
+      <li><code>::</code> 读作"谁家的"：<code>std::cout</code> 是标准库这家的 cout；只写一个 <code>::a</code> 是"全局那个 a"，不属于任何一家。</li>
+      <li>有了"谁家的"，两个地方都叫 a 也能分清，不会打架。</li>
+    </ul>
+    <p class="keep">记住这句就行：箭头朝哪儿东西就往哪儿走；endl 多了个冲水；:: 就是在说"谁家的"。</p>
+    <p class="terms">术语对照：<code>std::cout</code> 是「标准输出流对象」，<code>endl</code> 是「换行并刷新缓冲区」，<code>::</code> 是「作用域解析运算符」。</p>
+  </div>
+
+  <!-- 5 -->
+  <div class="card">
+    <h3><span class="n">5</span>命名空间：给名字加个"谁家的"</h3>
+    <p class="concl">就是给名字分个家，防止撞名。<b>写全名最保险</b>；<code>using namespace</code> 把人家的东西全搬进来，最容易撞；<code>using A::a</code> 只搬一个。</p>
+    <pre class="code"><code>namespace A { int a = 1; int b = 2; }
+
+A::a = 10;           // 写全名：A 家的 a，最保险
+using namespace A;   // 把 A 家所有东西都搬进来：省事，但容易撞名
+using A::a;          // 只搬 a 这一个：b 还得写 A::b
+
+namespace { int x; } // 没名字的家：只在这个文件里看得见（效果跟加 static 一样）</code></pre>
+    <p class="keep">记住这句就行：名字撞了就写 <code>::</code> 说清楚是谁家的。</p>
+    <p class="terms">术语对照：正式叫「命名空间（namespace）」，没名字的那个用「内部链接」来描述。</p>
+  </div>
+
+  <!-- 6 -->
+  <div class="card">
+    <h3><span class="n">6</span>返回引用：别把拆掉的房子的门牌号给别人</h3>
+    <p class="concl">函数里临时造的箱子，函数一结束就拆了。把它的地址交出去，别人拿着号码去开门——<b>门还在不在，全看运气</b>。</p>
+    <pre class="code"><code>int g = 0;
+int&amp; getG() { return g; }        // 全局的箱子一直在，安全
+
+int&amp; bad() { int x = 1; return x; }  // x 是函数里的一次性箱子
+                                     // 函数一结束就拆了，地址作废
+
+void fill(int&amp; out) { out = 42; }    // 调用者把自己的箱子递进来，安全
+
+static int s = 5;                    // 加了 static 的箱子，程序跑完才没
+int&amp; getS() { return s; }            // 也安全</code></pre>
+    <ul class="pts">
+      <li>能用的只有三种：全局的箱子、加了 static 的箱子、调用者自己递进来的箱子。</li>
+      <li>写错了不一定马上崩，可能这次刚好没被别的东西盖住，看着"还能用"——换台机器就说不准了。</li>
+    </ul>
+    <p class="keep">记住这句就行：返回引用之前先问一句——这口箱子，函数结束后还在不在？</p>
+    <p class="terms">术语对照：这种情况正式叫「悬空引用（dangling reference）」，属于「未定义行为（UB）」。</p>
+  </div>
+
+  <div class="gloss">
+    <h4>术语小抄：教材、报错、面试，说的都是这些正式名字</h4>
+    <p>看教材、看编译器报错、面试时用的都是上面的正式名称，遇到术语就翻译回这套比喻——箱子、纸条、门牌号、封条、冲水、谁家的。</p>
+    <pre class="code"><code>error: binding reference of type 'int&amp;' to 'const int' discards qualifiers</code></pre>
+    <p>逐词对一下：binding 是"往上贴"，reference 是"那张纸条"，discards qualifiers 是"把 const 这张封条给撕了"。</p>
+    <p class="say">这是在说"你想给一个承诺不改的东西贴一张能改的纸条，不行"。</p>
+    <p>比如写 <code>const int a = 10; int&amp; r = a;</code> 就会撞上这条报错：a 已经被封条封住了，不许再贴一张能改的纸条。</p>
+  </div>
+
+  <div class="sec-title" id="day2">Day 2 · 内存、类型与函数规则</div>
+  <p class="sec-desc">还是箱子那套比喻。Day 2 多了一个新东西：门牌号能自己申请、自己归还（new / delete）。</p>
+
+  <!-- 7 -->
+  <div class="card">
+    <h3><span class="n">7</span>new / delete：租房子和退房子必须对上</h3>
+    <p class="concl"><code>new</code> 是"租一间房，拿到门牌号"，<code>delete</code> 是"退租"。<b>怎么租的就怎么退</b>——这是唯一一条死规矩。</p>
+    <pre class="code"><code>int* p = new int;      // 租一间房，门牌号交给 p
+*p = 42;               // 照着门牌号进去，放 42
+delete p;              // 退租：一间房就用 delete
+p = nullptr;           // 退完把号码划掉，免得以后误开
+
+int* arr = new int[10]; // 租一排十间房
+delete[] arr;           // 退一排，必须用带方括号的 delete[]
+arr = nullptr;
+
+// int* q = new int;
+// free(q);              // 错：new 的房不能找 free 退</code></pre>
+    <ul class="pts">
+      <li>配对表只有两行：<code>new</code> ↔ <code>delete</code>，<code>new[]</code> ↔ <code>delete[]</code>。拿错钥匙，后果没人保证。</li>
+      <li><code>delete p;</code> 只是把房退了，门牌号还捏在手里。这时再照着它找过去，就是开一扇已经不属于你的门，所以退完立刻置空。</li>
+      <li><code>delete nullptr;</code> 什么都不做，是安全的。所以置空以后重复退也不会出事。</li>
+    </ul>
+    <p class="keep">记住这句就行：谁 new 的谁 delete，怎么借的怎么还，退完立刻把号码划掉。</p>
+    <p class="terms">术语对照：这叫「动态内存分配与释放」，退完不置空再用叫「悬垂指针（dangling pointer）」，同一块退两次叫「double free」。</p>
+  </div>
+
+  <!-- 8 -->
+  <div class="card">
+    <h3><span class="n">8</span>struct 加强：箱子自己也会干活了</h3>
+    <p class="concl">C++ 的结构体不只是"装几个数的盒子"，<b>里面还能写函数</b>；定义变量时连 <code>struct</code> 都不用写。这就是通往"类"的那级台阶。</p>
+    <pre class="code"><code>struct Point {
+    int x;
+    int y;
+    int sum() { return x + y; }   // 结构体里可以写函数
+};
+
+Point p;              // 不用写 struct Point p;
+p.x = 3;
+p.y = 4;
+std::cout &lt;&lt; p.sum(); // 输出 7，函数直接用里面的 x、y</code></pre>
+    <ul class="pts">
+      <li><code>p.sum()</code> 读作"让 p 这口箱子干 sum 这件事"，点左边是箱子，右边是动作，函数里能直接用 x、y。</li>
+      <li>写 <code>struct Point p;</code> 也能编译，那是 C 的习惯；C++ 里直接把 <code>Point</code> 当类型名用。</li>
+      <li>struct 和 class 只差"默认开不开放给人看"，现在只要记住"struct 也能带函数"就够了。</li>
+    </ul>
+    <p class="keep">记住这句就行：C++ 的 struct 是"带动作的箱子"，定义变量不用再带 struct。</p>
+    <p class="terms">术语对照：结构体里的函数叫「成员函数（member function）」，<code>p.sum()</code> 这种写法叫「成员访问」，把数据和操作它的函数放进同一个盒子叫「封装」。</p>
+  </div>
+
+  <!-- 9 -->
+  <div class="card">
+    <h3><span class="n">9</span>bool：只有"是"和"否"两个格子</h3>
+    <p class="concl"><code>bool</code> 只有两个值：<code>true</code> 和 <code>false</code>，占 <b>1 个字节</b>，专门用来记"是/否"这种状态。</p>
+    <pre class="code"><code>bool ok = true;        // 是
+bool err = false;      // 否
+
+std::cout &lt;&lt; ok;       // 输出 1：true 当数字用就是 1
+std::cout &lt;&lt; err;      // 输出 0
+
+int n = true;          // n 变成 1
+bool flag = 5;         // 非 0 都算 true（会给你警告，别这么写）
+
+if (ok) { /* 直接当条件用，不用写 ok == true */ }</code></pre>
+    <ul class="pts">
+      <li>它是 1 <b>字节</b>，不是 1 位。8 个 bool 就是 8 字节，别指望靠它省 RAM；真要按位省，得自己用位操作。</li>
+      <li>数字变 bool 只认"是不是 0"：0 是 false，非 0 都是 true。</li>
+      <li>写 <code>if (ok)</code> 就够了；<code>if (ok == true)</code> 是废话，还容易手滑写成赋值。</li>
+    </ul>
+    <p class="keep">记住这句就行：bool 是"是/否"两个格子，true 当数字用等于 1，false 等于 0。</p>
+    <p class="terms">术语对照：正式叫「布尔类型（bool）」，<code>true</code>/<code>false</code> 叫「布尔字面量」，bool 变 int 这一步叫「整型提升」。</p>
+  </div>
+
+  <!-- 10 -->
+  <div class="card">
+    <h3><span class="n">10</span>const：贴了封条就不许改</h3>
+    <p class="concl">被 <code>const</code> 封住的箱子，谁都不能改；<code>const T&amp;</code> 形参是"递原件看、不许改、也不复印"；const 有类型有作用域，比 <code>#define</code> 靠谱；配置表加 const 还能省 RAM。</p>
+    <pre class="code"><code>const int MAX = 100;     // 贴上封条，后面谁改谁编译不过
+// MAX = 200;            // 错：封条不是摆设
+
+void show(const std::string&amp; s);  // 不复印、不许改，大东西首选
+
+#define SIZE 10          // 老写法：纯文字替换，没有类型
+const int size = 10;     // 新写法：有类型、有作用域，能查错
+
+const int table[] = {1, 2, 3};   // 配置表加 const，通常进 flash，不占 RAM</code></pre>
+    <ul class="pts">
+      <li>const 变量必须当场给值：<code>const int a;</code> 单独一句编译不过。</li>
+      <li>嵌入式重点：全局的 <code>const</code> 数组一般被放进 flash，RAM 里就不占地方；把 const 去掉，它才会被搬进 RAM。</li>
+      <li><code>#define</code> 是预处理阶段的文字替换，出错时报错信息会指向替换后的怪代码；const 是真变量，调试器也看得见。</li>
+    </ul>
+    <p class="keep">记住这句就行：不想被改就贴封条；只读的大参数写 <code>const T&amp;</code>；配置表加 const 省 RAM。</p>
+    <p class="terms">术语对照：const 修饰的变量叫「常量」，<code>const T&amp;</code> 形参叫「常量引用」，放进 flash 的那块叫「只读数据段（.rodata）」。</p>
+  </div>
+
+  <!-- 11 -->
+  <div class="card">
+    <h3><span class="n">11</span>默认参数：只能从右往左连续给</h3>
+    <p class="concl">默认值<b>只能从最右边开始、一个接一个往左给</b>，中间不能跳；声明和定义只能写一处；调用时省略的必须是靠右那几个。</p>
+    <pre class="code"><code>void uart(int baud, int bits = 8, int stop = 1);  // 声明里给默认值
+
+uart(115200);          // 行：bits=8，stop=1
+uart(115200, 7);       // 行：bits=7，stop=1
+// uart(115200, , 2);  // 错：中间不能空着跳过去
+
+// void uart(int baud, int bits = 8, int stop = 1) { }  // 错：定义里又写一遍</code></pre>
+    <ul class="pts">
+      <li>反例：<code>void f(int a = 1, int b);</code> 不合法——左边给了、右边没给，调用时编译器没法知道 b 填什么。</li>
+      <li>默认值在声明和定义里只能挑一处写。写两处会报"重定义默认参数"，习惯上写在声明（头文件）里。</li>
+      <li>和重载混着用最容易撞车，见下一张卡片。</li>
+    </ul>
+    <p class="keep">记住这句就行：默认值从右边开始连着给，只写一处，中间不许跳。</p>
+    <p class="terms">术语对照：正式叫「默认参数（default argument）」，两个候选都能匹配的情况叫「二义性（ambiguous）」。</p>
+  </div>
+
+  <!-- 12 -->
+  <div class="card">
+    <h3><span class="n">12</span>函数重载：同名不同参数，别看返回值</h3>
+    <p class="concl">同名、<b>参数列表不同</b>才算重载；只有返回值不同不算；两个版本都能匹配时，编译器不替你猜，直接报二义性。</p>
+    <pre class="code"><code>void f(int x);        // 版本一：收整数
+void f(double x);     // 版本二：收小数 —— 参数类型不同，算重载
+// int  f(int x);     // 错：只改返回值，等于重复声明
+
+f(1);                 // 挑版本一
+f(1.0);               // 挑版本二
+
+void g(int x);
+void g(int x, int y = 0);   // 默认参数也能让 g(1) 对上两个版本
+g(1);                       // 二义性：编译器不知道选谁</code></pre>
+    <ul class="pts">
+      <li>参数个数、类型、顺序，只要有一处不同就算重载；返回值不参与挑选，因为调用处看不见返回值。</li>
+      <li><code>f(1.0f)</code> 遇到 <code>f(int)</code> 和 <code>f(double)</code>：float 转 double 只是"提升"，转 int 要"截断"，编译器会挑 f(double)，这里不报错，但你要知道它在替你挑。</li>
+      <li>真撞上二义性，最省事的办法是改名字，别跟编译器较劲。</li>
+    </ul>
+    <p class="keep">记住这句就行：重载看参数不看返回值；两个都能匹配就报二义性，改名字最省事。</p>
+    <p class="terms">术语对照：正式叫「函数重载（overload）」，两个候选都匹配叫「二义性调用（ambiguous call）」。</p>
+  </div>
+
+  <section class="check">
+    <h3>怎么判断自己真的会了</h3>
+    <ol>
+      <li><b>关掉所有资料，从空白文件写出 swap，能编译能跑</b> —— 这才叫会。看着网页点头不算。</li>
+      <li><b>能看懂编译器的报错在说什么</b> —— 报错是最便宜的老师，它每次都直说哪一行不对。</li>
+      <li><b>能用人话把这件事讲给一个完全不懂的人听</b> —— 讲不清，就是还没懂。</li>
+    </ol>
+    <p class="check-tip">提醒一句：网页刷题只能暴露盲点，不能替代动手。刷十轮，不如自己从零敲一遍。</p>
+  </section>
+
+  <!-- ===== 练习 ===== -->
+  <div class="sec-title" id="practice">练习</div>
+  <p class="sec-desc">每轮从题库随机抽 <b>8 道单选 + 4 道填空 + 3 道判断</b>，题目和选项顺序都是打乱的，同一轮不会重复。点「再来一轮」重新抽题并清零计分。</p>
+
+  <div class="stats">
+    <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg">0 / 15</div></div>
+    <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore">0</div></div>
+    <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate">—</div></div>
+    <button class="again" id="againBar">再来一轮</button>
+  </div>
+
+  <div id="qlist"></div>
+  <div id="summary"></div>
+
+  <footer>做完这一页，Day 2 就可以进「类与对象、构造与析构」了。</footer>
+</div>
+
+<script>
+/* ============================================================
+   代码高亮
+   ============================================================ */
+var KEY = ['int','void','const','return','using','namespace','static','class','struct','sizeof',
+           'char','float','double','bool','unsigned','long','short','new','delete','true','false',
+           'nullptr','for','while','if','else','break','continue','switch','case','default',
+           'typedef','extern','include','main'];
+var TYP = ['std','cout','cin','endl','string','size_t','NULL'];
+
+function hl(src) {
+  var esc = src.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  var re = /(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*")|('(?:[^'\\\n]|\\.)*')|\b([A-Za-z_]\w*)\b|\b(\d+)\b/g;
+  return esc.replace(re, function (m, c1, c2, c3, word, num) {
+    if (c1) return '<span class="c">' + m + '</span>';
+    if (c2 || c3) return '<span class="s">' + m + '</span>';
+    if (num) return '<span class="n">' + m + '</span>';
+    if (word) {
+      if (KEY.indexOf(word) > -1) return '<span class="k">' + m + '</span>';
+      if (TYP.indexOf(word) > -1) return '<span class="t">' + m + '</span>';
+    }
+    return m;
+  });
+}
+
+/* ============================================================
+   题库（单选 29 / 填空 11 / 判断 10，共 50 道）
+   ============================================================ */
+var BANK = {
+
+/* ---------------- 单选 41 道 ---------------- */
+single: [
+  {
+    id: 's01',
+    day: 'day1',
+    q: '只在函数里写一行 <code>int&amp; r;</code>，没说贴到哪个箱子上，会怎样？',
+    options: [
+      '能编译，r 随便指一个箱子',
+      '编译不过：贴纸条的时候必须说清楚贴哪个箱子',
+      '能编译，r 是一张空纸条',
+      '能编译，运行的时候才报错'
+    ],
+    ans: 1,
+    why: '贴纸条必须当场贴到某个箱子上，编译器得知道贴哪儿。你只说"要贴"，没说贴哪个箱子，它就直接不给你过。顺便说一句：纸条也不能空着，没有"空引用"这回事。'
+  },
+  {
+    id: 's02',
+    day: 'day1',
+    code: 'int a = 10, b = 20;\nint& d = a;\nd = b;',
+    q: '执行完这三行，<code>a</code> 箱子里是多少？',
+    options: ['10', '20', '30', '编译不过'],
+    ans: 1,
+    why: 'd 是 a 箱子上贴的第二张纸条。<code>d = b</code> 是顺着 d 找到箱子、把 b 里的 20 倒进去，所以 a 变成 20。纸条一点没挪地方。'
+  },
+  {
+    id: 's03',
+    day: 'day1',
+    code: 'void f(int a[10]) {\n    std::cout << sizeof(a);\n}',
+    q: '64 位机器上，函数里的 <code>sizeof(a)</code> 是多少？',
+    options: ['40', '10', '8', '4'],
+    ans: 2,
+    why: '数组当参数递进去时，编译器只记地址、不记长度，所以里面拿到的是个门牌号；门牌号在 64 位机器上占 8 个字节。想知道有多长，得另外多传一个数字进去。'
+  },
+  {
+    id: 's04',
+    day: 'day1',
+    code: 'void swap1(int x, int y)  { int t = x; x = y; y = t; }\nvoid swap2(int* x, int* y) { int t = *x; *x = *y; *y = t; }\nvoid swap3(int& x, int& y) { int t = x; x = y; y = t; }',
+    q: '从调用者的角度看，哪一个 swap 执行完两个箱子里的东西没变？',
+    options: [
+      '抄一份的那个（swap1）',
+      '递门牌号的那个（swap2）',
+      '递原件的那个（swap3）',
+      '三个都没变'
+    ],
+    ans: 0,
+    why: '抄一份的那个，函数里改的是复印件，函数一结束复印件就扔了，外面的箱子没被碰过。另外两个拿到的都是原件，所以真的换了。'
+  },
+  {
+    id: 's05',
+    day: 'day1',
+    q: '既然递门牌号也能换，为什么说递原件（引用）更省心？',
+    options: [
+      '引用版跑得更快，因为它完全不碰地址',
+      '调用时不用写 &amp;，函数里不用写 *，也不用先问号码是不是空的',
+      '门牌号版遇到带封条的箱子会编译不过',
+      '引用版什么类型都能换，门牌号版只能换 int'
+    ],
+    ans: 1,
+    why: '引用在底下多半也是拿地址实现的，快不到哪去（所以第一条不对）。真正省掉的是三件麻烦事：调用处不用写 &amp;、函数里不用写 *、也不用判断号码空不空。互换两个数本来就不存在"号码是空的"这种情况，用引用正好对得上。'
+  },
+  {
+    id: 's06',
+    day: 'day1',
+    q: '下面哪一行能编译过？<br>（1）<code>int&amp; r = 10;</code>　（2）<code>const int&amp; r = 10;</code>',
+    options: ['只有（1）', '只有（2）', '两行都行', '两行都不行'],
+    ans: 1,
+    why: '10 是当场造的一次性箱子，用完就扔，普通纸条贴不上去。加上 const 这张封条就可以了，编译器会把这个临时箱子留到你用完 r 为止。'
+  },
+  {
+    id: 's07',
+    day: 'day1',
+    code: 'int& f() {\n    int x = 1;\n    return x;\n}',
+    q: '这个函数错在哪？',
+    options: [
+      '函数不能把引用返回出去',
+      '返回的是函数里一次性箱子的地址，函数一结束箱子就拆了',
+      '应该写成 <code>return &amp;x;</code>',
+      '没错，x 的寿命会自动延长'
+    ],
+    ans: 1,
+    why: 'x 是函数自己造的一次性箱子，函数一返回就拆了。你把地址递出去，别人照着去找，可能还能开，也可能直接崩，全看运气。只有 const 引用贴临时箱子时寿命才会延长，返回局部变量不享受这个待遇。'
+  },
+  {
+    id: 's08',
+    day: 'day1',
+    q: '关于 <code>endl</code> 和 <code>\'\\n\'</code>，哪句对？',
+    options: [
+      '完全一样，endl 只是写得好看',
+      'endl 是换行 + 冲水；只想换行的话 \'\\n\' 更快',
+      '\'\\n\' 会冲水，endl 不会',
+      'endl 只能用在文件里，\'\\n\' 只能用在屏幕上'
+    ],
+    ans: 1,
+    why: '冲水（flush）就是把攒在管子里的字立刻推出去。endl 每用一次就冲一次，串口那头就得等一次硬件；\'\\n\' 只换行，攒够了一起走。'
+  },
+  {
+    id: 's09',
+    day: 'day1',
+    code: 'namespace C { int a1 = 1; int b1 = 2; }\nusing C::a1;\n\nint main() {\n    std::cout << a1;\n    std::cout << b1;\n}',
+    q: '这段代码会怎样？',
+    options: [
+      '正常输出 12',
+      '先输出 1，然后编译不过：b1 没搬过来',
+      '正常输出 2',
+      '整个程序都编译不过，a1 也用不了'
+    ],
+    ans: 1,
+    why: '<code>using C::a1;</code> 只把 a1 一个名字搬到手边，b1 还锁在 C 家里。想用 b1 就写 <code>C::b1</code>，或者再补一句 <code>using C::b1;</code>。'
+  },
+  {
+    id: 's10',
+    day: 'day1',
+    code: 'namespace D { int a2 = 100; }\nusing namespace D;\nint a2 = 200;\n\nint main() { std::cout << a2; }',
+    q: '这段代码会怎样？',
+    options: ['输出 100', '输出 200', '编译不过：两个 a2 分不清是谁家的', '输出 0'],
+    ans: 2,
+    why: '<code>using namespace D;</code> 把 D 家的 a2 也搬到了手边，你自己又造了一个全局 a2，两个都叫 a2，编译器不知道该用哪个，只能罢工。写清楚就行：<code>D::a2</code> 或 <code>::a2</code>。'
+  },
+  {
+    id: 's11',
+    day: 'day1',
+    q: '<code>std::cout</code> 里那个 <code>::</code> 是什么意思？',
+    options: [
+      '成员访问，表示 cout 是 std 的成员',
+      '读作"谁家的"：去标准库这家找 cout',
+      '全局变量前缀，等于 extern',
+      '类型转换符号'
+    ],
+    ans: 1,
+    why: '<code>std::cout</code> 就是"标准库这家的 cout"。前面只留一个 <code>::</code>（写成 <code>::a</code>），意思是"全局那个 a"，不属于任何一家。'
+  },
+  {
+    id: 's12',
+    day: 'day1',
+    q: '没名字的 <code>namespace { ... }</code>（匿名命名空间），效果最接近下面哪个？',
+    options: [
+      '给全局变量加了 static，只本文件能用',
+      '加了 const 的全局变量，不能改',
+      '放进了标准库，到处能用',
+      '变成局部变量，函数外看不见'
+    ],
+    ans: 0,
+    why: '它是个没名字的家，里面的东西只在这个 .cpp 文件里看得见，别的文件链接不到。效果跟 C 里给全局变量加 static 一样，只是它能一次罩住一堆东西。'
+  },
+  {
+    id: 's13',
+    day: 'day1',
+    q: '函数要把引用返回出去，下面哪种箱子是安全的？',
+    options: [
+      '函数里临时造的箱子',
+      '一直在的箱子：全局的、加了 static 的，或者调用者自己递进来的',
+      '函数里 new 出来但没留指针的箱子',
+      '值传递的形参（那份复印件）'
+    ],
+    ans: 1,
+    why: '返回引用就是把地址给出去，对方得还能找到那口箱子。全局和 static 的箱子活到程序结束，调用者递进来的由调用者保管，都安全。临时箱子和复印件会被拆掉；new 出来又没人拿指针的箱子会漏掉。'
+  },
+  {
+    id: 's14',
+    day: 'day1',
+    code: 'int a = 1, b = 2;\nint& r = a;\nr = b;',
+    q: '执行完这三行，a 和 b 各是多少？',
+    options: ['a = 2，b = 2', 'a = 1，b = 2', 'a = 2，b = 1', '编译不过'],
+    ans: 0,
+    why: 'r = b 是把 b 里的 20 倒进 a 的箱子，所以 a 变成 2；b 从头到尾没人动，还是 2。注意这不是把 r 的纸条挪到 b 上。'
+  },
+  {
+    id: 's15',
+    day: 'day1',
+    code: 'int a = 5;\nint& r = a;\nstd::cout << sizeof(r);',
+    q: '64 位机器上，这行输出多少？',
+    options: ['4', '8', '5', '1'],
+    ans: 0,
+    why: 'sizeof 问的是"箱子里装的东西有多大"，不是"纸条有多长"。r 贴的是 int 的箱子，int 占 4 个字节，所以是 4。'
+  },
+  {
+    id: 's16',
+    day: 'day1',
+    code: 'void f(int& x) { x++; }\n\nint a = 1;\nf(a);\nstd::cout << a;',
+    q: '输出多少？',
+    options: ['1', '2', '0', '编译不过'],
+    ans: 1,
+    why: '引用形参就是给调用者的箱子又贴了一张纸条，函数里 <code>x++</code> 就是 <code>a++</code>。'
+  },
+  {
+    id: 's17',
+    day: 'day1',
+    code: 'void f(int& x) { x = 1; }\n\nint main() {\n    f(10);\n}',
+    q: '这段代码会怎样？',
+    options: [
+      '能过，x 就贴着 10 那个临时箱子',
+      '编译不过：普通纸条贴不到临时箱子上',
+      '能过，运行时崩',
+      '能过，10 会被改成 1'
+    ],
+    ans: 1,
+    why: '10 是当场造的一次性箱子，普通 <code>int&amp;</code> 不许贴上去。想接这种字面量，参数就写 <code>const int&amp;</code>，或者干脆按值抄一份。'
+  },
+  {
+    id: 's18',
+    day: 'day1',
+    code: 'void f(const int& x) { std::cout << x; }\n\nint main() {\n    f(10);\n}',
+    q: '这段代码会怎样？',
+    options: [
+      '编译不过，引用不能接字面量',
+      '能过：const 纸条可以贴到临时箱子上',
+      '能过，但会先抄一份',
+      '必须写成 f(&amp;10) 才行'
+    ],
+    ans: 1,
+    why: 'const 引用可以贴临时箱子，编译器会把这个临时箱子留到你用完为止。所以 <code>const int&amp;</code> 既能接变量也能接字面量，是"只想看看、不打算改"的万能写法。'
+  },
+  {
+    id: 's19',
+    day: 'day1',
+    code: 'const int a = 10;\nint& r = a;',
+    q: '这段代码会怎样？',
+    options: [
+      '能过，r 就是 a',
+      '编译不过：贴了封条的箱子不能再贴普通纸条',
+      '能过，但 r 改不了 a',
+      '能过，运行时出错'
+    ],
+    ans: 1,
+    why: 'a 贴了 const 封条，只许看不许改。要是允许普通纸条贴上去，就能顺着纸条撕封条改内容，封条就白贴了。想贴只能写 <code>const int&amp; r = a;</code>。'
+  },
+  {
+    id: 's20',
+    day: 'day1',
+    q: '关于引用和门牌号（指针），哪一句是错的？',
+    options: [
+      '引用必须当场贴，指针可以先空着',
+      '引用贴了不能换箱子，指针可以改指向',
+      '引用可以是空的，用 nullptr 表示',
+      '对引用取地址，拿到的是箱子的地址'
+    ],
+    ans: 2,
+    why: '引用没有"空"这回事，语言层面就不给你表达"没这个箱子"。想表示"可能没箱子"，只能用指针 + nullptr。'
+  },
+  {
+    id: 's21',
+    day: 'day1',
+    code: 'int* p = nullptr;\nint& r = *p;',
+    q: '这段代码会怎样？',
+    options: [
+      '编译不过，不能对空号码取值',
+      '编译能过，但运行时照着空门牌号去找，通常直接崩',
+      'r 自动变成 0',
+      'r 变成一张空纸条'
+    ],
+    ans: 1,
+    why: '<code>*p</code> 在编译器眼里就是"一个箱子"，它不查这个箱子真不真存在，所以能过编译。但运行时真去开那扇门，就是访问空地址，通常直接崩。这也说明"引用不能空"靠你自己别乱写，编译器兜不住所有情况。'
+  },
+  {
+    id: 's25',
+    day: 'day1',
+    code: 'int g = 1;\n\nint main() {\n    int g = 2;\n    std::cout << ::g;\n}',
+    q: '输出什么？',
+    options: ['1', '2', '编译不过', '0'],
+    ans: 0,
+    why: '<code>::g</code> 就是"全局那个 g"，跳过 main 里的局部 g，所以是 1。想用局部的直接写 g。'
+  },
+  {
+    id: 's26',
+    day: 'day1',
+    code: 'std::cout << 3.14 << \' \' << 65 << \'\\n\';',
+    q: '输出什么？',
+    options: ['3.14 65', '3.14 A', '3.14 65.0', '编译不过'],
+    ans: 0,
+    why: '箭头会看类型办事：小数照原样打，int 就打数字 65，不会自作主张变成字母 A。这也是它比 printf 省心的地方——printf 里把 %d 写成 %c 就出字母了。'
+  },
+  {
+    id: 's27',
+    day: 'day1',
+    code: 'int a;\nstd::cin >> a;',
+    q: '用 cin 往箱子里读东西，要不要像 scanf 那样写 <code>&amp;a</code>？',
+    options: [
+      '要，写成 <code>std::cin &gt;&gt; &amp;a;</code>',
+      '不用，&gt;&gt; 自己就是"递原件"的方式',
+      '要，写成 <code>std::cin &gt;&gt; *a;</code>',
+      '两种都行'
+    ],
+    ans: 1,
+    why: '<code>&gt;&gt;</code> 这个符号的形参本来就是引用，等于自动把原件递过去，所以你直接写变量名就行。这也是为什么 cin 能改到你手上那个箱子。'
+  },
+  {
+    id: 's28',
+    day: 'day1',
+    q: '<code>endl</code> 是谁家的东西？',
+    options: [
+      '全局的，直接写 endl 就行',
+      'std 家的，标准写法是 <code>std::endl</code>',
+      '是个宏，不属于任何家',
+      '是 cin 的成员'
+    ],
+    ans: 1,
+    why: 'endl 是标准库 std 家里的。不写 <code>using namespace std;</code> 就必须写 <code>std::endl</code>，所以示例里到处是 std::。'
+  },
+  {
+    id: 's29',
+    day: 'day1',
+    q: '<code>void f(std::string s)</code> 和 <code>void f(const std::string&amp; s)</code> 差在哪？',
+    options: [
+      '完全一样',
+      '后者不复印一份，而且函数里不许改',
+      '后者复印两份，更慢',
+      '后者只能传常量字符串'
+    ],
+    ans: 1,
+    why: '按值传 string，每次调用都要复印一整串字符，字符串长的时候很费；const 引用是把原件递过去，不复印，封条保证函数里不会偷偷改。所以"只看看的大东西"几乎都这么写。'
+  },
+  {
+    id: 's30',
+    day: 'day1',
+    code: 'int& get() { static int x = 7; return x; }\n\nget() = 100;',
+    q: '函数把引用返回出去，调用者拿到的到底是什么？',
+    options: [
+      '一份复印件，改不了原来的',
+      '原件本身，可以直接改到函数里那个 static 箱子',
+      '一个临时箱子，用完就扔',
+      '一个门牌号'
+    ],
+    ans: 1,
+    why: '返回引用就是把箱子本身交出去，所以 <code>get() = 100;</code> 能改到函数里那个 static 的箱子。前提是它得还活着——所以不能返回临时箱子。'
+  },
+  {
+    id: 's31',
+    day: 'day1',
+    code: 'int a = 1;\nint& r = a;\nint& s = r;\ns = 9;',
+    q: '执行完，a 是多少？',
+    options: ['1', '9', '编译不过', 's 变成 9，a 不变'],
+    ans: 1,
+    why: '拿引用去初始化另一个引用，贴的还是原来那口箱子，s 也是 a 的纸条。<code>s = 9;</code> 写的就是 a。'
+  },
+  {
+    id: 's32',
+    day: 'day1',
+    q: '已经贴好纸条的 <code>int&amp; r = a;</code>，想让 r 改去管 b，怎么办？',
+    options: [
+      '写 <code>r = b;</code> 就行',
+      '再写一次 <code>int&amp; r = b;</code>',
+      '做不到，纸条撕不下来，只能改用指针',
+      '用 const_cast 转一下'
+    ],
+    ans: 2,
+    why: '纸条贴上去就粘死了，<code>r = b</code> 是倒东西不是搬家；再写一次是重复定义，编译器直接报错。真想换目标只能用指针，因为门牌号是可以改的。'
+  },
+  {
+    id: 'd2s01',
+    day: 'day2',
+    code: 'int* p = new int;\n*p = 5;\ndelete p;',
+    q: '这段代码的用法对吗？',
+    options: [
+      '对：new 一间房配 delete，正好对上',
+      '错：必须写成 delete[] p',
+      '错：必须用 free(p) 才能还回去',
+      '错：根本不该用 new，应该用 malloc'
+    ],
+    ans: 0,
+    why: 'new 单独租一间房，就用 delete 退；只有 new[] 租的一排房才用 delete[]。free 是 C 那套（配 malloc 用），和 new 是两套账本，混着用会把内存管理搞乱。'
+  },
+  {
+    id: 'd2s02',
+    day: 'day2',
+    code: 'int* a = new int[10];\nfor (int i = 0; i < 10; i++) a[i] = i;\ndelete a;',
+    q: '最后一行有什么问题？',
+    options: [
+      '没问题，delete 也能退一排房',
+      'new[] 借的是一排房，必须用 delete[] a 整排退',
+      '应该写成 delete a[10]',
+      '应该写成 free(a)'
+    ],
+    ans: 1,
+    why: '一排房要整排退，delete[] 才知道一共有几间（delete a[10] 只是去动第 10 间，而且已经越界）。写成 delete 是错误的配对，标准不保证后果，可能只清掉第一间，也可能把堆里的记账弄乱。'
+  },
+  {
+    id: 'd2s03',
+    day: 'day2',
+    q: '<code>delete p;</code> 之后马上写 <code>p = nullptr;</code>，主要是图什么？',
+    options: [
+      '让这块内存还得更彻底',
+      '把门牌号划掉，防止以后误用已经退租的地址',
+      '防止内存泄漏',
+      '不写这一句就编译不过'
+    ],
+    ans: 1,
+    why: '内存在 delete 那一刻就已经还了，置空不会还得更干净。真正的用处是让 p 变成明确的"空"：以后 if (p) 能挡住误用，重复 delete nullptr 也安全。内存泄漏指的是"根本没 delete"，跟置空没关系；不置空也照样编译得过。'
+  },
+  {
+    id: 'd2s04',
+    day: 'day2',
+    code: 'struct Point {\n    int x;\n    int y;\n    int sum() { return x + y; }\n};',
+    q: '这段在 C++ 里合法吗？',
+    options: [
+      '合法，结构体里可以写函数',
+      '不合法，结构体只能放数据',
+      '不合法，函数必须写到 class 里',
+      '合法，但函数里不能读写 x、y'
+    ],
+    ans: 0,
+    why: 'C++ 的结构体早就不只是"装数据的盒子"，里面可以写函数，函数能直接用它自己的 x、y。C 语言里确实不能这么写，所以从 C 过来的人容易以为不行。'
+  },
+  {
+    id: 'd2s05',
+    day: 'day2',
+    q: '已经写了 <code>struct Point { ... };</code>，在 C++ 里定义变量，哪种写法最正常？',
+    options: ['struct Point p;', 'Point p;', 'struct p Point;', 'Point struct p;'],
+    ans: 1,
+    why: 'C 里类型名必须带着 struct 一起写，C++ 直接把 Point 当成类型名用。两种写法编译器都收，但 C++ 里没人再写 struct，多写反而像在写 C。'
+  },
+  {
+    id: 'd2s06',
+    day: 'day2',
+    q: '一个 <code>bool</code> 变量占几个字节？',
+    options: ['1 位', '1 字节', '2 字节', '4 字节'],
+    ans: 1,
+    why: '1 位是理论上最省，但 C++ 规定 bool 至少占 1 字节，常见平台上正好 1 字节。所以 8 个 bool 就是 8 字节，别指望靠它省 RAM——真要按位省，得自己用位操作把 8 个状态塞进一个字节。'
+  },
+  {
+    id: 'd2s07',
+    day: 'day2',
+    code: 'int n = true;\nint m = false;',
+    q: '<code>n</code> 和 <code>m</code> 分别是多少？',
+    options: ['1 和 0', '0 和 1', 'true 和 false', '编译不过'],
+    ans: 0,
+    why: 'true 当数字用就是 1，false 就是 0，这是语言规定的转换。反过来也成立：数字变 bool 时，0 是 false，非 0 都是 true。'
+  },
+  {
+    id: 'd2s08',
+    day: 'day2',
+    q: '配置表用 <code>const</code> 而不用 <code>#define</code>，最主要的好处是什么？',
+    options: [
+      'const 跑得更快',
+      '#define 只能写数字，不能写字符串',
+      'const 有类型、有作用域，编译器能查错，调试器也看得见',
+      'const 完全不占内存'
+    ],
+    ans: 2,
+    why: '#define 是预处理阶段的文字替换，没有类型，出错时报错信息会指向替换后的怪代码，调试器也看不到这个名字。const 是真变量，有类型、有作用域。至于占不占内存，得看用法：全局 const 数组通常进 flash，本来就不占 RAM，光加 const 并不能保证"完全不占"。'
+  },
+  {
+    id: 'd2s09',
+    day: 'day2',
+    q: '只写一句 <code>const int a;</code>，会怎样？',
+    options: [
+      '能编译，a 自动是 0',
+      '编译不过：封条一贴就必须当场给值',
+      '能编译，a 是随机值',
+      '能编译，以后还能给它赋一次值'
+    ],
+    ans: 1,
+    why: 'const 的意思就是"定下来不许改"，如果允许先不给值，这个变量永远没法有值，所以语言直接要求初始化。注意不是"以后赋一次"——一次也不行。'
+  },
+  {
+    id: 'd2s10',
+    day: 'day2',
+    code: 'void f(int a = 1, int b);',
+    q: '这个声明合法吗？',
+    options: [
+      '合法，两个参数随便给默认值',
+      '不合法：默认值必须从右往左连续给',
+      '合法，但调用时必须写全两个参数',
+      '不合法：默认值只能是 0'
+    ],
+    ans: 1,
+    why: '默认值要从最右边开始，一个接一个往左给。这里左边给了、右边没给，调用 f(5) 时编译器没法知道 b 该是什么，所以不合法。正确写法是 void f(int a, int b = 1);。'
+  },
+  {
+    id: 'd2s11',
+    day: 'day2',
+    code: 'void f(int x);\nvoid f(int x, int y = 0);',
+    q: '调用 <code>f(1);</code> 会怎样？',
+    options: [
+      '正常，选第一个版本',
+      '正常，选第二个版本',
+      '编译不过：两个版本都能匹配，编译器不知道选谁',
+      '能编译，运行的时候随机挑一个'
+    ],
+    ans: 2,
+    why: 'f(1) 两个都能对上：一个直接匹配，另一个靠默认值补齐。遇到这种情况编译器不会替你猜，直接报二义性。想避开就改名字，或者把默认值去掉，让两个版本只有一个能匹配。'
+  },
+  {
+    id: 'd2s12',
+    day: 'day2',
+    code: 'void f(int);\nvoid f(double);\nint  f(int);',
+    q: '这三句里，哪些算合法的重载？',
+    options: [
+      '三句都算',
+      '前两句算；第三句和第一句参数一模一样，只有返回值不同，会直接报错',
+      '只有第三句算',
+      '一句都不算'
+    ],
+    ans: 1,
+    why: '重载看的是参数列表：个数、类型、顺序只要有一处不同就算。返回值不参与挑选——调用处写 f(1) 时没法靠返回值区分版本，所以"只有返回值不同"在 C++ 里等于重复声明，编译器直接报错。'
+  }
+],
+
+/* ---------------- 填空 16 道 ---------------- */
+fill: [
+  {
+    id: 'f01',
+    day: 'day1',
+    code: 'int a = 1;\nint __ r = a;    // 给 a 那个箱子再贴一张纸条',
+    q: '横线上只填<b>一个符号</b>，让 r 成为 a 箱子上贴的第二张纸条。',
+    answers: ['&'],
+    display: '&amp;　（写成 int&amp; r = a;）',
+    why: '类型后面跟 &amp; 就是"再贴一张纸条"的意思。读起来是"r 是 int 的引用，贴在 a 身上"。它和取地址的 &amp; 长得一样，但这里是在声明类型，不是取地址。'
+  },
+  {
+    id: 'f02',
+    day: 'day1',
+    code: 'void show(____ std::string& s);',
+    q: '他想把原件递过去看，又不许函数改它。横线上填<b>一个关键字</b>（就是那个封条）。',
+    answers: ['const'],
+    display: 'const（给原件贴封条）',
+    why: 'const 就是封条：函数里只能看不能改，调用者的东西不会被偷偷动。同时因为是引用，也不会复印一份，大东西传起来很省。'
+  },
+  {
+    id: 'f03',
+    day: 'day1',
+    code: 'std__cout << 1;\nstd__endl;',
+    q: '要写"标准库这家的 cout"，横线上填<b>一个运算符</b>。',
+    answers: ['::'],
+    display: '::（读作"谁家的"）',
+    why: '这就是"谁家的"符号：左边是家，右边是东西。<code>std::cout</code> 就是标准库这家的 cout，别的地方也有叫 cout 的也不会混。'
+  },
+  {
+    id: 'f04',
+    day: 'day1',
+    code: 'int a = 10, b = 20;\nint& r = a;\nr = b;',
+    q: '<code>r = b;</code> 这句，是把纸条换个地方贴，还是把 b 里的东西倒进 r 管的箱子？填两个字：改的是箱子里面的____。',
+    answers: ['值', '东西', '数值'],
+    display: '值（把 b 的东西倒进 a 的箱子）',
+    why: '纸条贴上去就撕不下来了。<code>r = b</code> 只是把 b 里的 20 倒进 a，所以 a 变了、b 没变。想换箱子只能用指针。'
+  },
+  {
+    id: 'f05',
+    day: 'day1',
+    code: 'int& f() {\n    int x = 1;\n    return x;\n}',
+    q: '把已经拆掉的房子的门牌号给了别人，这种引用叫____引用（填<b>两个字</b>），用它是自找麻烦。',
+    answers: ['悬空', '悬垂'],
+    display: '悬空（悬垂）',
+    why: '函数一返回，函数里那些一次性箱子就拆了，地址也就作废。它可能这次刚好还能开门，下次就崩——所以别把这种地址递出去。'
+  },
+  {
+    id: 'f06',
+    day: 'day1',
+    q: '没名字的命名空间，只在本文件看得见，效果约等于给全局变量加上哪个关键字？',
+    answers: ['static'],
+    display: 'static',
+    why: '加了 static 的全局变量只在本文件可见；没名字的命名空间里的东西也一样。所以 C 里用 static 干的事，C++ 里也能用匿名命名空间干，而且能一次罩住一堆东西。'
+  },
+  {
+    id: 'f07',
+    day: 'day1',
+    code: 'void swap(int& x, int& y);\n\nint m = 1, n = 2;\nswap(m, n);',
+    q: '调用时，函数拿到的形参 x 是 m 的什么？（填<b>两个字</b>）',
+    answers: ['别名', '引用'],
+    display: '别名（给 m 的箱子又贴了一张纸条）',
+    why: '引用形参和实参是同一口箱子，只是多了一个名字，所以叫别名。正因为是同一口箱子，函数里改 x 就是改 m，swap 才真的能换。'
+  },
+  {
+    id: 'f08',
+    day: 'day1',
+    code: 'std::cout << "hi" << std::endl;',
+    q: '<code>endl</code> 比 <code>\'\\n\'</code> 多做了一个动作，填 <b>flush</b> 或「冲水」「刷新」。',
+    answers: ['flush', 'flush()', '刷新', '刷新缓冲区', '冲水'],
+    display: 'flush（冲水：把管子里的字立刻推出去）',
+    why: 'endl 先换个行，再冲一次水，把攒着的字立刻送出去；\'\\n\' 只换行不冲水，攒够了一起走。串口每冲一次都要等硬件，所以打印多行时 \'\\n\' 更快。'
+  },
+  {
+    id: 'f09',
+    day: 'day1',
+    q: '引用必须在当场就____（填<b>两个字</b>），不能先空着。',
+    answers: ['初始化', '绑定', '贴好'],
+    display: '初始化（当场贴到某个箱子上）',
+    why: '写 <code>int&amp; r;</code> 等于说"我要贴纸条"却没说贴哪个箱子，编译器没法办，直接报错。指针可以先空着，之后再指向别处，这点和引用正好相反。'
+  },
+  {
+    id: 'f10',
+    day: 'day1',
+    code: 'int a = 1;\nint& r = a;',
+    q: '<code>&amp;r == &amp;a</code> 的结果是 1 还是 0？',
+    answers: ['1', 'true', '真'],
+    display: '1（两张纸条指的是同一口箱子）',
+    why: '引用不是新箱子，所以对 r 取地址和对 a 取地址，拿到的是同一个地址，比较当然相等。'
+  },
+  {
+    id: 'f11',
+    day: 'day1',
+    q: '函数返回引用时，不能返回____变量（填<b>两个字</b>），否则等于把拆掉的房子的门牌号给别人。',
+    answers: ['局部', '临时'],
+    display: '局部（函数里临时造的）',
+    why: '局部变量在函数结束时就拆了，返回它的地址就是给人家一个作废的门牌号。安全的只有三种：全局的、加了 static 的、调用者自己递进来的。'
+  },
+  {
+    id: 'd2f01',
+    day: 'day2',
+    code: 'int* a = new int[10];\n// ... 用完之后\ndelete__ a;',
+    q: '<code>new int[10]</code> 借的是一排房，还的时候要补齐方括号。横线上填<b>两个字符</b>。',
+    answers: ['[]'],
+    display: '[]（写成 delete[] a;）',
+    why: 'new[] 配 delete[]，这是唯一配对。写成 delete 就是拿错钥匙，标准不保证后果——可能只清掉第一间，也可能把堆的记录弄乱。'
+  },
+  {
+    id: 'd2f02',
+    day: 'day2',
+    code: 'delete p;\np = ____;   // 把旧门牌号划掉',
+    q: '退租以后要把 <code>p</code> 设成"空门牌号"，横线上填<b>四个字母</b>。',
+    answers: ['nullptr'],
+    display: 'nullptr（空门牌号）',
+    why: '置空以后 if (p) 能挡住误用，重复 delete nullptr 也安全。老代码里写 NULL 或 0 也能用，但 C++ 推荐 nullptr，它不会被当成整数参与运算。'
+  },
+  {
+    id: 'd2f03',
+    day: 'day2',
+    q: '<code>bool</code> 只记"是/否"，一个 bool 在常见平台上占 ____ 个字节（填数字）。',
+    answers: ['1', '一'],
+    display: '1',
+    why: 'C++ 规定 bool 至少 1 字节，常见编译器正好是 1 字节。别以为它只占 1 位——8 个 bool 就是 8 字节，想按位省得自己用位操作。'
+  },
+  {
+    id: 'd2f04',
+    day: 'day2',
+    q: '默认参数的规矩：必须从____往右连续给，中间不能跳着给。填<b>一个字</b>。',
+    answers: ['左'],
+    display: '左（从最右边开始，往左连着给）',
+    why: '从最右边开始，一个接一个往左给。<code>void f(int a = 1, int b);</code> 就是"左边给了、右边没给"，调用时编译器没法补 b，所以不合法。'
+  },
+  {
+    id: 'd2f05',
+    day: 'day2',
+    q: '默认值写在声明还是定义里？规矩是同一个函数只能写____处（填<b>一个字</b>或数字）。',
+    answers: ['一', '1'],
+    display: '一（只写一处）',
+    why: '写两处会报"重定义默认参数"。习惯上写在声明里（头文件），定义那边就不再重复写。'
+  }
+],
+
+/* ---------------- 判断 15 道 ---------------- */
+judge: [
+  {
+    id: 'j01',
+    day: 'day1',
+    q: '引用可以先空着，以后再贴到某个箱子上。',
+    ans: 1,
+    why: '贴纸条必须当场贴，没有"先空着以后再说"这一步。<code>int&amp; r;</code> 单独写一行就是编译错误，这也是它和门牌号最直观的区别。'
+  },
+  {
+    id: 'j02',
+    day: 'day1',
+    q: '引用不能为空，也没有"空引用"这回事。',
+    ans: 0,
+    why: '引用一旦存在就一定贴着某个箱子，语言层面不给你表达"没箱子"。真要表示"可能没有"，就用指针 + nullptr。'
+  },
+  {
+    id: 'j03',
+    day: 'day1',
+    q: '<code>endl</code> 和 <code>\'\\n\'</code> 完全一样，都是换行。',
+    ans: 1,
+    why: 'endl 除了换行还会冲一次水，强制把攒着的字推出去；\'\\n\' 只换行。串口这种每冲一次都要等的地方，差别很明显。'
+  },
+  {
+    id: 'j04',
+    day: 'day1',
+    q: '用引用作参数时，函数里改了形参，调用者那个箱子也会跟着变。',
+    ans: 0,
+    why: '引用形参就是给调用者的箱子又贴了一张纸条，同一口箱子，改哪个名字都是改它。'
+  },
+  {
+    id: 'j06',
+    day: 'day1',
+    q: '引用贴好以后，还能用 <code>r = b;</code> 让它改去管 b。',
+    ans: 1,
+    why: '<code>r = b</code> 是把 b 里的东西倒进 r 现在管的箱子，纸条原地不动。想换箱子只能用指针。'
+  },
+  {
+    id: 'j07',
+    day: 'day1',
+    q: '参数写成 <code>const T&amp;</code>，可以不复印一份大东西。',
+    ans: 0,
+    why: '引用就是把原件递过去，不存在复印件；const 是封条，保证函数里不会改你的东西。传一大串字符、大的结构体时，这就是标配。'
+  },
+  {
+    id: 'j08',
+    day: 'day1',
+    q: '函数可以把函数里临时造的箱子的引用安全地返回出去。',
+    ans: 1,
+    why: '临时箱子在函数返回时就拆了，递出去的地址作废，用起来全看运气。安全的只有全局的、加了 static 的、调用者递进来的箱子。'
+  },
+  {
+    id: 'j09',
+    day: 'day1',
+    q: '没名字的命名空间里的变量，别的 .cpp 文件可以用 extern 声明后访问。',
+    ans: 1,
+    why: '那里面的东西只在本文件可见，别的文件根本链接不到，写 extern 也没用。想在文件之间共享，就得用普通命名空间或全局变量。'
+  },
+  {
+    id: 'j11',
+    day: 'day1',
+    q: '<code>int&amp; r = 10;</code> 是合法的写法。',
+    ans: 1,
+    why: '10 是当场造的一次性箱子，普通纸条贴不上去，这行直接编译不过。要贴字面量必须加 const，写成 <code>const int&amp; r = 10;</code>，临时箱子的寿命会被延长。'
+  },
+  {
+    id: 'j12',
+    day: 'day1',
+    q: '<code>cout</code> 的 <code>&lt;&lt;</code> 会看变量类型自己选打印方式。',
+    ans: 0,
+    why: 'int 就打数字、小数就打小数、字符就打字符，不用像 printf 那样自己配 %d/%f/%c。这是 C++ 输出比 C 省心的地方。'
+  },
+  {
+    id: 'd2j01',
+    day: 'day2',
+    q: '<code>new</code> 出来的内存，可以用 <code>free</code> 还回去。',
+    ans: 1,
+    why: 'new/delete 是一套，malloc/free 是另一套，不能交叉使用。free 不知道 new 那边做过什么（比如调用构造函数），混着用等于两套账本对不上。'
+  },
+  {
+    id: 'd2j02',
+    day: 'day2',
+    q: '<code>delete</code> 之后把指针置成 <code>nullptr</code>，能避免以后误用那个旧地址。',
+    ans: 0,
+    why: '旧门牌号留着，就还能照着它找过去；置空以后 if (p) 这道检查才有意义，重复 delete nullptr 也不会出事。'
+  },
+  {
+    id: 'd2j03',
+    day: 'day2',
+    q: 'C++ 里用 struct 定义变量，必须写成 <code>struct Point p;</code>。',
+    ans: 1,
+    why: 'C++ 把 Point 直接当类型名，写 <code>Point p;</code> 就行。带着 struct 也能编译，但那是 C 的老习惯，C++ 里没必要。'
+  },
+  {
+    id: 'd2j04',
+    day: 'day2',
+    q: '两个函数只要返回值类型不同，就算合法的重载。',
+    ans: 1,
+    why: '重载只看参数列表。调用处没法靠返回值挑版本，所以只改返回值等于重复声明，编译器直接报错。'
+  },
+  {
+    id: 'd2j05',
+    day: 'day2',
+    q: '<code>const int a = 10;</code> 之后再写 <code>a = 20;</code> 会编译不过。',
+    ans: 0,
+    why: '封条贴上就改不了，a = 20 会被编译器拦下。想留一个能改的副本，就另外定义变量把值抄过去，别去动 const 那个。'
+  }
+]
+
+};
+
+/* ============================================================
+   随机抽题 / 打乱
+   ============================================================ */
+var ROUND_SPEC = { single: 8, fill: 4, judge: 3 };
+/* 每轮里 day1 : day2 的配额，凑不够就从另一天补 */
+var DAY_MIX = { single: [4, 4], fill: [2, 2], judge: [2, 1] };
+var LABEL = { single: '单选', fill: '填空', judge: '判断' };
+var LETTERS = 'ABCDEFG';
+
+function shuffle(arr) {
+  for (var i = arr.length - 1; i > 0; i--) {
+    var j = Math.floor(Math.random() * (i + 1));
+    var t = arr[i]; arr[i] = arr[j]; arr[j] = t;
+  }
+  return arr;
+}
+
+function sample(arr, n) {
+  return shuffle(arr.slice()).slice(0, n);
+}
+
+/* 把题库里的原始题目加工成「本轮题目」：选项打乱 + 重算正确答案 + 解析跟着走 */
+function prepare(base, type) {
+  if (type === 'single') {
+    var opts = shuffle(base.options.map(function (txt, i) {
+      return { text: txt, ok: i === base.ans };
+    }));
+    var idx = 0;
+    for (var k = 0; k < opts.length; k++) { if (opts[k].ok) { idx = k; break; } }
+    return {
+      key: base.id, type: 'single',
+      q: base.q, code: base.code || '',
+      options: opts, ansIdx: idx,
+      answerText: opts[idx].text,
+      why: base.why
+    };
+  }
+  if (type === 'judge') {
+    return {
+      key: base.id, type: 'judge',
+      q: base.q, code: base.code || '',
+      ansIdx: base.ans,
+      answerText: base.ans === 0 ? '对' : '错',
+      why: base.why
+    };
+  }
+  return {
+    key: base.id, type: 'fill',
+    q: base.q, code: base.code || '',
+    answers: base.answers,
+    answerText: base.display,
+    why: base.why
+  };
+}
+
+/* 一轮练习的运行时状态 */
+var R = { list: [], ans: {}, draft: {}, startedAt: 0 };
+
+function dayOf(b) {
+  return b.day === 'day2' ? 'day2' : 'day1';
+}
+
+/* 按 day 配额抽题：先各天各抽各的，不够再从剩下的里补，保证两个 day 都覆盖到 */
+function pickMix(list, total, mix) {
+  var d1 = list.filter(function (b) { return dayOf(b) === 'day1'; });
+  var d2 = list.filter(function (b) { return dayOf(b) === 'day2'; });
+  var picked = sample(d1, Math.min(mix[0], d1.length))
+    .concat(sample(d2, Math.min(mix[1], d2.length)));
+  var rest = list.filter(function (b) { return picked.indexOf(b) < 0; });
+  var need = total - picked.length;
+  if (need > 0) picked = picked.concat(sample(rest, need));
+  return picked;
+}
+
+function startRound(spec) {
+  spec = spec || ROUND_SPEC;
+  var items = [];
+  ['single', 'fill', 'judge'].forEach(function (t) {
+    pickMix(BANK[t], spec[t], DAY_MIX[t]).forEach(function (b) {
+      items.push(prepare(b, t));
+    });
+  });
+  R = { list: shuffle(items), ans: {}, draft: {}, startedAt: Date.now() };
+  render();
+}
+
+/* ============================================================
+   渲染
+   ============================================================ */
+function norm(s) {
+  if (s === null || s === undefined) return '';
+  s = String(s).trim().toLowerCase();
+  s = s.replace(/[\uFF01-\uFF5E]/g, function (ch) {
+    return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0);
+  });
+  return s.replace(/\s+/g, '');
+}
+
+function stripHtml(s) {
+  var d = document.createElement('div');
+  d.innerHTML = String(s).replace(/<br\s*\/?>/gi, ' ');
+  return (d.textContent || '').replace(/\s+/g, ' ').trim();
+}
+
+function buildQ(p, i) {
+  var st = R.ans[p.key];
+  var card = document.createElement('div');
+  card.className = 'q';
+
+  var head = document.createElement('div');
+  head.className = 'q-head';
+  head.innerHTML = '<span class="badge b-' + p.type + '">' + LABEL[p.type] + '</span>' +
+                   '<span class="q-idx">第 ' + (i + 1) + ' 题</span>';
+  card.appendChild(head);
+
+  var text = document.createElement('div');
+  text.className = 'q-text';
+  text.innerHTML = p.q;
+  card.appendChild(text);
+
+  if (p.code) {
+    var pre = document.createElement('pre');
+    pre.className = 'code';
+    pre.innerHTML = '<code>' + hl(p.code) + '</code>';
+    card.appendChild(pre);
+  }
+
+  var body = document.createElement('div');
+  body.className = 'q-body';
+  card.appendChild(body);
+
+  if (p.type === 'single') {
+    p.options.forEach(function (opt, k) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'opt';
+      btn.innerHTML = '<span class="ok">' + LETTERS[k] + '.</span>' + opt.text;
+      if (st) {
+        btn.disabled = true;
+        if (k === p.ansIdx) btn.classList.add('correct');
+        else if (k === st.user) btn.classList.add('wrong');
+      } else {
+        btn.addEventListener('click', function () { pick(p, k); });
+      }
+      body.appendChild(btn);
+    });
+  } else if (p.type === 'judge') {
+    var row = document.createElement('div');
+    row.style.display = 'flex';
+    row.style.gap = '10px';
+    ['对', '错'].forEach(function (opt, k) {
+      var btn = document.createElement('button');
+      btn.type = 'button';
+      btn.className = 'opt';
+      btn.style.margin = '8px 0 0';
+      btn.style.textAlign = 'center';
+      btn.textContent = opt;
+      if (st) {
+        btn.disabled = true;
+        if (k === p.ansIdx) btn.classList.add('correct');
+        else if (k === st.user) btn.classList.add('wrong');
+      } else {
+        btn.addEventListener('click', function () { pick(p, k); });
+      }
+      row.appendChild(btn);
+    });
+    body.appendChild(row);
+  } else {
+    var frow = document.createElement('div');
+    frow.className = 'fill-row';
+    var inp = document.createElement('input');
+    inp.type = 'text';
+    inp.placeholder = '输入答案，回车提交';
+    inp.value = st ? st.raw : (R.draft[p.key] || '');
+    inp.addEventListener('input', function () { R.draft[p.key] = inp.value; });
+    if (st) {
+      inp.disabled = true;
+      inp.classList.add(st.ok ? 'correct' : 'wrong');
+    } else {
+      inp.addEventListener('keydown', function (e) {
+        if (e.key === 'Enter') submitFill(p, inp.value);
+      });
+    }
+    var sbtn = document.createElement('button');
+    sbtn.type = 'button';
+    sbtn.className = 'submit';
+    sbtn.textContent = st ? '已提交' : '提交';
+    if (st) sbtn.disabled = true;
+    else sbtn.addEventListener('click', function () { submitFill(p, inp.value); });
+    frow.appendChild(inp);
+    frow.appendChild(sbtn);
+    body.appendChild(frow);
+  }
+
+  var slot = document.createElement('div');
+  slot.className = 'fb-slot';
+  card.appendChild(slot);
+
+  if (st) {
+    slot.innerHTML =
+      '<div class="fb ' + (st.ok ? 'ok' : 'no') + '">' +
+        '<div class="head">' + (st.ok ? '✓ 答对了' : '✗ 答错了') + '</div>' +
+        (st.ok ? '' : '<div class="ansline">正确答案：<b>' + p.answerText + '</b></div>') +
+        '<div class="why">' + p.why + '</div>' +
+      '</div>';
+  }
+  return card;
+}
+
+function pick(p, k) {
+  var ok = (k === p.ansIdx);
+  var userText = (p.type === 'judge')
+    ? (k === 0 ? '对' : '错')
+    : (LETTERS[k] + '. ' + stripHtml(p.options[k].text));
+  R.ans[p.key] = { ok: ok, user: k, userText: userText, raw: '' };
+  render();
+}
+
+function submitFill(p, val) {
+  var slot = document.querySelector('[data-slot="' + p.key + '"]');
+  if (norm(val) === '') {
+    if (slot) slot.innerHTML = '<div class="hint">先写点什么再提交。</div>';
+    return;
+  }
+  var v = norm(val);
+  var ok = p.answers.some(function (a) { return norm(a) === v; });
+  R.ans[p.key] = { ok: ok, user: val, userText: val, raw: val };
+  render();
+}
+
+function render() {
+  var list = document.getElementById('qlist');
+  list.innerHTML = '';
+  R.list.forEach(function (p, i) {
+    var card = buildQ(p, i);
+    card.querySelector('.fb-slot').setAttribute('data-slot', p.key);
+    list.appendChild(card);
+  });
+  updateStats();
+  updateSummary();
+}
+
+function updateStats() {
+  var total = R.list.length;
+  var done = Object.keys(R.ans).length;
+  var right = R.list.filter(function (p) { return R.ans[p.key] && R.ans[p.key].ok; }).length;
+  document.getElementById('stProg').textContent = done + ' / ' + total;
+  document.getElementById('stScore').textContent = right;
+  document.getElementById('stRate').textContent = done ? Math.round(right / done * 100) + '%' : '—';
+  document.getElementById('bar').style.width = (done / total * 100) + '%';
+}
+
+function updateSummary() {
+  var box = document.getElementById('summary');
+  var total = R.list.length;
+  var done = Object.keys(R.ans).length;
+  var right = R.list.filter(function (p) { return R.ans[p.key] && R.ans[p.key].ok; }).length;
+  var wrong = R.list.filter(function (p) { return R.ans[p.key] && !R.ans[p.key].ok; });
+
+  if (done < total) {
+    box.className = '';
+    box.innerHTML = '';
+    return;
+  }
+
+  var html = '<div class="sum-card">';
+  html += '<h3>' + (wrong.length === 0 ? '全部答对，收工。' : '这一轮做完了') + '</h3>';
+  html += '<div class="sum-score">对 <b>' + right + '</b> 道，错 <b style="color:#ff7b72">' + wrong.length +
+          '</b> 道　（本轮 ' + total + ' 题，得分 ' + right + ' / ' + total +
+          '，正确率 ' + Math.round(right / total * 100) + '%）</div>';
+
+  if (wrong.length === 0) {
+    html += '<p class="sum-note">引用这条主线你已经清楚了。可以点「再来一轮」换一批题检验一下，或者直接进 Day 2：类与对象、构造与析构。</p>';
+  } else {
+    html += '<p class="sum-note">下面是本轮错题，先看解析再重做。错的大多是「引用不能改绑」和「名字查找规则」这两个坑。</p>';
+    html += '<div class="wrong-head"><span>本轮错题（' + wrong.length + ' 道）</span>' +
+            '<button type="button" class="btn-ghost" data-export="1">导出错题报告</button></div>';
+    html += '<ul class="wrong-list">';
+    wrong.forEach(function (p) {
+      var idx = R.list.indexOf(p) + 1;
+      var raw = stripHtml(p.q);
+      if (raw.length > 46) raw = raw.slice(0, 46) + '…';
+      var st = R.ans[p.key];
+      html += '<li>' +
+                '<div class="wq">' + idx + '. ' + raw + '</div>' +
+                '<div class="wa">你的答案：<span class="bad">' + st.userText + '</span>　' +
+                '正确：<span class="good">' + p.answerText + '</span></div>' +
+                '<div class="ww">' + p.why + '</div>' +
+              '</li>';
+    });
+    html += '</ul>';
+  }
+
+  html += '<p class="sum-tip">把导出的错题报告直接发给老师就行：题干、全部选项、你选了什么、正确答案和解析都在里面。</p>';
+
+  html += '<div class="btn-row">';
+  if (wrong.length > 0) {
+    html += '<button class="btn-main" id="redo">重做错题（' + wrong.length + ' 道）</button>';
+  }
+  html += '<button class="btn-main" id="againSum">再来一轮</button>';
+  html += '<button class="btn-ghost" type="button" data-export="1">导出错题报告</button>';
+  html += '</div>';
+
+  html += '<div class="notice" id="notice"></div>';
+  html += '<div class="export" id="exportBox"></div>';
+  html += '</div>';
+
+  box.className = 'show';
+  box.innerHTML = html;
+
+  var redo = document.getElementById('redo');
+  if (redo) {
+    redo.addEventListener('click', function () {
+      // 只保留错题，重新随机排序（选项也重新打乱）
+      var items = wrong.map(function (p) { return prepare(findBase(p), p.type); });
+      R = { list: shuffle(items), ans: {}, draft: {}, startedAt: Date.now() };
+      render();
+      document.getElementById('practice').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    });
+  }
+  var again = document.getElementById('againSum');
+  if (again) again.addEventListener('click', goNewRound);
+
+  Array.prototype.forEach.call(box.querySelectorAll('[data-export]'), function (btn) {
+    btn.addEventListener('click', openExport);
+  });
+}
+
+/* ============================================================
+   导出错题报告（Markdown，纯本地能力）
+   ============================================================ */
+function pad2(n) { return (n < 10 ? '0' : '') + n; }
+
+function todayStr() {
+  var d = new Date();
+  return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate());
+}
+
+function fmtDuration(ms) {
+  var s = Math.max(0, Math.round(ms / 1000));
+  var m = Math.floor(s / 60);
+  s = s % 60;
+  return m > 0 ? (m + ' 分 ' + s + ' 秒') : (s + ' 秒');
+}
+
+function rightAnswerLine(p) {
+  if (p.type === 'fill') return stripHtml(p.answerText);
+  if (p.type === 'judge') return p.ansIdx === 0 ? '对' : '错';
+  return LETTERS[p.ansIdx] + '. ' + stripHtml(p.options[p.ansIdx].text);
+}
+
+function buildReport(wrong) {
+  var total = R.list.length;
+  var right = R.list.filter(function (p) { return R.ans[p.key] && R.ans[p.key].ok; }).length;
+  var L = [];
+
+  L.push('# C++ 第一天 · 错题报告');
+  L.push('');
+  L.push('- 日期：' + todayStr());
+  L.push('- 本轮题量：' + total + ' 题（答对 ' + right + ' 题，答错 ' + wrong.length + ' 题）');
+  L.push('- 得分：' + right + ' / ' + total + '（正确率 ' + Math.round(right / total * 100) + '%）');
+  if (R.startedAt) L.push('- 用时：' + fmtDuration(Date.now() - R.startedAt));
+  L.push('');
+  L.push('> 本报告由「C++ 第一天重点 + 练习」页面自动生成，可直接交给老师看。');
+  L.push('');
+
+  wrong.forEach(function (p, i) {
+    var st = R.ans[p.key];
+    L.push('---');
+    L.push('');
+    L.push('## ' + (i + 1) + '. [' + LABEL[p.type] + '] ' + stripHtml(p.q));
+    L.push('');
+
+    if (p.code) {
+      L.push('```cpp');
+      L.push(p.code);
+      L.push('```');
+      L.push('');
+    }
+
+    if (p.type === 'fill') {
+      L.push('- 你的答案：`' + String(st.raw || '（空）') + '`');
+      L.push('- 正确答案：`' + stripHtml(p.answerText) + '`');
+      L.push('');
+    } else {
+      var opts = (p.type === 'judge')
+        ? ['对', '错']
+        : p.options.map(function (o) { return o.text; });
+      var rightIdx = p.ansIdx;
+
+      L.push('**全部选项：**');
+      L.push('');
+      opts.forEach(function (txt, k) {
+        var label = (p.type === 'judge') ? txt : (LETTERS[k] + '. ' + stripHtml(txt));
+        var mark = '';
+        if (k === rightIdx) mark += '　← ✅ 正确答案';
+        if (k === st.user) mark += '　← ❌ 你的选择';
+        L.push('- ' + label + mark);
+      });
+      L.push('');
+      L.push('- 你的答案：' + String(st.userText || ''));
+      L.push('- 正确答案：' + rightAnswerLine(p));
+      L.push('');
+    }
+
+    L.push('**解析：**' + stripHtml(p.why));
+    L.push('');
+  });
+
+  L.push('---');
+  L.push('');
+  L.push('（共 ' + wrong.length + ' 道错题）');
+  L.push('');
+  return L.join('\n');
+}
+
+function showNotice(msg) {
+  var n = document.getElementById('notice');
+  if (!n) return;
+  n.textContent = msg;
+  n.className = 'notice show';
+  clearTimeout(showNotice._t);
+  showNotice._t = setTimeout(function () {
+    n.className = 'notice';
+  }, 3200);
+}
+
+function openExport() {
+  var wrong = R.list.filter(function (p) { return R.ans[p.key] && !R.ans[p.key].ok; });
+
+  if (wrong.length === 0) {
+    showNotice('本轮全对，没有错题');
+    return;
+  }
+
+  var box = document.getElementById('exportBox');
+  if (!box) return;
+
+  box.innerHTML =
+    '<div class="export-head">错题报告（Markdown）<span class="export-meta">' + wrong.length + ' 道错题</span></div>' +
+    '<textarea id="exportText" readonly spellcheck="false"></textarea>' +
+    '<div class="btn-row">' +
+      '<button type="button" class="btn-main" id="copyBtn">复制到剪贴板</button>' +
+      '<button type="button" class="btn-main" id="dlBtn">下载 .md 文件</button>' +
+      '<button type="button" class="btn-ghost" id="hideExport">收起</button>' +
+    '</div>' +
+    '<div class="export-tip" id="exportTip"></div>';
+
+  document.getElementById('exportText').value = buildReport(wrong);
+  box.className = 'export show';
+
+  document.getElementById('copyBtn').addEventListener('click', copyReport);
+  document.getElementById('dlBtn').addEventListener('click', downloadReport);
+  document.getElementById('hideExport').addEventListener('click', function () {
+    box.className = 'export';
+  });
+
+  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function exportTip(text, cls) {
+  var tip = document.getElementById('exportTip');
+  if (!tip) return;
+  tip.textContent = text;
+  tip.className = 'export-tip ' + (cls || '');
+}
+
+function copyReport() {
+  var ta = document.getElementById('exportText');
+  if (!ta) return;
+  var text = ta.value;
+
+  function done() { exportTip('已复制，直接粘贴给老师就行。', 'ok'); }
+
+  function manual() {
+    ta.focus();
+    ta.select();
+    var copied = false;
+    try { copied = document.execCommand('copy'); } catch (e) { copied = false; }
+    if (copied) done();
+    else exportTip('浏览器不让自动复制，内容已经选中了，按 Ctrl+C（Mac 按 Command+C）手动复制即可。', 'warn');
+  }
+
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(done, manual);
+  } else {
+    manual();
+  }
+}
+
+function downloadReport() {
+  var ta = document.getElementById('exportText');
+  if (!ta) return;
+  var name = '错题报告_' + todayStr() + '.md';
+  var blob = new Blob([ta.value], { type: 'text/markdown;charset=utf-8' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+  exportTip('已下载：' + name, 'ok');
+}
+
+function findBase(p) {
+  var arr = BANK[p.type];
+  for (var i = 0; i < arr.length; i++) {
+    if (arr[i].id === p.key) return arr[i];
+  }
+  return null;
+}
+
+function goNewRound() {
+  startRound(ROUND_SPEC);
+  document.getElementById('practice').scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+document.getElementById('againTop').addEventListener('click', goNewRound);
+document.getElementById('againBar').addEventListener('click', goNewRound);
+
+/* 页面里静态写的知识卡片代码块，统一过高亮 */
+document.querySelectorAll('pre.code > code').forEach(function (node) {
+  node.innerHTML = hl(node.textContent);
+});
+
+startRound(ROUND_SPEC);
+</script>
+</body>
+</html>
