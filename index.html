@@ -268,6 +268,7 @@
   .b-single { color: #7aa2f7; border-color: rgba(122,162,247,.35); background: rgba(122,162,247,.1); }
   .b-fill   { color: #d29922; border-color: rgba(210,153,34,.35); background: rgba(210,153,34,.1); }
   .b-judge  { color: #c792ea; border-color: rgba(199,146,234,.35); background: rgba(199,146,234,.1); }
+  .b-code   { color: #5eead4; border-color: rgba(94,234,212,.35); background: rgba(94,234,212,.1); }
   .q-idx { font-size: 12px; color: #6b7684; }
   .q-text { font-size: 14.5px; color: #dde5ee; margin-bottom: 4px; }
 
@@ -293,6 +294,7 @@
   .opt.wrong { border-color: #f85149; background: rgba(248,81,73,.1); color: #ffd9d6; }
   .opt.wrong .ok { color: #f85149; }
 
+  .code-tip { font-size: 12.5px; color: #7d8896; margin: 10px 0 0; }
   .fill-row { display: flex; gap: 8px; margin-top: 10px; }
   .fill-row input {
     flex: 1; min-width: 0;
@@ -494,8 +496,8 @@
       <span class="tag">嵌入式方向</span>
       <span class="tag">Day 1</span>
       <span class="tag">Day 2</span>
-      <span class="tag">题库 72 道</span>
-      <span class="tag">每轮随机 15 题</span>
+      <span class="tag">题库 84 道</span>
+      <span class="tag">每轮随机 20 题</span>
     </div>
     <div class="nav">
       <a href="#day1">Day 1 · 引用</a>
@@ -797,10 +799,10 @@ g(1);                       // 二义性：编译器不知道选谁</code></pre>
 
   <!-- ===== 练习 ===== -->
   <div class="sec-title" id="practice">练习</div>
-  <p class="sec-desc">每轮从题库随机抽 <b>8 道单选 + 4 道填空 + 3 道判断</b>，题目和选项顺序都是打乱的，同一轮不会重复。点「再来一轮」重新抽题并清零计分。</p>
+  <p class="sec-desc">每轮从题库随机抽 <b>9 道单选 + 4 道填空 + 3 道判断 + 4 道代码题</b>，题目和选项顺序都是打乱的，同一轮不会重复。代码题把空填进输入框，回车提交即可。点「再来一轮」重新抽题并清零计分。</p>
 
   <div class="stats">
-    <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg">0 / 15</div></div>
+    <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg">0 / 20</div></div>
     <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore">0</div></div>
     <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate">—</div></div>
     <button class="again" id="againBar">再来一轮</button>
@@ -838,7 +840,7 @@ function hl(src) {
 }
 
 /* ============================================================
-   题库（单选 29 / 填空 11 / 判断 10，共 50 道）
+   题库（单选 41 / 填空 16 / 判断 15 / 代码 12，共 84 道）
    ============================================================ */
 var BANK = {
 
@@ -1588,6 +1590,118 @@ judge: [
     ans: 0,
     why: '封条贴上就改不了，a = 20 会被编译器拦下。想留一个能改的副本，就另外定义变量把值抄过去，别去动 const 那个。'
   }
+],
+
+/* ---------------- 代码题 12 道（6 天1 + 6 天2） ---------------- */
+code: [
+  {
+    id: 'c01',
+    day: 'day1',
+    q: '读代码，写出终端里打印的数字。',
+    code: 'int a = 10;\nint& r = a;   // r 是 a 的别名\nr = 20;\ncout << a << endl;',
+    answers: ['20'],
+    display: '20',
+    why: 'r 不是新箱子，只是 a 的第二张纸条：给 r 赋值就是给 a 赋值，所以 a 变成 20。答 10 是把它当成了独立变量；答 0 或"不确定"是把引用当成了新开的空箱子——引用不新开箱子，也不许空着。'
+  },
+  {
+    id: 'c02',
+    day: 'day1',
+    q: '补全指针版 swap 的空白，让三个变量完成交换。',
+    code: 'void swap(int* x, int* y) {\n  int t = ____;   // 先把一个值存起来\n  *x = *y;\n  *y = t;\n}',
+    answers: ['*x'],
+    display: '*x',
+    why: 't 要存的是 x 指过去那口箱子的内容，所以写 *x。写成 x 存的是门牌号，后面 *y = t 就变成拿门牌号去写内存，类型也对不上；写成 y 是另一口箱子的内容，交换结果就错了。'
+  },
+  {
+    id: 'c03',
+    day: 'day1',
+    q: '把形参类型补全：既不要拷贝一份字符串，也不许函数里改它。',
+    code: 'void show(____ s) {\n  cout << s << endl;\n}',
+    answers: ['const string&', 'const string &', 'const std::string&'],
+    display: 'const string&',
+    why: '& 让它递原件、不拷贝；const 是封条，保证函数里改不动。只写 const string 是拷贝一份再贴封条，满足"不许改"但白拷贝了；只写 string& 省了拷贝，可函数里就能改你的字符串了。'
+  },
+  {
+    id: 'c04',
+    day: 'day1',
+    q: '用全名访问 dev 里的 x，把空白补全。',
+    code: 'namespace dev { int x = 1; }\nint main() {\n  cout << ____ << endl;\n  return 0;\n}',
+    answers: ['dev::x'],
+    display: 'dev::x',
+    why: ':: 是"谁家的"，dev::x 才是那个空间里的 x。直接写 x 编译器找不到（会说 x 没声明）；写 dev.x 是 C 结构体的写法，命名空间不认；写 dev::y 名字本身就不对。'
+  },
+  {
+    id: 'c05',
+    day: 'day1',
+    q: '读代码，写出终端打印的两个数字（中间有个空格）。',
+    code: 'void swap(int x, int y) { int t = x; x = y; y = t; }\nint a = 1, b = 2;\nswap(a, b);\ncout << a << " " << b << endl;',
+    answers: ['1 2', '12'],
+    display: '1 2',
+    why: '值传递是复印两份递进去，函数里换的是复印件，原件没动，所以还是 1 2。答 2 1 说明以为形参和实参是同一口箱子——想真换，形参得写成 int& 或 int*。'
+  },
+  {
+    id: 'c06',
+    day: 'day1',
+    q: '补全引用版 swap 的空白，让交换真正生效。',
+    code: 'void swap(int& x, int& y) {\n  int t = x;\n  ____ = y;   // 第二步：把 y 的值放进 x\n  y = t;\n}',
+    answers: ['x'],
+    display: 'x',
+    why: 'x 本身就是引用，直接写 x 就是在改调用者那口箱子。写 *x 编译不过（引用不是地址，不用解引用）；写 t 会把刚存好的值又冲掉，交换就白做了。'
+  },
+  {
+    id: 'c07',
+    day: 'day2',
+    q: '这块内存是用 new[] 要来的，补全释放它的那一行。',
+    code: 'int* p = new int[10];\n// 释放这块内存\n____',
+    answers: ['delete[] p', 'delete [] p', 'delete[]p;'],
+    display: 'delete[] p;',
+    why: 'new[] 必须配 delete[]，方括号是告诉编译器"这是一排箱子，要挨个拆"。写 delete p 只拆第一个、其余泄漏（很多平台直接崩）；写 free(p) 是另一套账本，new 出来的不能用 free 还。'
+  },
+  {
+    id: 'c08',
+    day: 'day2',
+    q: 'delete 之后补一行，让这个指针不再指向已经还掉的那块内存。',
+    code: 'int* p = new int(5);\ndelete p;\n____   // 防止悬垂指针被误用',
+    answers: ['p = nullptr', 'p=nullptr', 'p = NULL', 'p = 0'],
+    display: 'p = nullptr;',
+    why: 'delete 只把内存还回去，指针里那个旧门牌号还在，不置空就是悬垂指针。置成 nullptr 后 if (p) 才拦得住，重复 delete 也不出事。只写 nullptr 是没赋值；再写 delete p 是重复释放。'
+  },
+  {
+    id: 'c09',
+    day: 'day2',
+    q: '读代码，写出 p.sum() 打印的数字。',
+    code: 'struct Point {\n  int x, y;\n  int sum() const { return x + y; }\n};\nPoint p{3, 4};\ncout << p.sum() << endl;',
+    answers: ['7'],
+    display: '7',
+    why: '结构体里可以带成员函数，sum 直接用自己的 x、y 相加，3+4=7。答 34 是把两个数字当字符串接起来了；答"编译不过"是还停在 C 的观念里，以为 struct 只能放数据。'
+  },
+  {
+    id: 'c10',
+    day: 'day2',
+    q: '读代码，写出终端打印的数字。',
+    code: 'bool flag = true;\nint n = flag;      // bool 转 int\ncout << n + 1 << endl;',
+    answers: ['2'],
+    display: '2',
+    why: 'true 转成 int 就是 1，1+1=2。答 1 是漏了 +1；答 0 是把 true 当成了 0，正好反了；答"真"是把 bool 当字符串——它本质就是一个 1 字节的整数。'
+  },
+  {
+    id: 'c11',
+    day: 'day2',
+    q: '读代码，写出终端打印的数字。',
+    code: 'int add(int a, int b = 10) {\n  return a + b;\n}\ncout << add(5) << endl;',
+    answers: ['15'],
+    display: '15',
+    why: '调用时省掉的那个参数自动拿默认值 10，5+10=15。答 5 是以为省略的参数当 0；答"编译不过"通常是没记住默认值必须从右往左连续给——这里只给最右边一个，是合法的。'
+  },
+  {
+    id: 'c12',
+    day: 'day2',
+    q: 'f(1.0f) 会调用哪个版本？填 f(int) 或 f(double)。',
+    code: 'void f(int x);\nvoid f(double x);\nf(1.0f);',
+    answers: ['f(double)', 'f(double x)', 'double'],
+    display: 'f(double)',
+    why: 'float 转 double 叫"提升"，转 int 叫"截断"，编译器优先选损失小的那条路，所以走 f(double)。填 f(int) 是以为 float 会直接变整数；两个版本其实都能匹配，只是 double 更贴近，这里不报二义性。'
+  }
 ]
 
 };
@@ -1595,10 +1709,10 @@ judge: [
 /* ============================================================
    随机抽题 / 打乱
    ============================================================ */
-var ROUND_SPEC = { single: 8, fill: 4, judge: 3 };
+var ROUND_SPEC = { single: 9, fill: 4, judge: 3, code: 4 };
 /* 每轮里 day1 : day2 的配额，凑不够就从另一天补 */
-var DAY_MIX = { single: [4, 4], fill: [2, 2], judge: [2, 1] };
-var LABEL = { single: '单选', fill: '填空', judge: '判断' };
+var DAY_MIX = { single: [5, 4], fill: [2, 2], judge: [2, 1], code: [2, 2] };
+var LABEL = { single: '单选', fill: '填空', judge: '判断', code: '代码' };
 var LETTERS = 'ABCDEFG';
 
 function shuffle(arr) {
@@ -1639,7 +1753,7 @@ function prepare(base, type) {
     };
   }
   return {
-    key: base.id, type: 'fill',
+    key: base.id, type: (type === 'code' ? 'code' : 'fill'),
     q: base.q, code: base.code || '',
     answers: base.answers,
     answerText: base.display,
@@ -1669,7 +1783,7 @@ function pickMix(list, total, mix) {
 function startRound(spec) {
   spec = spec || ROUND_SPEC;
   var items = [];
-  ['single', 'fill', 'judge'].forEach(function (t) {
+  ['single', 'fill', 'judge', 'code'].forEach(function (t) {
     pickMix(BANK[t], spec[t], DAY_MIX[t]).forEach(function (b) {
       items.push(prepare(b, t));
     });
@@ -1688,6 +1802,17 @@ function norm(s) {
     return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0);
   });
   return s.replace(/\s+/g, '');
+}
+
+/* 代码题专用的宽松比较：忽略大小写、空白、分号、全角符号 */
+function normCode(s) {
+  if (s === null || s === undefined) return '';
+  s = String(s);
+  s = s.replace(/[\uFF01-\uFF5E]/g, function (ch) {
+    return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0);
+  });
+  s = s.replace(/\u3000/g, ' ');
+  return s.toLowerCase().replace(/\s+/g, '').replace(/;/g, '');
 }
 
 function stripHtml(s) {
@@ -1760,11 +1885,17 @@ function buildQ(p, i) {
     });
     body.appendChild(row);
   } else {
+    if (p.type === 'code') {
+      var ctip = document.createElement('div');
+      ctip.className = 'code-tip';
+      ctip.textContent = '把 ____ 处该填的内容写进输入框：分号、空格、大小写都不计较。';
+      body.appendChild(ctip);
+    }
     var frow = document.createElement('div');
     frow.className = 'fill-row';
     var inp = document.createElement('input');
     inp.type = 'text';
-    inp.placeholder = '输入答案，回车提交';
+    inp.placeholder = p.type === 'code' ? '填入空白处的代码，回车提交' : '输入答案，回车提交';
     inp.value = st ? st.raw : (R.draft[p.key] || '');
     inp.addEventListener('input', function () { R.draft[p.key] = inp.value; });
     if (st) {
@@ -1817,7 +1948,9 @@ function submitFill(p, val) {
     return;
   }
   var v = norm(val);
-  var ok = p.answers.some(function (a) { return norm(a) === v; });
+  var ok = p.answers.some(function (a) {
+    return p.type === 'code' ? normCode(a) === normCode(val) : norm(a) === v;
+  });
   R.ans[p.key] = { ok: ok, user: val, userText: val, raw: val };
   render();
 }
@@ -1938,7 +2071,7 @@ function fmtDuration(ms) {
 }
 
 function rightAnswerLine(p) {
-  if (p.type === 'fill') return stripHtml(p.answerText);
+  if (p.type === 'fill' || p.type === 'code') return stripHtml(p.answerText);
   if (p.type === 'judge') return p.ansIdx === 0 ? '对' : '错';
   return LETTERS[p.ansIdx] + '. ' + stripHtml(p.options[p.ansIdx].text);
 }
@@ -1972,9 +2105,9 @@ function buildReport(wrong) {
       L.push('');
     }
 
-    if (p.type === 'fill') {
+    if (p.type === 'fill' || p.type === 'code') {
       L.push('- 你的答案：`' + String(st.raw || '（空）') + '`');
-      L.push('- 正确答案：`' + stripHtml(p.answerText) + '`');
+      L.push('- 标准答案：`' + stripHtml(p.answerText) + '`');
       L.push('');
     } else {
       var opts = (p.type === 'judge')
