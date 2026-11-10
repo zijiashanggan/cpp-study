@@ -286,16 +286,41 @@
     outline: none;
   }
   .aiq:focus { border-color: #7dd3fc; }
-  .aians {
+  .chatlog {
+    max-height: 340px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
     margin-top: 10px;
-    font-size: 13.5px;
-    line-height: 1.85;
-    color: #cfdae7;
-    white-space: pre-wrap;
+    padding-right: 3px;
   }
-  .aians .who { display: block; font-size: 11.5px; color: #7dd3fc; margin-bottom: 3px; }
-  .aians.err { color: #ffb3ae; }
-  .aians.load { color: #f0c86b; }
+  .msg {
+    margin: 8px 0;
+    padding: 8px 11px;
+    border-radius: 10px;
+    font-size: 13.5px;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .msg:first-child { margin-top: 0; }
+  .msg.me {
+    background: rgba(122,162,247,.12);
+    border: 1px solid rgba(122,162,247,.26);
+    color: #cfdae7;
+  }
+  .msg.ai {
+    background: rgba(255,255,255,.035);
+    border: 1px solid #2c3542;
+    color: #cfdae7;
+  }
+  .msg.ai.load { color: #f0c86b; border-color: rgba(240,200,107,.28); }
+  .msg.ai.err { color: #ffb3ae; border-color: rgba(248,81,73,.30); }
+  .msg .who { display: block; font-size: 11.5px; color: #7dd3fc; margin-bottom: 3px; }
+  .chatbar {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; flex-wrap: wrap; margin-top: 8px;
+  }
+  .chatbar .cnt { font-size: 12px; color: #94a3b3; }
   .ainote { margin-top: 9px; font-size: 12.5px; line-height: 1.7; color: #94a3b3; }
   .linkbtn {
     background: none; border: 0; padding: 0;
@@ -2638,12 +2663,42 @@ function closeAiCfg() {
   document.getElementById('aiMask').className = 'aimask hidden';
 }
 
-function aiNeedCfg(ans, prefix) {
-  ans.className = 'aians err';
-  ans.innerHTML = (prefix || '还没填 API Key。') +
+function aiAddMsg(box, role, content, extra, asHtml) {
+  var log = box.querySelector('.chatlog');
+  if (!log) return null;
+  var d = document.createElement('div');
+  d.className = 'msg ' + role + (extra ? ' ' + extra : '');
+  if (role === 'ai') {
+    var who = document.createElement('span');
+    who.className = 'who';
+    who.textContent = aiName() + ' · ' + AICFG.model;
+    d.appendChild(who);
+  }
+  if (asHtml) {
+    var sp = document.createElement('span');
+    sp.innerHTML = content;
+    d.appendChild(sp);
+  } else {
+    d.appendChild(document.createTextNode(content));
+  }
+  log.appendChild(d);
+  log.scrollTop = log.scrollHeight;
+  return d;
+}
+
+function aiRefreshCnt(box) {
+  var c = box.querySelector('.chatbar .cnt');
+  if (!c) return;
+  var n = Math.floor(box._history.length / 2);
+  c.textContent = n ? '已保留 ' + n + ' / 5 轮对话' : '还没有对话';
+}
+
+function aiNeedCfg(box, prefix) {
+  var el = aiAddMsg(box, 'ai',
+    (prefix || '还没填 API Key。') +
     ' 点 <button type="button" class="linkbtn" data-cfg="1">这里去设置</button> 填一下' +
-    '（和函数卡页面共用同一份配置，那边填过这边就能直接用）。';
-  var b = ans.querySelector('[data-cfg]');
+    '（和函数卡页面共用同一份配置，那边填过这边就能直接用）。', 'err', true);
+  var b = el && el.querySelector('[data-cfg]');
   if (b) b.addEventListener('click', openAiCfg);
 }
 
@@ -2693,6 +2748,13 @@ function aiMount(host, ctx, presetQ, note) {
   host.innerHTML = '';
   var box = document.createElement('div');
   box.className = 'aibox';
+  box._ctx = ctx;
+  box._history = [];       /* [{role,content}...]，只留最近 5 轮 */
+  box._failQ = '';         /* 上次失败的问题，重试时不重复贴气泡 */
+  box._errEl = null;
+
+  var log = document.createElement('div');
+  log.className = 'chatlog';
 
   var row = document.createElement('div');
   row.className = 'airow';
@@ -2700,18 +2762,34 @@ function aiMount(host, ctx, presetQ, note) {
   inp.className = 'aiq';
   inp.type = 'text';
   inp.maxLength = 300;
-  inp.setAttribute('placeholder', '就上面这段内容提问，回车发送');
+  inp.setAttribute('placeholder', '继续追问，回车发送');
   var send = document.createElement('button');
   send.type = 'button';
   send.className = 'aibtn send primary';
   send.textContent = '发送';
   row.appendChild(inp);
   row.appendChild(send);
+
+  var bar = document.createElement('div');
+  bar.className = 'chatbar';
+  var cnt = document.createElement('span');
+  cnt.className = 'cnt';
+  var clear = document.createElement('button');
+  clear.type = 'button';
+  clear.className = 'aibtn';
+  clear.textContent = '清空对话';
+  bar.appendChild(cnt);
+  bar.appendChild(clear);
+
+  box.appendChild(log);
   box.appendChild(row);
+  box.appendChild(bar);
 
   var noteEl = document.createElement('div');
   noteEl.className = 'ainote';
-  noteEl.innerHTML = note + ' <button type="button" class="linkbtn" data-cfg="1">AI 设置</button>';
+  noteEl.innerHTML = note +
+    ' 每次只把最近 5 轮对话和这段内容发给模型，消耗的是你自己的 key 额度。' +
+    ' <button type="button" class="linkbtn" data-cfg="1">AI 设置</button>';
   box.appendChild(noteEl);
 
   if (AICFG.p === 'ollama' && aiIsMobile()) {
@@ -2721,61 +2799,84 @@ function aiMount(host, ctx, presetQ, note) {
     box.appendChild(warn);
   }
 
-  var ans = document.createElement('div');
-  ans.className = 'aians';
-  box.appendChild(ans);
-
   host.appendChild(box);
+  aiRefreshCnt(box);
 
   var cfgBtn = noteEl.querySelector('[data-cfg]');
   if (cfgBtn) cfgBtn.addEventListener('click', openAiCfg);
-  send.addEventListener('click', function () { aiAsk(box, ctx); });
+  send.addEventListener('click', function () { aiAsk(box); });
   inp.addEventListener('keydown', function (e) {
-    if (e.key === 'Enter') { e.preventDefault(); aiAsk(box, ctx); }
+    if (e.key === 'Enter') { e.preventDefault(); aiAsk(box); }
+  });
+  /* 手机上键盘弹起时把输入框滚到可视区中间，别被挡住 */
+  inp.addEventListener('focus', function () {
+    setTimeout(function () {
+      try { inp.scrollIntoView({ block: 'center', behavior: 'smooth' }); }
+      catch (e) { inp.scrollIntoView(); }
+    }, 250);
+  });
+  clear.addEventListener('click', function () {
+    if (AI_BUSY) return;
+    box._history = [];
+    box._failQ = '';
+    box._errEl = null;
+    log.innerHTML = '';
+    aiRefreshCnt(box);
+    inp.value = '';
+    send.textContent = '发送';
+    inp.focus();
   });
 
-  if (presetQ) { inp.value = presetQ; aiAsk(box, ctx); }
+  if (presetQ) { inp.value = presetQ; aiAsk(box); }
   else inp.focus();
 }
 
-function aiAsk(box, ctx) {
-  var ans = box.querySelector('.aians');
+function aiAsk(box) {
+  var log = box.querySelector('.chatlog');
   var btn = box.querySelector('.aibtn.send');
   var qEl = box.querySelector('.aiq');
-  if (!ans || !btn || !qEl) return;
+  if (!log || !btn || !qEl) return;
   if (AI_BUSY) {
-    ans.className = 'aians load';
-    ans.textContent = '上一个问题还在等回复，稍等一下…';
+    var busy = aiAddMsg(box, 'ai', '上一个问题还在等回复，稍等一下…', 'load');
+    setTimeout(function () {
+      if (busy && busy.parentNode) busy.parentNode.removeChild(busy);
+    }, 3000);
     return;
   }
 
   var q = String(qEl.value || '').trim().slice(0, 300);
   if (!q) {
-    ans.className = 'aians err';
-    ans.textContent = '先写一句要问什么，比如「这段代码为什么要判空？」';
+    aiAddMsg(box, 'ai', '先写一句要问什么，比如「这段代码为什么要判空？」', 'err');
     qEl.focus();
     return;
   }
   if (!AICFG.key && AICFG.p !== 'ollama') {
-    aiNeedCfg(ans, '还没填 API Key。');
+    aiNeedCfg(box, '还没填 API Key。');
     openAiCfg();
     return;
   }
   if (!AICFG.base || !AICFG.model) {
-    aiNeedCfg(ans, '接口地址或模型名还没填。');
+    aiNeedCfg(box, '接口地址或模型名还没填。');
     openAiCfg();
     return;
   }
+  /* 上次失败的报错气泡先收起来，重试时不留一堆红字 */
+  if (box._errEl && box._errEl.parentNode) box._errEl.parentNode.removeChild(box._errEl);
+  box._errEl = null;
+  /* 同一个问题重试就不再重复贴一遍「我」的气泡 */
+  if (box._failQ !== q) aiAddMsg(box, 'me', q);
+  box._failQ = '';
 
   var sys = '你是 C++ 嵌入式方向的助教，学生是刚入门的初学者。只围绕我给你的材料回答，用中文大白话，' +
     '先给结论，再补一个很小的例子或类比；如果材料里有正确答案和学生的错选，重点讲清学生为什么会错、正确思路是什么。' +
     '不要展开无关知识，不要用 Markdown 表格。回答尽量控制在 250 字以内。';
+  /* 只带最近 5 轮（10 条）+ 这一次的材料和问题 */
+  var msgs = [{ role: 'system', content: sys }]
+    .concat(box._history.slice(-10))
+    .concat([{ role: 'user', content: '材料：\n' + box._ctx + '\n\n学生的问题：' + q }]);
   var body = {
     model: AICFG.model,
-    messages: [
-      { role: 'system', content: sys },
-      { role: 'user', content: '材料：\n' + ctx + '\n\n学生的问题：' + q }
-    ],
+    messages: msgs,
     max_tokens: 400,
     temperature: 0.3,
     stream: false
@@ -2785,10 +2886,9 @@ function aiAsk(box, ctx) {
   AI_BUSY = true;
   btn.disabled = true;
   btn.textContent = '等待中…';
-  ans.className = 'aians load';
-  ans.textContent = AICFG.p === 'ollama'
+  var loadEl = aiAddMsg(box, 'ai', AICFG.p === 'ollama'
     ? '本机模型正在加载，可能要等一分钟…（冷启动实测约 55 秒，最多等 90 秒）'
-    : '正在等回复…（最多等 90 秒）';
+    : '正在等回复…（最多等 90 秒）', 'load');
 
   AI_ABORT = ('AbortController' in window) ? new AbortController() : null;
   var timer = setTimeout(function () {
@@ -2800,13 +2900,14 @@ function aiAsk(box, ctx) {
     AI_BUSY = false;
     AI_ABORT = null;
     btn.disabled = false;
+    if (loadEl && loadEl.parentNode) loadEl.parentNode.removeChild(loadEl);
   }
   function fail(html) {
     finish();
     btn.textContent = '再问一次';
-    ans.className = 'aians err';
-    ans.innerHTML = html;
-    var c = ans.querySelector('[data-cfg]');
+    box._failQ = q;                 /* 输入框里的问题保留着，直接再点一次即可 */
+    box._errEl = aiAddMsg(box, 'ai', html, 'err', true);
+    var c = box._errEl && box._errEl.querySelector('[data-cfg]');
     if (c) c.addEventListener('click', openAiCfg);
   }
 
@@ -2837,13 +2938,12 @@ function aiAsk(box, ctx) {
     if (!out) throw new Error('模型返回了空内容');
     finish();
     btn.textContent = '发送';
-    ans.className = 'aians';
-    ans.innerHTML = '';
-    var who = document.createElement('span');
-    who.className = 'who';
-    who.textContent = aiName() + ' · ' + AICFG.model;
-    ans.appendChild(who);
-    ans.appendChild(document.createTextNode(String(out).trim()));
+    var answer = String(out).trim();
+    aiAddMsg(box, 'ai', answer);
+    /* 只保留最近 5 轮，超了丢最早的 */
+    box._history.push({ role: 'user', content: q }, { role: 'assistant', content: answer });
+    if (box._history.length > 10) box._history = box._history.slice(-10);
+    aiRefreshCnt(box);
   }).catch(function (err) {
     var m = String((err && err.message) || err);
     if ((err && err.name === 'AbortError') || /abort/i.test(m)) {
