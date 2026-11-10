@@ -249,6 +249,131 @@
     border: 1px solid rgba(210,153,34,.2);
   }
 
+  /* ===== AI 问答 ===== */
+  .aiwrap { margin-top: 12px; }
+  .aibtn {
+    background: rgba(125,211,252,.10);
+    border: 1px solid rgba(125,211,252,.30);
+    color: #9adcff;
+    border-radius: 9px;
+    padding: 7px 13px;
+    font-size: 13px;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background .15s;
+  }
+  .aibtn:hover { background: rgba(125,211,252,.18); }
+  .aibtn[disabled] { opacity: .5; cursor: default; }
+  .aibtn.primary { background: rgba(94,234,212,.14); border-color: rgba(94,234,212,.40); color: #5eead4; }
+  .aibtn.danger { background: rgba(248,81,73,.10); border-color: rgba(248,81,73,.35); color: #ffb3ae; }
+  .aibox {
+    margin-top: 10px;
+    padding: 11px 12px;
+    border: 1px solid #2c3542;
+    border-radius: 10px;
+    background: rgba(125,211,252,.04);
+  }
+  .airow { display: flex; gap: 8px; }
+  .aiq {
+    flex: 1; min-width: 0;
+    background: #0a0e13;
+    border: 1px solid #2a3341;
+    border-radius: 9px;
+    padding: 9px 12px;
+    color: #e6edf3;
+    font-size: 13.5px;
+    font-family: inherit;
+    outline: none;
+  }
+  .aiq:focus { border-color: #7dd3fc; }
+  .aians {
+    margin-top: 10px;
+    font-size: 13.5px;
+    line-height: 1.85;
+    color: #cfdae7;
+    white-space: pre-wrap;
+  }
+  .aians .who { display: block; font-size: 11.5px; color: #7dd3fc; margin-bottom: 3px; }
+  .aians.err { color: #ffb3ae; }
+  .aians.load { color: #f0c86b; }
+  .ainote { margin-top: 9px; font-size: 12.5px; line-height: 1.7; color: #94a3b3; }
+  .linkbtn {
+    background: none; border: 0; padding: 0;
+    color: #7dd3fc; font: inherit; cursor: pointer; text-decoration: underline;
+  }
+  .aimask {
+    position: fixed; inset: 0; z-index: 80;
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px;
+    background: rgba(0,0,0,.62);
+  }
+  .aimask.hidden { display: none; }
+  .aimask .hidden { display: none; }
+  .aidlg {
+    width: 100%; max-width: 520px;
+    max-height: 88vh; overflow-y: auto;
+    background: #151b23;
+    border: 1px solid #2c3542;
+    border-radius: 14px;
+    padding: 18px;
+  }
+  .aidlg h3 { margin: 0 0 10px; font-size: 16.5px; }
+  .aidlg p { margin: 0 0 12px; font-size: 13px; color: #94a3b3; line-height: 1.75; }
+  .aidlg .fld { margin: 10px 0; }
+  .aidlg label { display: block; font-size: 12.5px; color: #a9b8c9; margin-bottom: 5px; }
+  .aidlg input {
+    width: 100%;
+    background: #0a0e13;
+    border: 1px solid #2a3341;
+    border-radius: 9px;
+    padding: 9px 12px;
+    color: #e6edf3;
+    font-size: 13.5px;
+    font-family: ui-monospace, Consolas, monospace;
+    outline: none;
+  }
+  .aidlg input:focus { border-color: #7dd3fc; }
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin: 6px 0 4px; }
+  .pbtn {
+    font-size: 12.5px; padding: 6px 12px;
+    border-radius: 999px;
+    background: rgba(255,255,255,.04);
+    border: 1px solid #2c3542;
+    color: #cfdae7;
+    font-family: inherit; cursor: pointer;
+  }
+  .pbtn.on { background: rgba(125,211,252,.14); border-color: rgba(125,211,252,.45); color: #9adcff; }
+  .ainote-warn {
+    margin-top: 10px;
+    font-size: 12.5px; line-height: 1.75;
+    color: #f0c86b;
+    background: rgba(240,180,41,.08);
+    border: 1px solid rgba(240,180,41,.28);
+    border-radius: 9px;
+    padding: 9px 12px;
+  }
+  .ainote-box {
+    margin-top: 10px;
+    font-size: 12.5px; line-height: 1.8;
+    color: #a9b8c9;
+    background: rgba(255,255,255,.03);
+    border: 1px solid #2c3542;
+    border-radius: 9px;
+    padding: 9px 12px;
+  }
+  .ainote-box code, .ainote-warn code {
+    font-family: ui-monospace, Consolas, monospace;
+    background: rgba(255,255,255,.07);
+    border-radius: 4px;
+    padding: 0 4px;
+    color: #7dd3fc;
+  }
+  .aimodal-actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+  @media (max-width: 560px) {
+    .airow { flex-direction: column; }
+    .airow .aibtn.send { padding: 9px 13px; }
+  }
+
   /* ===== 练习区 ===== */
   .stats {
     position: sticky; top: 0; z-index: 20;
@@ -876,6 +1001,39 @@ g(1);                       // 二义性：编译器不知道选谁</code></pre>
   </section>
 
   <footer>做完这一页，Day 2 就可以进「类与对象、构造与析构」了。</footer>
+</div>
+
+<div class="aimask hidden" id="aiMask">
+  <div class="aidlg" role="dialog" aria-modal="true" aria-labelledby="aiDlgTitle">
+    <h3 id="aiDlgTitle">AI 问答设置</h3>
+    <p>这份配置和「函数卡」页面是同一份（同域名共用），那边填过这里直接就能用。</p>
+    <div class="fld">
+      <label>服务商</label>
+      <div class="chips" id="aiPresets"></div>
+    </div>
+    <div class="fld">
+      <label for="aiBase">接口地址 Base URL</label>
+      <input id="aiBase" type="text" spellcheck="false" autocomplete="off" placeholder="https://api.deepseek.com/v1">
+    </div>
+    <div class="fld">
+      <label for="aiModel">模型名</label>
+      <input id="aiModel" type="text" spellcheck="false" autocomplete="off" placeholder="deepseek-chat">
+    </div>
+    <div class="fld">
+      <label for="aiKey">API Key</label>
+      <input id="aiKey" type="password" spellcheck="false" autocomplete="off" placeholder="sk-...">
+      <div class="ainote" id="aiKeyState"></div>
+    </div>
+    <div class="ainote-warn hidden" id="aiMobileNote">手机上用不了本机 Ollama：手机的 localhost 是手机自己，不是你的电脑。手机上请选云端服务商并填 key。</div>
+    <div class="ainote-box hidden" id="aiOllamaNote">用本机 Ollama 前，先让它在后台跑起来（<code>ollama serve</code>），并允许这个网页访问：<br>
+      设环境变量 <code>OLLAMA_ORIGINS</code> 为 <code>https://zijiashanggan.github.io</code>（本地调试再加 <code>http://localhost:8000</code>），改完必须重启 ollama 才生效。第一次提问模型要加载，等一分钟左右正常。</div>
+    <div class="aimodal-actions">
+      <button class="aibtn primary" id="aiSave" type="button">保存</button>
+      <button class="aibtn" id="aiClear" type="button">清空 key</button>
+      <button class="aibtn" id="aiClose" type="button">关闭</button>
+    </div>
+    <div class="ainote" id="aiNow"></div>
+  </div>
 </div>
 
 <script>
@@ -2006,6 +2164,33 @@ function buildQ(t, p, i) {
         (st.ok ? '' : '<div class="ansline">正确答案：<b>' + p.answerText + '</b></div>') +
         '<div class="why">' + p.why + '</div>' +
       '</div>';
+
+    /* 答错就地给一个「问问为什么」，题干/选项/正确答案/错选一起交给 AI */
+    if (!st.ok) {
+      var askWrap = document.createElement('div');
+      askWrap.className = 'aiwrap';
+      var askBtn = document.createElement('button');
+      askBtn.type = 'button';
+      askBtn.className = 'aibtn';
+      askBtn.textContent = '问问为什么';
+      var askHost = document.createElement('div');
+      askWrap.appendChild(askBtn);
+      askWrap.appendChild(askHost);
+      slot.appendChild(askWrap);
+      askBtn.addEventListener('click', function () {
+        if (askHost.getAttribute('data-open') === '1') {
+          askHost.innerHTML = '';
+          askHost.removeAttribute('data-open');
+          askBtn.textContent = '问问为什么';
+          return;
+        }
+        askHost.setAttribute('data-open', '1');
+        askBtn.textContent = '收起';
+        var idx = t.R.list.indexOf(p) + 1;
+        aiMount(askHost, aiWrongCtx(p, idx, st), '这道题我为什么错了？正确答案为什么对？',
+                '上下文已带上：题干、全部选项、正确答案、你的错选和原解析。');
+      });
+    }
   }
   return card;
 }
@@ -2086,7 +2271,7 @@ function updateSummary(t) {
     html += '<div class="wrong-head"><span>' + t.name + ' 本轮错题（' + wrong.length + ' 道）</span>' +
             '<button type="button" class="btn-ghost" data-export="1">导出错题报告</button></div>';
     html += '<ul class="wrong-list">';
-    wrong.forEach(function (p) {
+    wrong.forEach(function (p, wi) {
       var idx = t.R.list.indexOf(p) + 1;
       var raw = stripHtml(p.q);
       if (raw.length > 46) raw = raw.slice(0, 46) + '…';
@@ -2096,6 +2281,8 @@ function updateSummary(t) {
                 '<div class="wa">你的答案：<span class="bad">' + st.userText + '</span>　' +
                 '正确：<span class="good">' + p.answerText + '</span></div>' +
                 '<div class="ww">' + p.why + '</div>' +
+                '<div class="aiwrap"><button type="button" class="aibtn" data-wq="' + wi + '">问问为什么</button>' +
+                '<div class="aihost"></div></div>' +
               '</li>';
     });
     html += '</ul>';
@@ -2117,6 +2304,28 @@ function updateSummary(t) {
 
   box.className = 'show';
   box.innerHTML = html;
+
+  /* 错题里的「问问为什么」：把题干、选项、正确答案、你的错选一起交给 AI */
+  Array.prototype.forEach.call(box.querySelectorAll('[data-wq]'), function (btn) {
+    btn.addEventListener('click', function () {
+      var wi = parseInt(btn.getAttribute('data-wq'), 10);
+      var p = wrong[wi];
+      if (!p) return;
+      var host = btn.parentNode.querySelector('.aihost');
+      if (host.getAttribute('data-open') === '1') {
+        host.innerHTML = '';
+        host.removeAttribute('data-open');
+        btn.textContent = '问问为什么';
+        return;
+      }
+      host.setAttribute('data-open', '1');
+      btn.textContent = '收起';
+      var idx = t.R.list.indexOf(p) + 1;
+      aiMount(host, aiWrongCtx(p, idx, t.R.ans[p.key]),
+              '这道题我为什么错了？正确答案为什么对？',
+              '上下文已带上：题干、全部选项、正确答案、你的错选和原解析。');
+    });
+  });
 
   var redo = document.getElementById('redo' + t.id);
   if (redo) {
@@ -2340,6 +2549,382 @@ document.querySelectorAll('pre.code > code').forEach(function (node) {
 
 startRound(TRACKS.d1);
 startRound(TRACKS.d2);
+
+/* ============================================================
+   AI 问答（和函数卡页面共用同一份配置 cpp_ai_cfg_v1）
+   ============================================================ */
+var AI_STORE = 'cpp_ai_cfg_v1';
+var AI_PRESETS = [
+  { id:'ollama',      name:'Ollama（本机）', base:'http://localhost:11434/v1',                        model:'qwen2.5:3b' },
+  { id:'deepseek',    name:'DeepSeek',      base:'https://api.deepseek.com/v1',                        model:'deepseek-chat' },
+  { id:'dashscope',   name:'通义千问',       base:'https://dashscope.aliyuncs.com/compatible-mode/v1', model:'qwen-plus' },
+  { id:'siliconflow', name:'硅基流动',       base:'https://api.siliconflow.cn/v1',                     model:'Qwen/Qwen2.5-7B-Instruct' },
+  { id:'custom',      name:'自定义',         base:'',                                                 model:'' }
+];
+var AI_TIMEOUT = 90000;      /* 本机 Ollama 冷启动首字实测约 55 秒，25 秒必然超时 */
+var AI_MAX_CONTEXT = 2600;
+var AI_BUSY = false;
+var AI_ABORT = null;
+
+var AICFG = (function () {
+  var d = { p:'deepseek', base:'https://api.deepseek.com/v1', model:'deepseek-chat', key:'' };
+  try {
+    var raw = localStorage.getItem(AI_STORE);
+    if (raw) {
+      var o = JSON.parse(raw);
+      if (o && typeof o === 'object') {
+        d.p = o.p || d.p;
+        d.base = typeof o.base === 'string' && o.base ? o.base : d.base;
+        d.model = typeof o.model === 'string' && o.model ? o.model : d.model;
+        d.key = typeof o.key === 'string' ? o.key : '';
+      }
+    }
+  } catch (e) {}
+  return d;
+})();
+
+function aiPreset(id) {
+  for (var i = 0; i < AI_PRESETS.length; i++) if (AI_PRESETS[i].id === id) return AI_PRESETS[i];
+  return AI_PRESETS[1];
+}
+function aiName() { return aiPreset(AICFG.p).name; }
+function aiSaveCfg() {
+  try { localStorage.setItem(AI_STORE, JSON.stringify(AICFG)); } catch (e) {}
+}
+function aiIsMobile() {
+  return /Android|iPhone|iPad|iPod|Mobile|HarmonyOS/i.test(navigator.userAgent || '') ||
+    !!(window.matchMedia && window.matchMedia('(max-width:640px)').matches);
+}
+function aiNowText() {
+  return '当前：' + aiName() + ' · ' + (AICFG.model || '没填模型') + ' · ' +
+    (AICFG.key ? 'key 已保存在本机' : '还没填 key') + ' · 超时 90 秒';
+}
+
+function paintAiCfg() {
+  var chips = document.getElementById('aiPresets');
+  chips.innerHTML = '';
+  AI_PRESETS.forEach(function (pr) {
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'pbtn' + (pr.id === AICFG.p ? ' on' : '');
+    b.textContent = pr.name;
+    b.addEventListener('click', function () {
+      AICFG.p = pr.id;
+      if (pr.id !== 'custom') { AICFG.base = pr.base; AICFG.model = pr.model; }
+      if (pr.id === 'ollama') { if (!AICFG.key) AICFG.key = 'ollama'; }
+      else if (AICFG.key === 'ollama') { AICFG.key = ''; }
+      aiSaveCfg();
+      paintAiCfg();
+    });
+    chips.appendChild(b);
+  });
+  document.getElementById('aiBase').value = AICFG.base;
+  document.getElementById('aiModel').value = AICFG.model;
+  document.getElementById('aiKey').value = AICFG.key;
+  document.getElementById('aiKeyState').textContent = AICFG.key
+    ? (AICFG.p === 'ollama' ? '本机 Ollama 不校验 key，填 ollama 就行。' : 'key 已保存，和函数卡页面共用同一份。')
+    : '还没填 key。';
+  document.getElementById('aiMobileNote').className =
+    'ainote-warn' + ((AICFG.p === 'ollama' && aiIsMobile()) ? '' : ' hidden');
+  document.getElementById('aiOllamaNote').className =
+    'ainote-box' + (AICFG.p === 'ollama' ? '' : ' hidden');
+  document.getElementById('aiNow').textContent = aiNowText();
+}
+function openAiCfg() {
+  paintAiCfg();
+  document.getElementById('aiMask').className = 'aimask';
+}
+function closeAiCfg() {
+  document.getElementById('aiMask').className = 'aimask hidden';
+}
+
+function aiNeedCfg(ans, prefix) {
+  ans.className = 'aians err';
+  ans.innerHTML = (prefix || '还没填 API Key。') +
+    ' 点 <button type="button" class="linkbtn" data-cfg="1">这里去设置</button> 填一下' +
+    '（和函数卡页面共用同一份配置，那边填过这边就能直接用）。';
+  var b = ans.querySelector('[data-cfg]');
+  if (b) b.addEventListener('click', openAiCfg);
+}
+
+/* 把一张知识卡的标题、要点、代码、术语对照整段抽出来当上下文 */
+function aiCardCtx(card) {
+  var clone = card.cloneNode(true);
+  var w = clone.querySelector('.aiwrap');
+  if (w) w.parentNode.removeChild(w);
+  var out = [];
+  Array.prototype.forEach.call(clone.querySelectorAll('h3, pre, p, li'), function (el) {
+    var t = (el.textContent || '').replace(/[ \t]+/g, ' ').replace(/\s+/g, ' ').trim();
+    if (!t) return;
+    if (el.tagName === 'H3') out.push('【卡片】' + t.replace(/^\d+\s*/, ''));
+    else if (el.tagName === 'PRE') out.push('【代码】\n' + (el.textContent || '').replace(/^\s+|\s+$/g, ''));
+    else if (el.classList.contains('terms')) out.push('【术语对照】' + t.replace(/^术语对照：/, ''));
+    else if (el.classList.contains('keep')) out.push('【记住】' + t.replace(/^记住这句就行：/, ''));
+    else if (el.classList.contains('concl')) out.push('【一句话】' + t);
+    else if (el.tagName === 'LI') out.push('· ' + t);
+    else out.push(t);
+  });
+  var s = out.join('\n');
+  if (s.length > AI_MAX_CONTEXT) s = s.slice(0, AI_MAX_CONTEXT) + '\n…（卡片较长，后文已截断）';
+  return s;
+}
+
+/* 错题上下文：题干、全部选项、正确答案、你的错选、原解析 */
+function aiWrongCtx(p, idx, st) {
+  var L = [];
+  L.push('【题型】' + (LABEL[p.type] || p.type) + '题　第 ' + idx + ' 题');
+  L.push('【题干】' + stripHtml(p.q));
+  if (p.code) L.push('【代码】\n' + p.code);
+  if (p.type === 'single' && p.options) {
+    L.push('【选项】');
+    p.options.forEach(function (o, i) {
+      L.push('  ' + String.fromCharCode(65 + i) + '. ' + stripHtml(o.text));
+    });
+  } else if (p.type === 'judge') {
+    L.push('【选项】A. 对　B. 错');
+  }
+  L.push('【正确答案】' + stripHtml(p.answerText));
+  L.push('【我的错选】' + stripHtml(st && st.userText ? st.userText : '（空）'));
+  L.push('【原解析】' + stripHtml(p.why));
+  return L.join('\n');
+}
+
+function aiMount(host, ctx, presetQ, note) {
+  host.innerHTML = '';
+  var box = document.createElement('div');
+  box.className = 'aibox';
+
+  var row = document.createElement('div');
+  row.className = 'airow';
+  var inp = document.createElement('input');
+  inp.className = 'aiq';
+  inp.type = 'text';
+  inp.maxLength = 300;
+  inp.setAttribute('placeholder', '就上面这段内容提问，回车发送');
+  var send = document.createElement('button');
+  send.type = 'button';
+  send.className = 'aibtn send primary';
+  send.textContent = '发送';
+  row.appendChild(inp);
+  row.appendChild(send);
+  box.appendChild(row);
+
+  var noteEl = document.createElement('div');
+  noteEl.className = 'ainote';
+  noteEl.innerHTML = note + ' <button type="button" class="linkbtn" data-cfg="1">AI 设置</button>';
+  box.appendChild(noteEl);
+
+  if (AICFG.p === 'ollama' && aiIsMobile()) {
+    var warn = document.createElement('div');
+    warn.className = 'ainote-warn';
+    warn.textContent = '手机上选 Ollama 连不到电脑的 localhost（手机的 localhost 是手机自己）。请改用云端服务商并填 key。';
+    box.appendChild(warn);
+  }
+
+  var ans = document.createElement('div');
+  ans.className = 'aians';
+  box.appendChild(ans);
+
+  host.appendChild(box);
+
+  var cfgBtn = noteEl.querySelector('[data-cfg]');
+  if (cfgBtn) cfgBtn.addEventListener('click', openAiCfg);
+  send.addEventListener('click', function () { aiAsk(box, ctx); });
+  inp.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') { e.preventDefault(); aiAsk(box, ctx); }
+  });
+
+  if (presetQ) { inp.value = presetQ; aiAsk(box, ctx); }
+  else inp.focus();
+}
+
+function aiAsk(box, ctx) {
+  var ans = box.querySelector('.aians');
+  var btn = box.querySelector('.aibtn.send');
+  var qEl = box.querySelector('.aiq');
+  if (!ans || !btn || !qEl) return;
+  if (AI_BUSY) {
+    ans.className = 'aians load';
+    ans.textContent = '上一个问题还在等回复，稍等一下…';
+    return;
+  }
+
+  var q = String(qEl.value || '').trim().slice(0, 300);
+  if (!q) {
+    ans.className = 'aians err';
+    ans.textContent = '先写一句要问什么，比如「这段代码为什么要判空？」';
+    qEl.focus();
+    return;
+  }
+  if (!AICFG.key && AICFG.p !== 'ollama') {
+    aiNeedCfg(ans, '还没填 API Key。');
+    openAiCfg();
+    return;
+  }
+  if (!AICFG.base || !AICFG.model) {
+    aiNeedCfg(ans, '接口地址或模型名还没填。');
+    openAiCfg();
+    return;
+  }
+
+  var sys = '你是 C++ 嵌入式方向的助教，学生是刚入门的初学者。只围绕我给你的材料回答，用中文大白话，' +
+    '先给结论，再补一个很小的例子或类比；如果材料里有正确答案和学生的错选，重点讲清学生为什么会错、正确思路是什么。' +
+    '不要展开无关知识，不要用 Markdown 表格。回答尽量控制在 250 字以内。';
+  var body = {
+    model: AICFG.model,
+    messages: [
+      { role: 'system', content: sys },
+      { role: 'user', content: '材料：\n' + ctx + '\n\n学生的问题：' + q }
+    ],
+    max_tokens: 400,
+    temperature: 0.3,
+    stream: false
+  };
+  var url = String(AICFG.base).replace(/\/+$/, '') + '/chat/completions';
+
+  AI_BUSY = true;
+  btn.disabled = true;
+  btn.textContent = '等待中…';
+  ans.className = 'aians load';
+  ans.textContent = AICFG.p === 'ollama'
+    ? '本机模型正在加载，可能要等一分钟…（冷启动实测约 55 秒，最多等 90 秒）'
+    : '正在等回复…（最多等 90 秒）';
+
+  AI_ABORT = ('AbortController' in window) ? new AbortController() : null;
+  var timer = setTimeout(function () {
+    if (AI_ABORT) { try { AI_ABORT.abort(); } catch (e) {} }
+  }, AI_TIMEOUT);
+
+  function finish() {
+    clearTimeout(timer);
+    AI_BUSY = false;
+    AI_ABORT = null;
+    btn.disabled = false;
+  }
+  function fail(html) {
+    finish();
+    btn.textContent = '再问一次';
+    ans.className = 'aians err';
+    ans.innerHTML = html;
+    var c = ans.querySelector('[data-cfg]');
+    if (c) c.addEventListener('click', openAiCfg);
+  }
+
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + (AICFG.key || 'ollama')
+    },
+    body: JSON.stringify(body),
+    signal: AI_ABORT ? AI_ABORT.signal : undefined
+  }).then(function (r) {
+    return r.text().then(function (t) {
+      if (!r.ok) {
+        var msg = '';
+        try { var j = JSON.parse(t); msg = (j.error && (j.error.message || j.error.code)) || ''; } catch (e) {}
+        var err = new Error('HTTP ' + r.status + (msg ? '：' + String(msg).slice(0, 120) : ''));
+        err.status = r.status;
+        throw err;
+      }
+      return t;
+    });
+  }).then(function (t) {
+    var data;
+    try { data = JSON.parse(t); } catch (e) { throw new Error('返回的不是 JSON，Base URL 可能填错了'); }
+    var c = data.choices && data.choices[0];
+    var out = (c && ((c.message && c.message.content) || c.text)) || '';
+    if (!out) throw new Error('模型返回了空内容');
+    finish();
+    btn.textContent = '发送';
+    ans.className = 'aians';
+    ans.innerHTML = '';
+    var who = document.createElement('span');
+    who.className = 'who';
+    who.textContent = aiName() + ' · ' + AICFG.model;
+    ans.appendChild(who);
+    ans.appendChild(document.createTextNode(String(out).trim()));
+  }).catch(function (err) {
+    var m = String((err && err.message) || err);
+    if ((err && err.name === 'AbortError') || /abort/i.test(m)) {
+      fail('等了 90 秒还没等到回复。本机模型闲置 5 分钟就会被卸载，下次提问又要重新加载（实测首字约 55 秒）。' +
+           '再点一次「再问一次」通常就快了；如果用的是云端服务商，检查一下网络。');
+      return;
+    }
+    var st = err && err.status;
+    if (st === 401 || st === 403) {
+      fail('key 不对或没有权限（HTTP ' + st + '）。点 ' +
+           '<button type="button" class="linkbtn" data-cfg="1">这里去设置</button> 检查 key，注意首尾别带空格。');
+      return;
+    }
+    if (st === 429) {
+      fail('被限流或额度用完了（HTTP 429）。等半分钟再问，或者换一个服务商。');
+      return;
+    }
+    if (st === 404) {
+      fail('接口地址或模型名不对（HTTP 404）。检查 Base URL 是否以 /v1 结尾、模型名是否拼对。');
+      return;
+    }
+    if (/Failed to fetch|NetworkError|Load failed|Network request failed/i.test(m)) {
+      fail('请求发不出去，多半是被 CORS 拦了或网络不通。本机 Ollama 要设 OLLAMA_ORIGINS 允许这个网页访问，' +
+           '改完必须重启 ollama；云端服务商换个网络再试。');
+      return;
+    }
+    fail('出错了：' + m);
+  });
+}
+
+/* 每张知识卡底部加「问 AI · 就这张卡」 */
+function aiAttachCards() {
+  Array.prototype.forEach.call(document.querySelectorAll('.card'), function (card) {
+    var wrap = document.createElement('div');
+    wrap.className = 'aiwrap';
+    var btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'aibtn';
+    btn.textContent = '问 AI · 就这张卡';
+    var host = document.createElement('div');
+    wrap.appendChild(btn);
+    wrap.appendChild(host);
+    card.appendChild(wrap);
+    btn.addEventListener('click', function () {
+      if (wrap.getAttribute('data-open') === '1') {
+        host.innerHTML = '';
+        wrap.removeAttribute('data-open');
+        btn.textContent = '问 AI · 就这张卡';
+        return;
+      }
+      wrap.setAttribute('data-open', '1');
+      btn.textContent = '收起 AI';
+      aiMount(host, aiCardCtx(card), '', '上下文已带上这张卡的标题、要点、代码和术语对照。');
+    });
+  });
+}
+
+document.getElementById('aiSave').addEventListener('click', function () {
+  AICFG.base = document.getElementById('aiBase').value.trim();
+  AICFG.model = document.getElementById('aiModel').value.trim();
+  AICFG.key = document.getElementById('aiKey').value.trim();
+  aiSaveCfg();
+  paintAiCfg();
+  document.getElementById('aiNow').textContent = '已保存。' + aiNowText();
+});
+document.getElementById('aiClear').addEventListener('click', function () {
+  AICFG.key = '';
+  document.getElementById('aiKey').value = '';
+  aiSaveCfg();
+  paintAiCfg();
+  document.getElementById('aiNow').textContent = 'key 已清空。' + aiNowText();
+});
+document.getElementById('aiClose').addEventListener('click', closeAiCfg);
+document.getElementById('aiMask').addEventListener('click', function (e) {
+  if (e.target === this) closeAiCfg();
+});
+document.addEventListener('keydown', function (e) {
+  if (e.key === 'Escape' && document.getElementById('aiMask').className.indexOf('hidden') < 0) closeAiCfg();
+});
+
+aiAttachCards();
 </script>
 </body>
 </html>
