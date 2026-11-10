@@ -512,7 +512,7 @@
       <span class="tag">Day 1</span>
       <span class="tag">Day 2</span>
       <span class="tag">Day 1 题库 56 道</span>
-      <span class="tag">Day 2 题库 28 道</span>
+      <span class="tag">Day 2 题库 29 道</span>
       <span class="tag">两套练习各自独立</span>
     </div>
     <div class="nav">
@@ -709,7 +709,34 @@ arr = nullptr;
 
   <!-- 8 -->
   <div class="card">
-    <h3><span class="n">8</span>struct 加强：箱子自己也会干活了</h3>
+    <h3><span class="n">8</span>nullptr：一张写着"没有门牌号"的卡片</h3>
+    <p class="concl"><code>nullptr</code> 是"空门牌号"的专用写法。它<b>只认指针</b>，不会被当成数字 0，所以在 C++ 里比 <code>NULL</code> 更安全。</p>
+    <pre class="code"><code>int* p = nullptr;       // 空指针的标准写法（C++11 起）
+if (p == nullptr) {     // 判空：先看号码是不是空的
+  return;               // 空的不许解引用，直接走人
+}
+
+int* q = new int(7);
+delete q;
+q = nullptr;            // 退完立刻划掉号码，防野指针
+
+// void f(int);  void f(char*);
+// f(NULL);             // 老写法分不清：整数 0 还是空指针？
+// f(nullptr);          // 明确是空指针，不会撞车</code></pre>
+    <ul class="pts">
+      <li><b>是啥</b>：C++11 引入的空指针字面量，类型是 <code>std::nullptr_t</code>，能隐式转成任何指针类型。</li>
+      <li><b>干嘛用</b>：表示"这个门牌号是空的"——初始化、判空、<code>delete</code> 之后立刻置空防野指针。</li>
+      <li><b>和 NULL 的本质区别</b>：<code>NULL</code> 在 C 里就是数字 <code>0</code>，C++ 里分不清你要"整数 0"还是"空指针"，所以 <code>f(NULL)</code> 会二义性、模板还会把它推导成 <code>int</code>；<code>nullptr</code> 能转成任意指针，但<b>不能转成整数</b>。</li>
+      <li><b>最容易踩的坑</b>：<code>nullptr</code> 是 C++ 的东西，<b>.c 文件里根本没有</b>（那里只能写 <code>NULL</code> 或 <code>0</code>）。Keil 工程里 .c 和 .cpp 混着写，最容易在这里报错。</li>
+      <li><b>嵌入式影响</b>：解引用空指针在 STM32 上等于去读地址 0，直接进 HardFault。HAL 库里到处写 <code>if (p == NULL) return HAL_ERROR;</code> 就是这个原因。</li>
+    </ul>
+    <p class="keep">记住这句就行：<code>.cpp</code> 里判空一律写 <code>nullptr</code>，<code>.c</code> 里只能写 <code>NULL</code> 或 <code>0</code>。</p>
+    <p class="terms">术语对照：<code>nullptr</code>（空指针字面量）、<code>NULL</code>（C 里的 0 宏）、<code>std::nullptr_t</code>（它的类型）、野指针（dangling pointer）。</p>
+  </div>
+
+  <!-- 9 -->
+  <div class="card">
+    <h3><span class="n">9</span>struct 加强：箱子自己也会干活了</h3>
     <p class="concl">C++ 的结构体不只是"装几个数的盒子"，<b>里面还能写函数</b>；定义变量时连 <code>struct</code> 都不用写。这就是通往"类"的那级台阶。</p>
     <pre class="code"><code>struct Point {
     int x;
@@ -730,9 +757,9 @@ std::cout &lt;&lt; p.sum(); // 输出 7，函数直接用里面的 x、y</code><
     <p class="terms">术语对照：结构体里的函数叫「成员函数（member function）」，<code>p.sum()</code> 这种写法叫「成员访问」，把数据和操作它的函数放进同一个盒子叫「封装」。</p>
   </div>
 
-  <!-- 9 -->
+  <!-- 10 -->
   <div class="card">
-    <h3><span class="n">9</span>bool：只有"是"和"否"两个格子</h3>
+    <h3><span class="n">10</span>bool：只有"是"和"否"两个格子</h3>
     <p class="concl"><code>bool</code> 只有两个值：<code>true</code> 和 <code>false</code>，占 <b>1 个字节</b>，专门用来记"是/否"这种状态。</p>
     <pre class="code"><code>bool ok = true;        // 是
 bool err = false;      // 否
@@ -753,9 +780,9 @@ if (ok) { /* 直接当条件用，不用写 ok == true */ }</code></pre>
     <p class="terms">术语对照：正式叫「布尔类型（bool）」，<code>true</code>/<code>false</code> 叫「布尔字面量」，bool 变 int 这一步叫「整型提升」。</p>
   </div>
 
-  <!-- 10 -->
+  <!-- 11 -->
   <div class="card">
-    <h3><span class="n">10</span>const：贴了封条就不许改</h3>
+    <h3><span class="n">11</span>const：贴了封条就不许改</h3>
     <p class="concl">被 <code>const</code> 封住的箱子，谁都不能改；<code>const T&amp;</code> 形参是"递原件看、不许改、也不复印"；const 有类型有作用域，比 <code>#define</code> 靠谱；配置表加 const 还能省 RAM。</p>
     <pre class="code"><code>const int MAX = 100;     // 贴上封条，后面谁改谁编译不过
 // MAX = 200;            // 错：封条不是摆设
@@ -775,9 +802,9 @@ const int table[] = {1, 2, 3};   // 配置表加 const，通常进 flash，不�
     <p class="terms">术语对照：const 修饰的变量叫「常量」，<code>const T&amp;</code> 形参叫「常量引用」，放进 flash 的那块叫「只读数据段（.rodata）」。</p>
   </div>
 
-  <!-- 11 -->
+  <!-- 12 -->
   <div class="card">
-    <h3><span class="n">11</span>默认参数：只能从右往左连续给</h3>
+    <h3><span class="n">12</span>默认参数：只能从右往左连续给</h3>
     <p class="concl">默认值<b>只能从最右边开始、一个接一个往左给</b>，中间不能跳；声明和定义只能写一处；调用时省略的必须是靠右那几个。</p>
     <pre class="code"><code>void uart(int baud, int bits = 8, int stop = 1);  // 声明里给默认值
 
@@ -795,9 +822,9 @@ uart(115200, 7);       // 行：bits=7，stop=1
     <p class="terms">术语对照：正式叫「默认参数（default argument）」，两个候选都能匹配的情况叫「二义性（ambiguous）」。</p>
   </div>
 
-  <!-- 12 -->
+  <!-- 13 -->
   <div class="card">
-    <h3><span class="n">12</span>函数重载：同名不同参数，别看返回值</h3>
+    <h3><span class="n">13</span>函数重载：同名不同参数，别看返回值</h3>
     <p class="concl">同名、<b>参数列表不同</b>才算重载；只有返回值不同不算；两个版本都能匹配时，编译器不替你猜，直接报二义性。</p>
     <pre class="code"><code>void f(int x);        // 版本一：收整数
 void f(double x);     // 版本二：收小数 —— 参数类型不同，算重载
@@ -820,7 +847,7 @@ g(1);                       // 二义性：编译器不知道选谁</code></pre>
 
   <!-- ===== Day 2 练习（独立一套） ===== -->
   <div class="sec-title pr-title" id="practice2">Day 2 练习<span class="pr-tag">只抽 Day 2 的题 · 独立计分</span></div>
-  <p class="sec-desc">从 Day 2 的 <b>28</b> 道题里随机抽 <b>6 单选 + 3 填空 + 2 判断 + 3 代码</b>，同样打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 2，和上面 Day 1 那一套互不影响。</p>
+  <p class="sec-desc">从 Day 2 的 <b>29</b> 道题里随机抽 <b>6 单选 + 3 填空 + 2 判断 + 3 代码</b>，同样打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 2，和上面 Day 1 那一套互不影响。</p>
 
   <div class="stats">
     <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg2">0 / 14</div></div>
@@ -871,11 +898,11 @@ function hl(src) {
 }
 
 /* ============================================================
-   题库（单选 41 / 填空 16 / 判断 15 / 代码 12，共 84 道）
+   题库（单选 42 / 填空 16 / 判断 15 / 代码 12，共 85 道）
    ============================================================ */
 var BANK = {
 
-/* ---------------- 单选 41 道 ---------------- */
+/* ---------------- 单选 42 道 ---------------- */
 single: [
   {
     id: 's01',
@@ -1369,6 +1396,20 @@ single: [
     ],
     ans: 1,
     why: '重载看的是参数列表：个数、类型、顺序只要有一处不同就算。返回值不参与挑选——调用处写 f(1) 时没法靠返回值区分版本，所以"只有返回值不同"在 C++ 里等于重复声明，编译器直接报错。'
+  },
+  {
+    id: 'd2s13',
+    day: 'day2',
+    code: 'void f(int x);\nvoid f(char* p);\n\nf(NULL);      // 这里会怎样？',
+    q: '表示"空"的时候，C++ 为什么更推荐 <code>nullptr</code> 而不是 <code>NULL</code>？',
+    options: [
+      '<code>NULL</code> 在 C 里就是个数字 0，C++ 分不清"整数 0"和"空指针"，<code>f(NULL)</code> 会二义性、模板还会推导成 <code>int</code>；<code>nullptr</code> 只认指针',
+      '<code>nullptr</code> 占的内存比 <code>NULL</code> 少，能省 RAM',
+      '<code>NULL</code> 在 C++ 里已经彻底不能用了，写了就编译不过',
+      '<code>nullptr</code> 可以当整数 0 用，算地址的时候更方便'
+    ],
+    ans: 0,
+    why: 'NULL 本质是 0（或 0L），所以 f(NULL) 会撞成二义性，模板推导也会把它当成 int；nullptr 有独立类型 std::nullptr_t，只认指针，能转成任何指针但转不成整数，所以安全。它不是更省内存，也不是 NULL 不能用——只是表达不出"这是个指针"。'
   }
 ],
 
