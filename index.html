@@ -159,6 +159,7 @@
   }
   .pr-title { margin-top: 32px; }
   #practice2::before { background: linear-gradient(180deg, #c792ea, #7aa2f7); }
+  #practice3::before { background: linear-gradient(180deg, #f0c674, #c792ea); }
   .nav { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
   .nav a {
     font-size: 12.5px; color: #a9c1f5; text-decoration: none;
@@ -426,7 +427,7 @@
     margin-bottom: 13px;
     scroll-margin-top: 78px;
   }
-  #practice1, #practice2 { scroll-margin-top: 10px; }
+  #practice1, #practice2, #practice3 { scroll-margin-top: 10px; }
   .q-head { display: flex; align-items: center; gap: 9px; margin-bottom: 8px; }
   .badge {
     font-size: 11px; padding: 2px 9px; border-radius: 999px;
@@ -654,13 +655,14 @@
   <header>
     <div class="head-top">
       <div>
-        <h1>C++ 第一天重点 + 练习</h1>
-        <p class="sub">给刚学完 C、正在转 C++ 的嵌入式初学者：先把「引用」这一条主线吃透，后面看 STM32 库函数才不会发懵。</p>
+        <h1>C++ 前三天重点 + 练习</h1>
+        <p class="sub">给刚学完 C、正在转 C++ 的嵌入式初学者：先吃透引用和内存，再把类、构造、析构这条线串起来，后面看 STM32 库函数才不会发懵。</p>
         <p class="only">本页只保留当前阶段必学内容，其余等学完对象生命周期再补。</p>
       </div>
       <div class="head-btns">
         <button class="again" id="againTop1">Day 1 刷题</button>
         <button class="again" id="againTop2">Day 2 刷题</button>
+        <button class="again" id="againTop3">Day 3 刷题</button>
       </div>
     </div>
     <div class="tags">
@@ -668,15 +670,19 @@
       <span class="tag">嵌入式方向</span>
       <span class="tag">Day 1</span>
       <span class="tag">Day 2</span>
+      <span class="tag">Day 3</span>
       <span class="tag">Day 1 题库 56 道</span>
-      <span class="tag">Day 2 题库 29 道</span>
-      <span class="tag">两套练习各自独立</span>
+      <span class="tag">Day 2 题库 38 道</span>
+      <span class="tag">Day 3 题库 41 道</span>
+      <span class="tag">三套练习各自独立</span>
     </div>
     <div class="nav">
       <a href="#day1">Day 1 · 引用</a>
       <a href="#day2">Day 2 · 内存 / 类型</a>
+      <a href="#day3">Day 3 · 类与对象</a>
       <a href="#practice1">Day 1 练习</a>
       <a href="#practice2">Day 2 练习</a>
+      <a href="#practice3">Day 3 练习</a>
     </div>
   </header>
 
@@ -1002,9 +1008,78 @@ g(1);                       // 二义性：编译器不知道选谁</code></pre>
     <p class="terms">术语对照：正式叫「函数重载（overload）」，两个候选都匹配叫「二义性调用（ambiguous call）」。</p>
   </div>
 
+  <!-- 14 -->
+  <div class="card">
+    <h3><span class="n">14</span>volatile：告诉编译器"这个值会自己变"</h3>
+    <p class="concl"><code>volatile</code> 的意思是：<b>这个值可能被程序之外的东西改掉</b>（硬件寄存器、中断、DMA），每次用都必须真去内存读，不许缓存、不许优化掉。</p>
+    <pre class="code"><code>volatile unsigned int* const GPIOA_ODR =
+        (volatile unsigned int*)0x40020014;   // 寄存器地址
+*GPIOA_ODR |= (1u &lt;&lt; 5);                    // 每次写都真的落到寄存器
+
+volatile unsigned char flag = 0;   // 中断里会把它置 1
+
+int main() {
+    while (!flag) { }   // 不加 volatile，编译器可能优化成"死循环"
+}</code></pre>
+    <ul class="pts">
+      <li><b>三种必须加的场景</b>：外设寄存器指针、中断与主循环共享的变量、DMA 收发的缓冲区。</li>
+      <li><b>它只管"别优化"</b>，不管"安不安全"。<code>volatile int n; n++;</code> 仍然不是原子操作，中断里同时改，还是会丢数据，得关中断或用原子操作。</li>
+      <li><b>可以跟 const 一起用</b>：只读的状态寄存器就是 <code>volatile const</code>。</li>
+      <li><b>别乱加</b>：普通局部变量加了只会让程序变慢，不会更安全。</li>
+    </ul>
+    <p class="keep">记住这句就行：会被硬件或中断改的变量和寄存器指针，必须加 volatile；它挡的是编译器优化，不是并发。</p>
+    <p class="terms">术语对照：正式叫「volatile 限定符」，读作"易变的"；把地址写成指针叫「寄存器映射」，中断和主循环共用的变量叫「共享变量」。</p>
+  </div>
+
+  <!-- 15 -->
+  <div class="card">
+    <h3><span class="n">15</span>static：函数里的"记忆"，文件里的"私事"</h3>
+    <p class="concl"><code>static</code> 有两个完全不同的用法：写在<b>函数里</b>，是"这个变量只初始化一次、函数退出也不销毁"；写在<b>文件作用域</b>，是"只在本文件可见，别的文件链接不到"。</p>
+    <pre class="code"><code>void tick(void) {
+    static int count = 0;   // 只初始化一次，下次调用接着上次的值
+    count++;
+    printf("%d\n", count);  // 1、2、3……
+}
+
+static void led_on(void) { /* ... */ }   // 只在本 .c 里能调用
+static int s_err;                        // 其他文件链接不到</code></pre>
+    <ul class="pts">
+      <li><b>函数内 static</b>：适合做计数器、状态机的上一步状态，不用把变量暴露成全局。</li>
+      <li><b>文件作用域 static</b>：嵌入式里常用来做"模块私有函数"，多个 .c 里同名也不会冲突。</li>
+      <li><b>初始化时机</b>：比 main 还早，程序运行期间一直占着这块内存，不会随函数退出释放。</li>
+      <li><b>别写进头文件</b>：头文件里定义 static 变量，每个包含它的 .c 都会各自复制一份，看着像同一个其实不是。</li>
+    </ul>
+    <p class="keep">记住这句就行：static 在函数里是"记性"，在文件里是"私事"。</p>
+    <p class="terms">术语对照：这种"程序一直活着"的存储叫「静态存储期」；只在本文件可见叫「内部链接」，模块自己用的函数叫「模块私有函数」。</p>
+  </div>
+
+  <!-- 16 -->
+  <div class="card">
+    <h3><span class="n">16</span>位操作写寄存器：只动那一位，别把别的位冲掉</h3>
+    <p class="concl">嵌入式改寄存器，基本只用三招：<b>置位用 <code>|=</code></b>、<b>清零用 <code>&amp;= ~</code></b>、<b>翻转用 <code>^=</code></b>；判断某一位用 <code>&amp;</code>。直接 <code>reg = ...</code> 会把其他位一起写没。</p>
+    <pre class="code"><code>#define BIT(n) (1u &lt;&lt; (n))
+
+reg |=  BIT(3);        // 置位：第 3 位变 1，其他位不动
+reg &amp;= ~BIT(3);        // 清零：第 3 位变 0，其他位不动
+reg ^=  BIT(3);        // 翻转：0 变 1，1 变 0
+
+if (reg &amp; BIT(3)) { }  // 判断第 3 位是不是 1
+
+// 改多位：先把这几位清零，再写新值
+reg = (reg &amp; ~(0x3u &lt;&lt; 4)) | (0x2u &lt;&lt; 4);</code></pre>
+    <ul class="pts">
+      <li><b><code>1 &lt;&lt; 31</code> 的坑</b>：有符号 int 左移到最高位是未定义行为，写 <code>1u &lt;&lt; 31</code> 才稳。</li>
+      <li><b>读-改-写不是原子的</b>：主循环和中断同时改同一个寄存器，可能互相覆盖。要么关中断，要么用硬件的置位/清除寄存器。</li>
+      <li><b>别用魔法数字</b>：<code>0x40020014</code> 这种地址和位号，用宏或头文件里的定义，改板子时只改一处。</li>
+      <li><b>位域（bit-field）看着省事</b>，但每个编译器排布可能不同，通信协议里别用，寄存器操作也优先用宏。</li>
+    </ul>
+    <p class="keep">记住这句就行：改一位用 |= 和 &amp;= ~，别直接赋值，否则会把旁边的位一起冲掉。</p>
+    <p class="terms">术语对照：那串用来挑位的 0/1 叫「位掩码（mask）」，<code>|=</code> 叫「置位」，<code>&amp;= ~</code> 叫「清零」，读一遍再写回去叫「读-改-写」。</p>
+  </div>
+
   <!-- ===== Day 2 练习（独立一套） ===== -->
   <div class="sec-title pr-title" id="practice2">Day 2 练习<span class="pr-tag">只抽 Day 2 的题 · 独立计分</span></div>
-  <p class="sec-desc">从 Day 2 的 <b>29</b> 道题里随机抽 <b>6 单选 + 3 填空 + 2 判断 + 3 代码</b>，同样打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 2，和上面 Day 1 那一套互不影响。</p>
+  <p class="sec-desc">从 Day 2 的 <b>38</b> 道题里随机抽 <b>6 单选 + 3 填空 + 2 判断 + 3 代码</b>，同样打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 2，和上面 Day 1 那一套互不影响。</p>
 
   <div class="stats">
     <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg2">0 / 14</div></div>
@@ -1016,6 +1091,283 @@ g(1);                       // 二义性：编译器不知道选谁</code></pre>
   <div id="qlist2"></div>
   <div id="summary2"></div>
 
+  <!-- ================= Day 3 ================= -->
+  <div class="sec-title" id="day3">Day 3 · 类、构造与析构</div>
+  <p class="sec-desc">今天的主线：把「数据」和「操作」捆成一个对象，再搞清楚对象出生（构造）和退房（析构）时自动发生什么。</p>
+
+  <!-- 14 -->
+  <div class="card">
+    <h3><span class="n">17</span>面向过程 vs 面向对象：自己造车，还是找专业的人</h3>
+    <p class="concl"><b>面向过程</b>是自己从挖矿开始一步步干；<b>面向对象</b>是把活儿拆给发动机厂、轮胎厂、组装厂，自己只负责定接口、验收。</p>
+    <pre class="code"><code>// 面向过程：数据和操作是分开的（C 的写法）
+struct Person { char name[64]; int age; };
+void PersonEat(Person* p) { printf("%s 吃饭\n", p-&gt;name); }
+
+// 面向对象：数据和操作捆在一起（C++ 的写法）
+class Person {
+    char name[64];
+    int age;
+public:
+    void eat() { cout &lt;&lt; name &lt;&lt; " 吃饭" &lt;&lt; endl; }  // 行为跟着数据走
+};</code></pre>
+    <ul class="pts">
+      <li><b>面向过程的特点</b>：开发周期慢一点，但性能高、看得见每一步。小项目、单片机裸机程序，很多时候这么写最合适。</li>
+      <li><b>面向对象的特点</b>：开发快、好扩展，代价是多一点间接开销。十几个外设模块、状态一堆时，用它更好管。</li>
+      <li><b>不是谁高级谁低级</b>：它们是两套拆问题的办法。嵌入式里常见的是"哪块合适用哪套"，而不是全盘二选一。</li>
+    </ul>
+    <p class="keep">记住这句就行：小项目过程式够用；模块多、状态多，就用类把数据和操作捆一起。</p>
+    <p class="terms">术语对照：正式叫「面向过程（POP）」和「面向对象（OOP）」，三大特点是<b>封装</b>、<b>继承</b>、<b>多态</b>。</p>
+  </div>
+
+  <!-- 15 -->
+  <div class="card">
+    <h3><span class="n">18</span>封装：把东西装进盒子，再上一把锁</h3>
+    <p class="concl">封装就两件事：<b>把数据和操作放进同一个类</b>，再<b>用访问权限决定外面能碰什么</b>。属性一般私有，留 public 的函数当门。</p>
+    <pre class="code"><code>class User {
+private:
+    int id;                 // 外面碰不到，想改只能走下面的门
+public:
+    void setId(int mid) { id = mid; }   // 门：setter
+    int  getId() const  { return id; }  // 门：getter
+};
+
+int main() {
+    User user;
+    // user.id = 1;      // 编译不过：private，外面没钥匙
+    user.setId(100);     // 只能通过 public 的门
+}</code></pre>
+    <ul class="pts">
+      <li><b>public</b>：外面能直接用。</li>
+      <li><b>private</b>：只有类自己（和它的成员函数）能用，外面不行。</li>
+      <li><b>protected</b>：类自己和子类能用；没有继承时，和 private 一样外面进不来。</li>
+      <li><b>类内部不分权限</b>：同一个类的成员函数之间，private 成员照样能访问，权限只在类外才有意义。</li>
+    </ul>
+    <p class="keep">记住这句就行：属性私有、接口公开；以后改内部实现，外面用的人不用跟着改。</p>
+    <p class="terms">术语对照：这套做法叫「封装（encapsulation）」，改属性的函数叫 setter，读属性的叫 getter。</p>
+  </div>
+
+  <!-- 16 -->
+  <div class="card">
+    <h3><span class="n">19</span>class 与 struct：只差一个默认权限</h3>
+    <p class="concl">C++ 里 <code>class</code> 和 <code>struct</code> 几乎一样，唯一硬区别是：<b>class 默认 private，struct 默认 public</b>。</p>
+    <pre class="code"><code>class User {
+    int id;          // 没写权限：class 里默认 private
+public:
+    void setId(int mid);   // 类里只声明
+    int getId();
+};
+
+// 类外实现：函数名前必须加 类名::
+void User::setId(int mid) { id = mid; }
+int  User::getId() { return id; }
+
+struct Point {
+    int x, y;        // 没写权限：struct 里默认 public
+};</code></pre>
+    <ul class="pts">
+      <li><b>忘了 <code>User::</code></b>：写出来的就是普通全局函数，碰不到类的成员，链接时还会报"找不到成员函数"。</li>
+      <li><b>工程里的常规拆法</b>：<code>Demo.h</code> 里放类声明（加 <code>#pragma once</code>），<code>Demo.cpp</code> 里写 <code>Demo::</code> 实现，<code>main.cpp</code> 只 include 头文件。</li>
+      <li><b>为什么分文件</b>：改实现不用动头文件，别人也不用看见你的实现细节。</li>
+    </ul>
+    <p class="keep">记住这句就行：class 默认上锁，struct 默认敞开；类外实现别忘 <code>类名::</code>。</p>
+    <p class="terms">术语对照：<code>::</code> 叫「作用域解析运算符」，读作"谁家的"；<code>#pragma once</code> 是「头文件保护」，防止同一个头文件被重复展开。</p>
+  </div>
+
+  <!-- 17 -->
+  <div class="card">
+    <h3><span class="n">20</span>构造函数：对象一出生就自动跑的那段</h3>
+    <p class="concl">构造函数负责<b>给成员赋初值</b>，名字和类名一样、<b>没有返回值（void 也不能写）</b>、可以带参数、可以重载，由编译器自动调用。</p>
+    <pre class="code"><code>class Demo {
+    int a;
+public:
+    Demo() { a = 0; }              // 无参构造
+    Demo(int ma) { a = ma; }       // 有参构造（重载）
+};
+
+int main() {
+    Demo o1;             // 隐式调用无参构造（最常用）
+    Demo o2 = Demo();    // 显式调用无参构造
+    Demo o3(10);         // 隐式调用有参构造（最常用）
+    Demo o4 = Demo(20);  // 显式调用有参构造
+    Demo o5 = 30;        // 单参构造的隐式转换，等价于 Demo o5(30)
+    Demo();              // 匿名对象：这一行结束就析构
+}</code></pre>
+    <ul class="pts">
+      <li><b>默认构造会失效</b>：只要你自己写了任何一个构造函数（有参或无参），编译器就不再送你那个空的无参构造。</li>
+      <li><b>所以两个都写</b>：无参和有参都实现，别人写 <code>Demo d;</code> 才不会突然编译不过。</li>
+      <li><b>匿名对象</b>：<code>Demo();</code> 只是临时造一个，分号一到就退房，不会留在栈上。</li>
+    </ul>
+    <p class="keep">记住这句就行：自己写了构造函数，编译器就不再免费送无参构造。</p>
+    <p class="terms">术语对照：正式叫「构造函数（constructor）」，没参数的叫「默认构造函数」，同名不同参数叫「重载」。</p>
+  </div>
+
+  <!-- 18 -->
+  <div class="card">
+    <h3><span class="n">21</span>拷贝构造：拿一个旧对象，造一个新对象</h3>
+    <p class="concl"><b>用旧对象初始化新对象</b>时，编译器调用的就是拷贝构造，写法是 <code>类名(const 类名&amp; obj)</code>。只是起个别名，不算。</p>
+    <pre class="code"><code>class Demo {
+public:
+    int a;
+    Demo(int mA) { a = mA; }
+    Demo(const Demo&amp; obj) {   // 拷贝构造：参数是同类对象的引用
+        a = obj.a;            // 自己不写，编译器也会送一个"逐成员赋值"的版本
+    }
+};
+
+int main() {
+    Demo o1(10);
+    Demo o2 = o1;    // ① 旧对象初始化新对象：调用拷贝构造
+    Demo&amp; r = o1;     // 只是起别名：不调用拷贝构造
+
+    Demo o3(o1);     // ② 括号写法也是拷贝构造
+}</code></pre>
+    <ul class="pts">
+      <li><b>三种常见时机</b>：用旧对象初始化新对象、对象按值传参、对象按值返回（最后一种很多编译器会优化掉）。</li>
+      <li><b>先定义再赋值</b>：<code>Demo o2; o2 = o1;</code> 走的是赋值运算，不是拷贝构造。</li>
+      <li><b>参数必须传引用</b>：写成 <code>Demo(Demo obj)</code> 会为了传参再造一个对象，无限套娃，编译器直接不让你过。</li>
+    </ul>
+    <p class="keep">记住这句就行：旧对象初始化新对象才叫拷贝构造；起别名、赋值都不是。</p>
+    <p class="terms">术语对照：正式叫「拷贝构造函数（copy constructor）」，也叫复制构造函数；参数写成 <code>const 类名&amp;</code> 是标准姿势。</p>
+  </div>
+
+  <!-- 19 -->
+  <div class="card">
+    <h3><span class="n">22</span>浅拷贝与深拷贝：指针成员的生死问题</h3>
+    <p class="concl">默认拷贝构造是<b>浅拷贝</b>：指针成员只抄地址，两个对象指向同一块堆。谁先析构谁释放，另一个就拿着<b>野指针</b>，再来一次 <code>delete</code> 就是<b>双重释放</b>。</p>
+    <pre class="code"><code>class Demo {
+    char* name;
+public:
+    Demo(const char* s) {
+        name = new char[strlen(s) + 1];
+        strcpy(name, s);
+    }
+    // 深拷贝：给新对象单独再要一块堆，各过各的
+    Demo(const Demo&amp; obj) {
+        name = new char[strlen(obj.name) + 1];
+        strcpy(name, obj.name);
+    }
+    ~Demo() { delete[] name; }   // new[] 必须配 delete[]
+};
+
+int main() {
+    Demo a("hello");
+    Demo b = a;      // 深拷贝：a、b 各有一块内存，改谁都不影响对方
+}</code></pre>
+    <ul class="pts">
+      <li><b>浅拷贝的后果</b>：改 <code>b.name</code> 会连带改掉 <code>a.name</code>；两个析构函数各释放一次同一块内存，程序直接崩。</li>
+      <li><b>深拷贝的做法</b>：先按对方的长度 <code>new</code> 一块新的，再把内容 <code>strcpy</code> 过来。</li>
+      <li><b>顺手纠一个常见坑</b>：<code>new char[...]</code> 要用 <code>delete[]</code>，不是 <code>delete</code>。数组和单个对象是两本账，配错了很多平台会崩。</li>
+      <li><b>三件套</b>：类里有指针成员，拷贝构造、析构、赋值一般都要自己写，这叫「三法则」。</li>
+    </ul>
+    <p class="keep">记住这句就行：类里有指针，拷贝必须自己申请新内存，析构必须自己释放。</p>
+    <p class="terms">术语对照：只抄地址叫「浅拷贝（shallow copy）」，重新开一块叫「深拷贝（deep copy）」；同一块内存释放两次叫「双重释放（double free）」。</p>
+  </div>
+
+  <!-- 20 -->
+  <div class="card">
+    <h3><span class="n">23</span>析构函数：对象退房前自动收拾</h3>
+    <p class="concl">析构函数在对象销毁前自动调用，写法是 <code>~类名()</code>：<b>无返回值、不能写 void、不能有参数、不能重载</b>。有指针成员时，必须靠它把内存还回去。</p>
+    <pre class="code"><code>class Demo {
+public:
+    Demo()  { cout &lt;&lt; "出生" &lt;&lt; endl; }
+    ~Demo() { cout &lt;&lt; "退房" &lt;&lt; endl; }   // 栈上的对象离开作用域就自动调用
+};
+
+int main() {
+    Demo a;          // 出生
+    {
+        Demo b;      // 出生
+    }                // b 出作用域：退房（先析构，再释放对象）
+    Demo c;          // 出生
+}                    // 栈是后进先出：c 先退房，a 后退房</code></pre>
+    <ul class="pts">
+      <li><b>栈上的顺序</b>：同一作用域里，后构造的先析构，像叠盘子。</li>
+      <li><b>全局对象</b>：在 main 结束后析构，顺序一般也按后进先出，但不同编译器可能略有差别，别依赖它。</li>
+      <li><b>什么时候必须写</b>：类里有 <code>new</code> 出来的指针成员。不写就是内存泄漏——对象没了，堆那块还在。</li>
+      <li><b>没有指针就别硬写</b>：普通类用编译器默认的空析构就够了。</li>
+    </ul>
+    <p class="keep">记住这句就行：谁 new 的谁 delete，析构函数就是对象的退房手续。</p>
+    <p class="terms">术语对照：正式叫「析构函数（destructor）」；对象离开 <code>{}</code> 叫「出作用域」；new 了没还叫「内存泄漏（memory leak）」。</p>
+  </div>
+
+  <!-- 21 -->
+  <div class="card">
+    <h3><span class="n">24</span>初始化列表：成员对象的"有参构造"只能在这儿点</h3>
+    <p class="concl">冒号后面那串 <code>: a(mA), b(mB)</code> 就是初始化列表，<b>先执行列表，再执行函数体</b>。成员本身是对象、又想调它的有参构造时，只能写在这里。</p>
+    <pre class="code"><code>class Dept {
+public:
+    int did;
+    Dept(int id) { did = id; }
+};
+
+class Emp {
+    Dept dept;      // 成员对象：先它、后自己
+    int eid;
+public:
+    Emp(int id1, int id2) : dept(id2) {   // 用初始化列表调 Dept 的有参构造
+        eid = id1;
+    }
+    // 函数体里写 dept = Dept(id2); 是又造一个临时对象再赋值，不是初始化
+};</code></pre>
+    <ul class="pts">
+      <li><b>构造顺序</b>：先按成员在类里的<b>定义顺序</b>构造，和初始化列表的书写顺序无关；最后才执行自己的函数体。</li>
+      <li><b>析构顺序</b>：和构造相反，先析构自己，再析构成员对象。</li>
+      <li><b>const 成员和引用成员</b>：也必须在初始化列表里给值，函数体里赋值来不及。</li>
+    </ul>
+    <p class="keep">记住这句就行：成员对象的有参构造只能在初始化列表里点，函数体里赋值已经晚了。</p>
+    <p class="terms">术语对照：正式叫「初始化列表（member initializer list）」；类里的对象成员叫「对象成员 / 成员对象」。</p>
+  </div>
+
+  <!-- 22 -->
+  <div class="card">
+    <h3><span class="n">25</span>explicit 与默认三件套：今天最容易踩的四个坑</h3>
+    <p class="concl"><code>explicit</code> 用来<b>禁止单参构造的隐式转换</b>，挡住 <code>Dept d = 100;</code> 这种看着像赋值、其实是构造的写法。</p>
+    <pre class="code"><code>class Dept {
+public:
+    explicit Dept(int id) { did = id; }   // 加了 explicit
+private:
+    int did;
+};
+
+int main() {
+    // Dept d = 100;     // 编译不过：explicit 挡住了隐式转换
+    Dept d(100);         // 老老实实写括号，没问题
+}</code></pre>
+    <ul class="pts">
+      <li><b>坑 1：默认权限</b> —— class 不写 public 就全是 private，外面一句 <code>user.id = 1;</code> 直接编译不过。</li>
+      <li><b>坑 2：默认构造失效</b> —— 自己写了有参构造，<code>Demo d;</code> 就编不过了；无参构造要自己补上。</li>
+      <li><b>坑 3：浅拷贝</b> —— 有指针成员还用默认拷贝构造，轻则改一个动两个，重则双重释放崩溃。</li>
+      <li><b>坑 4：new / delete 配错</b> —— <code>new[]</code> 配 <code>delete[]</code>，<code>new</code> 配 <code>delete</code>，别混。</li>
+      <li><b>默认三件套</b>：编译器默认送无参构造、析构、拷贝构造（逐成员值拷贝）；你一旦自己写了拷贝构造，它就不再送默认构造了。</li>
+    </ul>
+    <p class="keep">记住这句就行：单参构造加 explicit，指针成员自己写拷贝和析构，能挡掉今天一半的坑。</p>
+    <p class="terms">术语对照：<code>explicit</code> 读作"显式的"，挡掉的叫「隐式转换（implicit conversion）」；编译器白送的三个函数合称「默认成员函数」。</p>
+  </div>
+
+  <div class="gloss">
+    <h4>今天这 5 个面试题，先用人话过一遍</h4>
+    <p><b>① 面向过程和面向对象有什么区别？</b>过程式按步骤拆，性能高、开发慢；OOP 按对象和责任拆，开发快、好扩展，代价是一点间接开销。</p>
+    <p><b>② 三大特征是什么？</b>封装（数据和操作捆一起、上权限）、继承（复用父类）、多态（同一个接口，不同对象有不同实现）。今天只要求把封装讲清楚。</p>
+    <p><b>③ 构造函数和析构函数干什么？</b>构造：对象出生时自动初始化成员；析构：对象退房前自动清理，尤其是把 new 出来的内存还掉。</p>
+    <p><b>④ public / protected / private 区别？</b>public 外面能用；private 只有类自己能用；protected 类和子类能用，没继承时等同 private。</p>
+    <p><b>⑤ 浅拷贝和深拷贝？</b>浅拷贝只抄指针地址，两个对象共用一块堆，容易双重释放；深拷贝重新申请一块，各管各的。</p>
+    <p class="say">今天先把「封装 + 构造 + 析构 + 深拷贝」这四件事写熟，继承和多态等下一课再展开，现在碰只会混。</p>
+  </div>
+
+  <!-- ===== Day 3 练习（独立一套） ===== -->
+  <div class="sec-title pr-title" id="practice3">Day 3 练习<span class="pr-tag">只抽 Day 3 的题 · 独立计分</span></div>
+  <p class="sec-desc">从 Day 3 的 <b>41</b> 道题里随机抽 <b>7 单选 + 3 填空 + 3 判断 + 3 代码</b>，打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 3，和 Day 1、Day 2 互不影响。</p>
+
+  <div class="stats">
+    <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg3">0 / 16</div></div>
+    <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore3">0</div></div>
+    <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate3">—</div></div>
+    <button class="again" id="againBar3">再来一轮</button>
+  </div>
+
+  <div id="qlist3"></div>
+  <div id="summary3"></div>
+
   <section class="check">
     <h3>怎么判断自己真的会了</h3>
     <ol>
@@ -1026,7 +1378,7 @@ g(1);                       // 二义性：编译器不知道选谁</code></pre>
     <p class="check-tip">提醒一句：网页刷题只能暴露盲点，不能替代动手。刷十轮，不如自己从零敲一遍。</p>
   </section>
 
-  <footer>做完这一页，Day 2 就可以进「类与对象、构造与析构」了。</footer>
+  <footer>做完这一页，Day 3 就可以进「继承与多态」了。</footer>
 </div>
 
 <div class="aimask hidden" id="aiMask">
@@ -1088,12 +1440,248 @@ function hl(src) {
 }
 
 /* ============================================================
-   题库（单选 42 / 填空 16 / 判断 15 / 代码 12，共 85 道）
+   题库（单选 60 / 填空 26 / 判断 28 / 代码 21，共 135 道）
    ============================================================ */
 var BANK = {
 
-/* ---------------- 单选 42 道 ---------------- */
+/* ---------------- 单选 60 道 ---------------- */
 single: [
+  {
+    id: 'd2s14',
+    day: 'day2',
+    q: '<code>volatile</code> 到底管什么？',
+    options: [
+      '让变量读写变成原子操作',
+      '告诉编译器这个值可能被外部改掉，每次都要真去内存读，别优化',
+      '把变量放到寄存器里，读写更快',
+      '让变量不能被修改'
+    ],
+    ans: 1,
+    why: 'volatile 只负责"别缓存、别优化掉"，常见于寄存器指针、中断共享变量、DMA 缓冲区。它不保证原子性；不想被改的是 const，不是 volatile。'
+  },
+  {
+    id: 'd2s15',
+    day: 'day2',
+    code: 'volatile unsigned char flag = 0;\n// 中断服务函数里：flag = 1;\n\nint main() {\n    while (!flag) { }\n    // 等中断把 flag 置 1\n}',
+    q: '如果 flag 不加 <code>volatile</code>，可能出什么问题？',
+    options: [
+      '编译不过',
+      '编译器可能把 flag 缓存进寄存器，while 变成永远退不出的死循环',
+      '中断进不来',
+      'flag 会变成随机值'
+    ],
+    ans: 1,
+    why: '主循环里 flag 一直没人"在眼皮底下"改，编译器可能只读一次就反复用旧值。加了 volatile 才会每次都去内存读，能看到中断里改的新值。'
+  },
+  {
+    id: 'd2s16',
+    day: 'day2',
+    code: 'void f(void) {\n    static int n = 0;\n    n++;\n}',
+    q: '函数里的 <code>static</code> 局部变量有什么特点？',
+    options: [
+      '每次调用都重新初始化为 0',
+      '只初始化一次，函数退出后值还在，下次调用接着用',
+      '只能在本文件其他函数里访问',
+      '和普通局部变量完全一样'
+    ],
+    ans: 1,
+    why: 'static 局部变量放在静态存储区，函数退出不销毁，初始化只做一次。常用来做计数器、保存状态机的上一步状态，又不用暴露成全局变量。'
+  },
+  {
+    id: 'd3s01',
+    day: 'day3',
+    q: '面向过程和面向对象，最核心的区别是什么？',
+    options: [
+      '面向过程只能用 C 写，面向对象只能用 C++ 写',
+      '面向过程按步骤拆，面向对象按"谁负责什么"拆成对象',
+      '面向对象一定比面向过程跑得快',
+      '面向过程处理不了复杂问题'
+    ],
+    ans: 1,
+    why: '两者都是拆问题的办法：过程式按步骤拆，性能高但改起来牵一发动全身；OOP 按责任拆对象，好扩展但有一点间接开销。OOP 不是"更快"，只是"更好分工"。'
+  },
+  {
+    id: 'd3s02',
+    day: 'day3',
+    q: '造车的例子里，"发动机找五菱、轮胎找韩泰"，最能说明面向对象的哪一点？',
+    options: [
+      '专业的人做专业的事，责任分开',
+      '所有零件必须自己一个人造',
+      '面向对象不需要测试',
+      '零件越多程序跑得越快'
+    ],
+    ans: 0,
+    why: 'OOP 的核心就是分工：每个对象管好自己的事，对外只暴露接口。出问题先找对应模块，而不是在一大段流程里翻。'
+  },
+  {
+    id: 'd3s03',
+    day: 'day3',
+    code: 'class User {\n    int id;\n};',
+    q: '这段代码里，<code>id</code> 默认是什么访问权限？',
+    options: ['public', 'private', 'protected', '没写就编译错误'],
+    ans: 1,
+    why: 'class 的默认权限是 private，struct 才是 public。所以在 class 里写成员，想给外面用一定要显式加 public:。'
+  },
+  {
+    id: 'd3s04',
+    day: 'day3',
+    q: 'C++ 里 <code>class</code> 和 <code>struct</code> 最关键的区别是什么？',
+    options: [
+      'class 里不能写函数',
+      'struct 不能有构造函数',
+      '默认访问权限不同：class 默认私有，struct 默认公有',
+      'class 不能被继承'
+    ],
+    ans: 2,
+    why: '除了默认权限，两者几乎可以互换：都能有成员函数、构造析构、继承。C++ 里 struct 常用来表示"就是一堆数据"，class 用来表示"有行为的对象"，这只是习惯，不是语法强制。'
+  },
+  {
+    id: 'd3s05',
+    day: 'day3',
+    code: 'class User {\n    int id;\npublic:\n    void setId(int mid);\n};\n\nvoid ____setId(int mid) { id = mid; }',
+    q: '在类外实现成员函数，函数名前面必须补什么？',
+    options: ['User.', 'User::', '什么都不用加', 'this->'],
+    ans: 1,
+    why: '要写 <code>void User::setId(int mid)</code>。少了 User::，编译器就把你当成一个普通全局函数，它既碰不到 id，也会和类里声明的那个函数对不上。'
+  },
+  {
+    id: 'd3s06',
+    day: 'day3',
+    code: 'class User {\n    int id;\npublic:\n    void setId(int mid) { id = mid; }\n    int getId() { return id; }\n};',
+    q: '同一个类的成员函数里，访问另一个对象的 private 成员 id：',
+    options: [
+      '不行，private 连同类对象也不能碰',
+      '可以，类内部没有访问权限之分',
+      '只有构造函数可以',
+      '必须先把 id 改成 public'
+    ],
+    ans: 1,
+    why: '访问权限只在类外才起作用。同一个类的成员函数之间，可以访问任意同类对象的私有成员；private 防的是"外面的人"，不是"自己人"。'
+  },
+  {
+    id: 'd3s07',
+    day: 'day3',
+    q: '下面哪个构造函数写法是对的？',
+    options: [
+      'void Demo() { }',
+      'Demo() { }',
+      'int Demo() { return 0; }',
+      'Demo void() { }'
+    ],
+    ans: 1,
+    why: '构造函数名字和类名相同，而且没有返回值——连 void 都不能写。写成 void Demo() 编译器会把它当普通函数，对象创建时不会调用。'
+  },
+  {
+    id: 'd3s08',
+    day: 'day3',
+    code: 'class Demo {\npublic:\n    Demo(int a) { }\n};\n\nint main() { Demo d; }',
+    q: '只写了有参构造，再写 <code>Demo d;</code> 会怎样？',
+    options: [
+      '调用默认无参构造，一切正常',
+      '编译不过：用户写了构造函数后，默认无参构造就失效了',
+      '编译器会自动补一个无参构造',
+      '能编译，运行时崩溃'
+    ],
+    ans: 1,
+    why: '只要用户自己写了任何一个构造函数，编译器就不再提供默认无参构造。要么补一个 <code>Demo() { }</code>，要么写 <code>Demo d(0);</code>。'
+  },
+  {
+    id: 'd3s09',
+    day: 'day3',
+    code: 'Demo o1(10);',
+    q: '下面哪一句会调用拷贝构造函数？',
+    options: [
+      'Demo&amp; r = o1;',
+      'Demo o2 = o1;',
+      'Demo o2; o2 = o1;',
+      'Demo o2(10);'
+    ],
+    ans: 1,
+    why: '拷贝构造只用在"用旧对象初始化新对象"这一种场景。<code>Demo&amp; r = o1;</code> 只是起别名；<code>o2 = o1;</code> 是先定义再赋值，走的是赋值运算；<code>o2(10)</code> 调的是有参构造。'
+  },
+  {
+    id: 'd3s10',
+    day: 'day3',
+    code: 'void fun(Demo d);\nDemo o1(10);\nfun(o1);',
+    q: '把对象按值传给函数，会发生什么？',
+    options: [
+      '不会拷贝，函数里改形参外面也变',
+      '会调用拷贝构造，用 o1 造一个形参对象',
+      '一定编译不过',
+      '只拷贝指针，不拷贝成员'
+    ],
+    ans: 1,
+    why: '按值传参相当于 <code>Demo d = o1;</code>，要造一个形参对象，所以会调用拷贝构造。想省这次拷贝、又不想改原件，就传 <code>const Demo&amp;</code>。'
+  },
+  {
+    id: 'd3s11',
+    day: 'day3',
+    code: 'class Demo {\n    char* name;\npublic:\n    Demo(const char* s) { name = new char[strlen(s) + 1]; strcpy(name, s); }\n    ~Demo() { delete[] name; }\n};',
+    q: '如果直接用编译器默认的拷贝构造（浅拷贝），会发生什么？',
+    options: [
+      '完全没问题，编译器会帮你深拷贝',
+      '两个对象指向同一块堆，改一个影响另一个，析构时可能双重释放',
+      '指针会自动变成 nullptr',
+      '只是多占一点栈空间'
+    ],
+    ans: 1,
+    why: '默认拷贝构造只逐成员赋值，指针成员抄的是地址：a、b 共用一块堆。谁先析构谁释放，另一个就成了野指针，再释放一次就是双重释放。所以有指针成员必须自己写深拷贝。'
+  },
+  {
+    id: 'd3s12',
+    day: 'day3',
+    q: '析构函数下面哪个写法是对的？',
+    options: [
+      'void ~Demo() { }',
+      '~Demo() { }',
+      '~Demo(int a) { }',
+      'Demo~() { }'
+    ],
+    ans: 1,
+    why: '析构函数是"类名前加 ~"，无返回值、连 void 也不能写、不能有参数、不能重载。一个类只有一个析构函数。'
+  },
+  {
+    id: 'd3s13',
+    day: 'day3',
+    code: 'class Demo {\n    int a;\npublic:\n    Demo(int ma) : a(ma) { cout &lt;&lt; "body"; }\n};',
+    q: '初始化列表 <code>: a(ma)</code> 和函数体，哪个先执行？',
+    options: [
+      '函数体先执行',
+      '初始化列表先执行，然后才是函数体',
+      '同时执行',
+      '只有拷贝构造才走初始化列表'
+    ],
+    ans: 1,
+    why: '顺序固定：先按成员定义顺序执行初始化列表，再进函数体。所以进函数体时，成员已经有值了；const 成员和引用成员也只能在列表里初始化。'
+  },
+  {
+    id: 'd3s14',
+    day: 'day3',
+    code: 'class Emp {\n    Dept dept;\n    int eid;\npublic:\n    Emp(int id1, int id2) : eid(id1), dept(id2) { }\n};',
+    q: '成员 dept 和 eid 的构造顺序由什么决定？',
+    options: [
+      '初始化列表里的书写顺序',
+      '成员在类里定义的顺序',
+      '按成员名字的字母顺序',
+      '每次运行随机'
+    ],
+    ans: 1,
+    why: '构造顺序只看成员在类里的定义顺序，和初始化列表怎么写无关。这段代码里 dept 先定义，所以先构造 dept，再构造 eid；析构顺序相反。'
+  },
+  {
+    id: 'd3s15',
+    day: 'day3',
+    code: 'class Dept {\npublic:\n    explicit Dept(int id) { }\n};\nDept d = 100;   // 这一句',
+    q: '<code>explicit</code> 在这里起什么作用？',
+    options: [
+      '让构造函数执行得更快',
+      '禁止 <code>Dept d = 100;</code> 这种隐式转换',
+      '把构造函数变成 private',
+      '允许一次传多个参数'
+    ],
+    ans: 1,
+    why: '单参构造默认允许"int 自动变成 Dept"，所以 <code>Dept d = 100;</code> 能编译。加上 explicit 就必须老老实实写 <code>Dept d(100);</code>，避免看不懂的隐式转换。'
+  },
   {
     id: 's01',
     day: 'day1',
@@ -1603,8 +2191,98 @@ single: [
   }
 ],
 
-/* ---------------- 填空 16 道 ---------------- */
+/* ---------------- 填空 26 道 ---------------- */
 fill: [
+  {
+    id: 'd2f91',
+    day: 'day2',
+    code: '#define BIT(n) (1u &lt;&lt; (n))\n\nreg ____ BIT(3);   // 把第 3 位置 1，其他位不动',
+    q: '置位要保留其他位，横线上填<b>一个运算符</b>。',
+    answers: ['|='],
+    display: '|=　（写成 reg |= BIT(3);）',
+    why: '置位用 <code>|=</code>，只把目标位变 1，其他位原样保留。直接写 <code>reg = BIT(3)</code> 会把别的位全冲成 0。'
+  },
+  {
+    id: 'd2f92',
+    day: 'day2',
+    code: 'reg ____ ~BIT(3);   // 把第 3 位清 0，其他位不动',
+    q: '清零要保留其他位，横线上填<b>一个运算符</b>（取反后相与）。',
+    answers: ['&='],
+    display: '&=　（写成 reg &= ~BIT(3);）',
+    why: '清零用 <code>&amp;= ~</code>：先把掩码取反，那位变 0、其他位变 1，再相与就只清目标位。写成 <code>reg = ~BIT(3)</code> 会把其他位全写成 1。'
+  },
+  {
+    id: 'd3f01',
+    day: 'day3',
+    code: 'void User____setId(int mid) {\n    id = mid;\n}',
+    q: '在类外实现成员函数，横线上填<b>一个运算符</b>（"谁家的"那个）。',
+    answers: ['::'],
+    display: '::　（写成 void User::setId(int mid)）',
+    why: '<code>::</code> 是作用域解析运算符，左边写类名，右边写成员名。漏了它，这个函数就成了全局函数，访问不到类的成员。'
+  },
+  {
+    id: 'd3f02',
+    day: 'day3',
+    code: 'class Demo {\npublic:\n    ____Demo() { cout &lt;&lt; "退房"; }\n};',
+    q: '析构函数名字前要加<b>一个符号</b>，横线填什么？',
+    answers: ['~'],
+    display: '~　（写成 ~Demo()）',
+    why: '析构函数就是在类名前加 <code>~</code>，表示"这个对象要没了"。它无返回值、无参数、不能重载。'
+  },
+  {
+    id: 'd3f03',
+    day: 'day3',
+    code: 'class Demo {\n    int a;\npublic:\n    Demo(int mA) ____ a(mA) {\n        cout &lt;&lt; "body";\n    }\n};',
+    q: '初始化列表前面要写<b>一个符号</b>，横线上填什么？',
+    answers: [':'],
+    display: ':　（写成 Demo(int mA) : a(mA)）',
+    why: '冒号后面接初始化列表，逗号分隔多个成员。它比函数体先执行，成员对象的有参构造也只能写在这里。'
+  },
+  {
+    id: 'd3f04',
+    day: 'day3',
+    code: 'Demo(____ Demo&amp; obj) {   // 拷贝构造\n    a = obj.a;\n}',
+    q: '拷贝构造的形参前面，要补<b>一个关键字</b>，保证拷贝时不改原件。',
+    answers: ['const'],
+    display: 'const　（写成 Demo(const Demo&amp; obj)）',
+    why: '参数写成 <code>const Demo&amp;</code>：引用避免无限递归地拷贝，const 保证拷贝过程中不动原件。这是拷贝构造的标准写法。'
+  },
+  {
+    id: 'd3f05',
+    day: 'day3',
+    code: 'struct Point {\n    int x, y;   // 不写访问权限\n};',
+    q: 'struct 里不写访问权限，默认是 ____（填一个关键字）。',
+    answers: ['public'],
+    display: 'public',
+    why: 'struct 默认 public，class 默认 private，这是两者唯一的硬区别。写 struct 表示"这就是一堆公开的数据"，写 class 则习惯上把数据藏起来。'
+  },
+  {
+    id: 'd3f06',
+    day: 'day3',
+    code: 'char* p = new char[10];\n// 用完要还回去\n____;',
+    q: '补全释放数组的语句（<code>new[]</code> 要配对的写法）。',
+    answers: ['delete[] p', 'delete [] p', 'delete[]p'],
+    display: 'delete[] p;',
+    why: '<code>new[]</code> 必须配 <code>delete[]</code>。数组和单个对象是两本账，用 <code>delete p</code> 释放数组在不少平台上会崩，或者只析构第一个元素。'
+  },
+  {
+    id: 'd3f07',
+    day: 'day3',
+    code: 'class Dept {\npublic:\n    ____ Dept(int id);   // 禁止 int 隐式变成 Dept\n};',
+    q: '挡住 <code>Dept d = 100;</code> 这种隐式转换，横线填<b>一个关键字</b>。',
+    answers: ['explicit'],
+    display: 'explicit',
+    why: '单参构造默认允许隐式转换，加 <code>explicit</code> 后就只能写 <code>Dept d(100);</code>。工程里建议单参构造都加上，少一类看不懂的 bug。'
+  },
+  {
+    id: 'd3f08',
+    day: 'day3',
+    code: 'Demo(const Demo&amp; obj) {\n    name = new char[____];\n    strcpy(name, obj.name);\n}',
+    q: '深拷贝时，新内存的长度要按对方的字符串算，横线填什么？',
+    answers: ['strlen(obj.name) + 1'],
+    display: 'strlen(obj.name) + 1',
+    why: '字符串末尾还有一个 <code>\\0</code>，所以长度是 <code>strlen(obj.name) + 1</code>。少加 1 会越界写，多申请一点不会错但别浪费。'
+  },
   {
     id: 'f01',
     day: 'day1',
@@ -1745,8 +2423,99 @@ fill: [
   }
 ],
 
-/* ---------------- 判断 15 道 ---------------- */
+/* ---------------- 判断 28 道 ---------------- */
 judge: [
+  {
+    id: 'd2j91',
+    day: 'day2',
+    q: '<code>volatile</code> 能保证中断和主循环同时改变量时不丢数据。',
+    ans: 1,
+    why: '不能。volatile 只保证每次都真去内存读，<code>n++</code> 这种"读-改-写"仍然可能被打断，导致丢更新。要安全得关中断或用原子操作。'
+  },
+  {
+    id: 'd2j92',
+    day: 'day2',
+    q: '函数里的 static 局部变量，每次调用函数都会重新初始化为初始值。',
+    ans: 1,
+    why: '错。static 局部变量只在第一次执行到它时初始化一次，之后一直保留上次的值，函数退出也不销毁。'
+  },
+  {
+    id: 'd2j93',
+    day: 'day2',
+    q: '文件作用域的 static 函数，只能在本文件里被调用，别的文件链接不到。',
+    ans: 0,
+    why: '对。这叫内部链接，常用来做模块私有函数：多个 .c 里写同名 static 函数也不会冲突。'
+  },
+  {
+    id: 'd3j01',
+    day: 'day3',
+    q: '构造函数可以写返回值，只要不写成 void 就行。',
+    ans: 1,
+    why: '构造函数没有返回值，连 void 都不能写。它由编译器在创建对象时自动调用，不是普通函数，不能拿返回值。'
+  },
+  {
+    id: 'd3j02',
+    day: 'day3',
+    q: '构造函数可以重载：同一个类可以有好几个参数不同的构造函数。',
+    ans: 0,
+    why: '可以。无参构造和带参构造就是最常见的重载，编译器按你传的参数挑一个调用。'
+  },
+  {
+    id: 'd3j03',
+    day: 'day3',
+    q: '析构函数可以带参数，也可以重载好几个。',
+    ans: 1,
+    why: '析构函数不能有参数、不能重载，一个类只有一个 <code>~类名()</code>。它由编译器在对象销毁前自动调用，不需要你传参。'
+  },
+  {
+    id: 'd3j04',
+    day: 'day3',
+    q: '自己写了拷贝构造函数之后，编译器仍然会提供一个默认无参构造。',
+    ans: 1,
+    why: '只要你声明了任何一个构造函数（包括拷贝构造），编译器就不再提供默认无参构造。需要 <code>Demo d;</code> 的话，得自己补一个无参构造。'
+  },
+  {
+    id: 'd3j05',
+    day: 'day3',
+    q: '类里只定义了有参构造，<code>Demo d;</code> 仍然能正常编译。',
+    ans: 1,
+    why: '编译不过：默认无参构造已经失效。要么写 <code>Demo d(0);</code>，要么自己补一个 <code>Demo() { }</code>。'
+  },
+  {
+    id: 'd3j06',
+    day: 'day3',
+    q: '浅拷贝之后，两个对象的指针成员指向同一块堆内存，析构时可能重复释放。',
+    ans: 0,
+    why: '对。默认拷贝构造只抄地址，两个对象共用一块堆；各自析构时都 delete 一次，就是双重释放。有指针成员必须写深拷贝。'
+  },
+  {
+    id: 'd3j07',
+    day: 'day3',
+    q: '成员对象的构造顺序，和初始化列表里的书写顺序一致。',
+    ans: 1,
+    why: '构造顺序只看成员在类里的定义顺序，跟初始化列表怎么写没关系。写反了顺序，编译器一般会给警告，但不会按你写的顺序来。'
+  },
+  {
+    id: 'd3j08',
+    day: 'day3',
+    q: '在同一个类的成员函数里，可以访问另一个同类对象的 private 成员。',
+    ans: 0,
+    why: '对。访问权限只在类外检查；类内部所有成员函数都能访问同类对象的私有成员。'
+  },
+  {
+    id: 'd3j09',
+    day: 'day3',
+    q: '给已有对象起一个引用别名，会调用拷贝构造函数。',
+    ans: 1,
+    why: '不会。引用只是别名，没有创建新对象。拷贝构造只发生在"用旧对象初始化新对象"时。'
+  },
+  {
+    id: 'd3j10',
+    day: 'day3',
+    q: '<code>explicit</code> 可以挡住 <code>Dept d = 100;</code> 这种隐式转换。',
+    ans: 0,
+    why: '对。加了 explicit 的单参构造不允许隐式转换，必须写成 <code>Dept d(100);</code>。'
+  },
   {
     id: 'j01',
     day: 'day1',
@@ -1854,8 +2623,89 @@ judge: [
   }
 ],
 
-/* ---------------- 代码题 12 道（6 天1 + 6 天2） ---------------- */
+/* ---------------- 代码题 21 道（6 天1 + 7 天2 + 8 天3） ---------------- */
 code: [
+  {
+    id: 'd2c91',
+    day: 'day2',
+    q: '读代码，写出终端打印的字符（不要空格）。',
+    code: 'void f(void) {\n    static int n = 0;\n    n++;\n    cout &lt;&lt; n;\n}\n\nint main() {\n    f();\n    f();\n    f();\n}',
+    answers: ['123'],
+    display: '123',
+    why: 'static 局部变量只初始化一次，之后一直保留值。三次调用 n 依次变成 1、2、3，所以打印 123；普通局部变量的话会是 111。'
+  },
+  {
+    id: 'd3c01',
+    day: 'day3',
+    q: '读代码，写出终端打印的字符（不要空格）。',
+    code: 'class Demo {\npublic:\n    Demo() { cout &lt;&lt; "A"; }\n    Demo(int a) { cout &lt;&lt; "B"; }\n};\n\nint main() {\n    Demo d;\n    Demo e(1);\n}',
+    answers: ['AB'],
+    display: 'AB',
+    why: '<code>Demo d;</code> 调无参构造打印 A，<code>Demo e(1);</code> 调有参构造打印 B，所以是 AB。若只写有参构造却写 <code>Demo d;</code>，会直接编译不过。'
+  },
+  {
+    id: 'd3c02',
+    day: 'day3',
+    q: '补全析构函数，把构造函数里 new 出来的字符串释放掉。',
+    code: 'class Demo {\n    char* name;\npublic:\n    Demo(const char* s) {\n        name = new char[strlen(s) + 1];\n        strcpy(name, s);\n    }\n    ~Demo() {\n        ____;\n    }\n};',
+    answers: ['delete[] name', 'delete [] name', 'delete[]name'],
+    display: 'delete[] name;',
+    why: '构造函数用的是 <code>new char[...]</code>，析构就必须配对 <code>delete[]</code>。只写 <code>delete name</code> 是数组/单对象配错，很多平台会崩。'
+  },
+  {
+    id: 'd3c03',
+    day: 'day3',
+    q: '补全类外的 setter，让形参 mid 写进成员 id。',
+    code: 'class User {\n    int id;\npublic:\n    void setId(int mid);\n};\n\nvoid User::setId(int mid) {\n    ____ = mid;\n}',
+    answers: ['id', 'this->id'],
+    display: 'id',
+    why: '成员名是 id，形参是 mid，直接写 <code>id = mid;</code> 即可。形参如果也叫 id，才需要用 <code>this->id = id;</code> 区分。'
+  },
+  {
+    id: 'd3c04',
+    day: 'day3',
+    q: '补全初始化列表，用 id2 调用成员对象 dept 的有参构造。',
+    code: 'class Emp {\n    Dept dept;\n    int eid;\npublic:\n    Emp(int id1, int id2) ____ {\n        eid = id1;\n    }\n};',
+    answers: ['dept(id2)', ':dept(id2)', ': dept(id2)'],
+    display: ': dept(id2)',
+    why: '成员对象只能靠初始化列表调有参构造，写法是 <code>: dept(id2)</code>。在函数体里写 <code>dept = Dept(id2);</code> 是先造临时对象再赋值，不是初始化。'
+  },
+  {
+    id: 'd3c05',
+    day: 'day3',
+    q: '这段代码里，拷贝构造函数被调用了几次？',
+    code: 'class Demo {\npublic:\n    int a;\n    Demo(int ma) { a = ma; }\n    Demo(const Demo&amp; obj) { a = obj.a; }\n};\n\nint main() {\n    Demo o1(10);\n    Demo o2 = o1;\n}',
+    answers: ['1'],
+    display: '1 次',
+    why: '只有 <code>Demo o2 = o1;</code> 是"用旧对象初始化新对象"，调用 1 次拷贝构造。<code>Demo o1(10);</code> 调的是有参构造。'
+  },
+  {
+    id: 'd3c06',
+    day: 'day3',
+    q: '读代码，写出终端打印的字符（不要空格）。',
+    code: 'class D {\npublic:\n    D() { cout &lt;&lt; "C"; }\n    ~D() { cout &lt;&lt; "X"; }\n};\n\nint main() {\n    D a;\n    { D b; }\n    D c;\n}',
+    answers: ['CCXCXX'],
+    display: 'CCXCXX',
+    why: 'a 构造 C → b 构造 C → b 出作用域析构 X → c 构造 C → main 结束，c 析构 X、a 析构 X。栈是后进先出，同一作用域里后构造的先析构。'
+  },
+  {
+    id: 'd3c07',
+    day: 'day3',
+    q: '读代码，写出最后打印的数字。',
+    code: 'struct S { int* p; };\n\nint main() {\n    int x = 5;\n    S a;\n    a.p = &amp;x;\n    S b = a;      // 默认拷贝构造：浅拷贝\n    *b.p = 9;\n    cout &lt;&lt; *a.p &lt;&lt; endl;\n}',
+    answers: ['9'],
+    display: '9',
+    why: '默认拷贝构造是浅拷贝，b.p 和 a.p 指向同一个 x。通过 b 改的就是 a 看到的那块内存，所以打印 9。要各管各的，就得写深拷贝。'
+  },
+  {
+    id: 'd3c08',
+    day: 'day3',
+    q: '读代码，写出终端打印的字符（不要空格）。',
+    code: 'class D {\npublic:\n    D() { cout &lt;&lt; "D"; }\n    ~D() { cout &lt;&lt; "~D"; }\n};\n\nclass E {\n    D d;\npublic:\n    E() { cout &lt;&lt; "E"; }\n    ~E() { cout &lt;&lt; "~E"; }\n};\n\nint main() { E e; }',
+    answers: ['DE~E~D'],
+    display: 'DE~E~D',
+    why: '先构造成员 d 打印 D，再执行 E 自己的构造打印 E；析构相反：先析构 E 打印 ~E，再析构成员 d 打印 ~D。'
+  },
   {
     id: 'c01',
     day: 'day1',
@@ -2020,7 +2870,7 @@ function prepare(base, type) {
   };
 }
 
-/* 两套完全独立的练习：Day 1 只抽 day1 的题，Day 2 只抽 day2 的题 */
+/* 三套完全独立的练习：Day N 只抽 dayN 的题 */
 var TRACKS = {
   d1: {
     id: 'd1', name: 'Day 1', day: 'day1',
@@ -2035,10 +2885,18 @@ var TRACKS = {
     dom: { list: 'qlist2', prog: 'stProg2', score: 'stScore2', rate: 'stRate2',
            sum: 'summary2', again: 'againBar2', root: 'practice2' },
     R: { list: [], ans: {}, draft: {}, startedAt: 0 }
+  },
+  d3: {
+    id: 'd3', name: 'Day 3', day: 'day3',
+    spec: { single: 7, fill: 3, judge: 3, code: 3 },
+    dom: { list: 'qlist3', prog: 'stProg3', score: 'stScore3', rate: 'stRate3',
+           sum: 'summary3', again: 'againBar3', root: 'practice3' },
+    R: { list: [], ans: {}, draft: {}, startedAt: 0 }
   }
 };
 
 function dayOf(b) {
+  if (b.day === 'day3') return 'day3';
   return b.day === 'day2' ? 'day2' : 'day1';
 }
 
@@ -2565,8 +3423,10 @@ function goNewRound(t) {
 
 document.getElementById('againTop1').addEventListener('click', function () { goNewRound(TRACKS.d1); });
 document.getElementById('againTop2').addEventListener('click', function () { goNewRound(TRACKS.d2); });
+document.getElementById('againTop3').addEventListener('click', function () { goNewRound(TRACKS.d3); });
 document.getElementById('againBar1').addEventListener('click', function () { goNewRound(TRACKS.d1); });
 document.getElementById('againBar2').addEventListener('click', function () { goNewRound(TRACKS.d2); });
+document.getElementById('againBar3').addEventListener('click', function () { goNewRound(TRACKS.d3); });
 
 /* 页面里静态写的知识卡片代码块，统一过高亮 */
 document.querySelectorAll('pre.code > code').forEach(function (node) {
@@ -2575,6 +3435,7 @@ document.querySelectorAll('pre.code > code').forEach(function (node) {
 
 startRound(TRACKS.d1);
 startRound(TRACKS.d2);
+startRound(TRACKS.d3);
 
 /* ============================================================
    AI 问答（和函数卡页面共用同一份配置 cpp_ai_cfg_v1）
