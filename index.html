@@ -52,66 +52,115 @@
     </div>
   </header>
 
-  <div id="mount-day1" class="day-mount"></div>
+  <div class="layout">
+    <aside class="toc" id="toc" aria-label="卡片目录">
+      <div class="toc-head">
+        <b>卡片目录</b>
+        <span class="toc-sum" id="tocSum"></span>
+      </div>
+      <div class="toc-list" id="tocList"></div>
+    </aside>
 
-  <!-- ===== Day 1 练习（独立一套） ===== -->
-  <div class="sec-title pr-title" id="practice1">Day 1 练习<span class="pr-tag">只抽 Day 1 的题 · 独立计分</span></div>
-  <p class="sec-desc">从 Day 1 的 <b>56</b> 道题里随机抽 <b>8 单选 + 4 填空 + 3 判断 + 3 代码</b>，题目顺序和选项都打乱，同一轮不重复。这一套的进度、得分、错题、报告只算 Day 1，和下面 Day 2 那一套互不影响。</p>
+    <main class="stage" id="stage">
+      <section class="deck" id="day1" aria-label="卡片">
+        <div class="deck-head">
+          <div class="deck-title" id="deckTitle">Day 1</div>
+          <div class="deck-meta">
+            <span class="qidx">第 <b id="qi">1</b> 张 / 共 <span id="qt">6</span> 张</span>
+            <button class="ovbtn" id="ovBtn" type="button" aria-haspopup="dialog" aria-controls="drawer">今天 6 张 ▾</button>
+          </div>
+        </div>
+        <div class="deck-bar" id="deckBarWrap" role="progressbar" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1" aria-label="当天卡片进度"><i id="deckBar"></i></div>
+        <div class="deck-card" id="cardHost"><div class="load-tip">正在加载 Day 1 的内容…</div></div>
+      </section>
 
-  <div class="stats">
-    <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg1">0 / 18</div></div>
-    <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore1">0</div></div>
-    <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate1">—</div></div>
-    <button class="again" id="againBar1">再来一轮</button>
+      <div class="day-part" data-day="day1">
+        <section class="tasks" id="task1"></section>
+        <div class="gloss-wrap" id="gloss1"></div>
+      </div>
+      <div class="day-part" data-day="day2" hidden>
+        <section class="tasks" id="task2"></section>
+        <div class="gloss-wrap" id="gloss2"></div>
+      </div>
+      <div class="day-part" data-day="day3" hidden>
+        <section class="tasks" id="task3"></section>
+        <div class="gloss-wrap" id="gloss3"></div>
+      </div>
+
+      <div class="day-part" data-day="day1">
+        <div class="sec-title pr-title" id="practice1">Day 1 练习<span class="pr-tag">只抽 Day 1 的题 · 独立计分</span></div>
+        <p class="sec-desc">从 Day 1 的 <b>56</b> 道题里随机抽 <b>8 单选 + 4 填空 + 3 判断 + 3 代码</b>，题目顺序和选项都打乱，同一轮不重复。这一套的进度、得分、错题、报告只算 Day 1，和下面 Day 2 那一套互不影响。</p>
+
+        <div class="stats">
+          <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg1">0 / 18</div></div>
+          <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore1">0</div></div>
+          <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate1">—</div></div>
+          <button class="again" id="againBar1">再来一轮</button>
+        </div>
+
+        <div id="qlist1"></div>
+        <div id="summary1"></div>
+      </div>
+
+      <div class="day-part" data-day="day2" hidden>
+        <div class="sec-title pr-title" id="practice2">Day 2 练习<span class="pr-tag">只抽 Day 2 的题 · 独立计分</span></div>
+        <p class="sec-desc">从 Day 2 的 <b>38</b> 道题里随机抽 <b>6 单选 + 3 填空 + 2 判断 + 3 代码</b>，同样打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 2，和上面 Day 1 那一套互不影响。</p>
+
+        <div class="stats">
+          <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg2">0 / 14</div></div>
+          <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore2">0</div></div>
+          <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate2">—</div></div>
+          <button class="again" id="againBar2">再来一轮</button>
+        </div>
+
+        <div id="qlist2"></div>
+        <div id="summary2"></div>
+      </div>
+
+      <div class="day-part" data-day="day3" hidden>
+        <div class="sec-title pr-title" id="practice3">Day 3 练习<span class="pr-tag">只抽 Day 3 的题 · 独立计分</span></div>
+        <p class="sec-desc">从 Day 3 的 <b>41</b> 道题里随机抽 <b>7 单选 + 3 填空 + 3 判断 + 3 代码</b>，打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 3，和 Day 1、Day 2 互不影响。</p>
+
+        <div class="stats">
+          <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg3">0 / 16</div></div>
+          <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore3">0</div></div>
+          <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate3">—</div></div>
+          <button class="again" id="againBar3">再来一轮</button>
+        </div>
+
+        <div id="qlist3"></div>
+        <div id="summary3"></div>
+      </div>
+
+      <section class="check">
+        <h3>怎么判断自己真的会了</h3>
+        <ol>
+          <li><b>关掉所有资料，从空白文件写出 swap，能编译能跑</b> —— 这才叫会。看着网页点头不算。</li>
+          <li><b>能看懂编译器的报错在说什么</b> —— 报错是最便宜的老师，它每次都直说哪一行不对。</li>
+          <li><b>能用人话把这件事讲给一个完全不懂的人听</b> —— 讲不清，就是还没懂。</li>
+        </ol>
+        <p class="check-tip">提醒一句：网页刷题只能暴露盲点，不能替代动手。刷十轮，不如自己从零敲一遍。</p>
+      </section>
+
+      <footer>做完这一页，Day 3 就可以进「继承与多态」了。</footer>
+    </main>
   </div>
-
-  <div id="qlist1"></div>
-  <div id="summary1"></div>
-
-  <div id="mount-day2" class="day-mount"></div>
-
-  <!-- ===== Day 2 练习（独立一套） ===== -->
-  <div class="sec-title pr-title" id="practice2">Day 2 练习<span class="pr-tag">只抽 Day 2 的题 · 独立计分</span></div>
-  <p class="sec-desc">从 Day 2 的 <b>38</b> 道题里随机抽 <b>6 单选 + 3 填空 + 2 判断 + 3 代码</b>，同样打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 2，和上面 Day 1 那一套互不影响。</p>
-
-  <div class="stats">
-    <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg2">0 / 14</div></div>
-    <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore2">0</div></div>
-    <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate2">—</div></div>
-    <button class="again" id="againBar2">再来一轮</button>
-  </div>
-
-  <div id="qlist2"></div>
-  <div id="summary2"></div>
-
-  <div id="mount-day3" class="day-mount"></div>
-
-  <!-- ===== Day 3 练习（独立一套） ===== -->
-  <div class="sec-title pr-title" id="practice3">Day 3 练习<span class="pr-tag">只抽 Day 3 的题 · 独立计分</span></div>
-  <p class="sec-desc">从 Day 3 的 <b>41</b> 道题里随机抽 <b>7 单选 + 3 填空 + 3 判断 + 3 代码</b>，打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 3，和 Day 1、Day 2 互不影响。</p>
-
-  <div class="stats">
-    <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg3">0 / 16</div></div>
-    <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore3">0</div></div>
-    <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate3">—</div></div>
-    <button class="again" id="againBar3">再来一轮</button>
-  </div>
-
-  <div id="qlist3"></div>
-  <div id="summary3"></div>
-
-  <section class="check">
-    <h3>怎么判断自己真的会了</h3>
-    <ol>
-      <li><b>关掉所有资料，从空白文件写出 swap，能编译能跑</b> —— 这才叫会。看着网页点头不算。</li>
-      <li><b>能看懂编译器的报错在说什么</b> —— 报错是最便宜的老师，它每次都直说哪一行不对。</li>
-      <li><b>能用人话把这件事讲给一个完全不懂的人听</b> —— 讲不清，就是还没懂。</li>
-    </ol>
-    <p class="check-tip">提醒一句：网页刷题只能暴露盲点，不能替代动手。刷十轮，不如自己从零敲一遍。</p>
-  </section>
-
-  <footer>做完这一页，Day 3 就可以进「继承与多态」了。</footer>
 </div>
+
+<nav class="pager" id="pager" aria-label="卡片翻页">
+  <button class="pbtn" id="prevBtn" type="button">上一张</button>
+  <button class="pbtn primary" id="nextBtn" type="button">下一张</button>
+</nav>
+
+<div class="drawer-mask" id="drawerMask" hidden></div>
+<div class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+  <div class="drawer-head">
+    <b id="drawerTitle">今天 6 张</b><span>点一下直接跳</span>
+    <button class="drawer-close" id="drawerClose" type="button" aria-label="关闭目录">×</button>
+  </div>
+  <div class="drawer-list" id="drawerList"></div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <div class="aimask hidden" id="aiMask">
   <div class="aidlg" role="dialog" aria-modal="true" aria-labelledby="aiDlgTitle">

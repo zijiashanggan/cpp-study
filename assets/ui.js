@@ -1,4 +1,4 @@
-﻿/* C++ 前三天 · 页面装载、卡片渲染、关卡进度 */
+/* C++ 前三天 · 单卡渲染、目录、翻页与关卡进度 */
 (function () {
   'use strict';
 
@@ -7,6 +7,12 @@
   var loaded = {};
   var loading = {};
   var started = {};
+  var tailDone = {};
+  var DATA = {};
+
+  /* 当前状态：只保存「哪一天、第几张」，DOM 里始终只渲染这一张 */
+  var ST = { day: 'day1', idx: 0 };
+  var COLL = {};   /* 侧栏分组折叠状态 */
 
   /* ---------------- localStorage ---------------- */
   var TASK_STORE = 'cpp_task_done_v1';      /* 原「今天动手」勾选，保持兼容 */
@@ -29,21 +35,58 @@
     var o = LV[cardId];
     return o && typeof o === 'object' ? o : {};
   }
+  function lvCount(cardId) {
+    var o = lvOf(cardId), n = 0;
+    if (o.read) n++;
+    if (o.do) n++;
+    if (o.quiz) n++;
+    return n;
+  }
+  function isPassed(cardId) { return lvCount(cardId) === 3; }
   function setLv(cardId, lv, on) {
     var o = lvOf(cardId);
     if (on) o[lv] = 1; else delete o[lv];
     LV[cardId] = o;
     writeJson(LV_STORE, LV);
     paintCard(cardId);
-    paintDayProg(dayOfCard(cardId));
-  }
-  function isPassed(cardId) {
-    var o = lvOf(cardId);
-    return !!(o.read && o.do && o.quiz);
+    paintToc();
   }
   function dayOfCard(cardId) {
     var m = /^d(\d)c/.exec(cardId);
     return m ? 'day' + m[1] : '';
+  }
+
+  /* ---------------- 基础查询 ---------------- */
+  function metaOf(day) {
+    for (var i = 0; i < SYL.length; i++) if (SYL[i].id === day) return SYL[i];
+    return null;
+  }
+  function dayName(day) {
+    var m = metaOf(day);
+    return m ? (m.title || day) : day;
+  }
+  function cardsOf(day) {
+    var d = DATA[day];
+    return d && d.cards ? d.cards : [];
+  }
+  function cardCount(day) {
+    var n = cardsOf(day).length;
+    if (n) return n;
+    var m = metaOf(day);
+    return m && m.cards ? m.cards : 0;
+  }
+  function passedCount(day) {
+    var n = 0;
+    Object.keys(LV).forEach(function (id) {
+      if (dayOfCard(id) !== day) return;
+      if (isPassed(id)) n++;
+    });
+    return n;
+  }
+  function idxOfCard(day, cardId) {
+    var list = cardsOf(day);
+    for (var i = 0; i < list.length; i++) if (list[i].id === cardId) return i;
+    return -1;
   }
 
   /* ---------------- 脚本加载 ---------------- */
@@ -70,15 +113,11 @@
     });
   }
 
-  function mountEl(day) { return document.getElementById('mount-' + day); }
-  function dayName(day) {
-    var m = SYL.filter(function (x) { return x.id === day; })[0];
-    return m ? (m.title || day) : day;
-  }
   function showLoad(day) {
-    var el = mountEl(day);
-    if (el && !el.querySelector('.card[data-card]')) {
-      el.innerHTML = '<div class="load-tip">正在加载 ' + dayName(day) + ' 的内容…</div>';
+    if (ST.day !== day) return;
+    var host = document.getElementById('cardHost');
+    if (host && !host.querySelector('.card[data-card]')) {
+      host.innerHTML = '<div class="load-tip">正在加载 ' + dayName(day) + ' 的内容…</div>';
     }
   }
   function showFail(day, isBank) {
@@ -87,9 +126,12 @@
     if (isBank) {
       var q = document.getElementById('qlist' + day.slice(3));
       if (q) q.innerHTML = html;
+    } else if (ST.day === day) {
+      var host = document.getElementById('cardHost');
+      if (host) host.innerHTML = html;
     } else {
-      var el = mountEl(day);
-      if (el) el.innerHTML = html;
+      var g = document.getElementById('gloss' + day.slice(3));
+      if (g) g.innerHTML = html;
     }
   }
 
@@ -99,7 +141,7 @@
       A.mergeBank && A.mergeBank(day, B[day]);
       return Promise.resolve();
     }
-    var meta = SYL.filter(function (x) { return x.id === day; })[0];
+    var meta = metaOf(day);
     if (!meta) return Promise.resolve();
     return loadScript(meta.bank).then(function () {
       return waitFor(function () { return (window.BANKS || {})[day]; });
@@ -113,7 +155,7 @@
   function ensureDay(day) {
     if (loaded[day]) return Promise.resolve();
     if (loading[day]) return loading[day];
-    var meta = SYL.filter(function (x) { return x.id === day; })[0];
+    var meta = metaOf(day);
     if (!meta) return Promise.resolve();
     showLoad(day);
     loading[day] = loadScript(meta.data).then(function () {
@@ -121,9 +163,11 @@
     }).then(function () {
       var data = (window.DAYS || {})[day];
       if (!data) throw new Error('缺数据：' + day);
-      renderDay(data);
+      DATA[day] = data;
       loaded[day] = true;
       delete loading[day];
+      renderTail(day);
+      if (ST.day === day) { paintDeckHead(); paintCardHost(); paintToc(); paintPager(); }
       return ensureBank(day).catch(function (e) { console.error(e); showFail(day, true); });
     }).then(function () {
       if (A.TRACKS && A.TRACKS['d' + day.slice(3)] && !started[day]) {
@@ -147,7 +191,9 @@
     if (q) q.innerHTML = '';
     if (!loaded[day]) {
       delete loading[day];
-      ensureDay(day);
+      ensureDay(day).then(function () {
+        if (ST.day === day) { paintDeckHead(); paintCardHost(); paintToc(); paintPager(); }
+      });
     } else {
       started[day] = false;
       ensureBank(day).then(function () {
@@ -161,8 +207,18 @@
     return String(s == null ? '' : s)
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
+
+  /* 代码块：超过 8 行默认折叠，只露前 8 行；按钮文案写明总行数和剩余行数 */
   function codeHtml(code) {
-    return '<pre class="code"><code>' + A.hl(code) + '</code></pre>';
+    var raw = String(code == null ? '' : code).replace(/\n+$/, '');
+    var n = raw ? raw.split('\n').length : 0;
+    var body = A.hl ? A.hl(raw) : esc(raw);
+    if (n <= 8) return '<pre class="code"><code>' + body + '</code></pre>';
+    var more = '展开全文 · 共 ' + n + ' 行（还有 ' + (n - 8) + ' 行）';
+    return '<div class="codewrap short" data-more="' + esc(more) + '">' +
+      '<pre class="code"><code>' + body + '</code></pre>' +
+      '<button class="expand" type="button">' + esc(more) + '</button>' +
+      '</div>';
   }
 
   function cardHtml(card) {
@@ -232,38 +288,67 @@
     return h.join('\n');
   }
 
-  function renderDay(day) {
-    var mount = document.getElementById('mount-' + day.id);
-    if (!mount) return;
-    var h = [];
-    h.push('<div class="sec-title" id="' + day.id + '">' + day.title +
-      '<span class="day-prog" id="prog-' + day.id + '"></span></div>');
-    if (day.desc) h.push('<p class="sec-desc">' + day.desc + '</p>');
-    day.cards.forEach(function (c) { h.push(cardHtml(c)); });
-
-    if (day.tasks && day.tasks.length) {
-      h.push('<div class="sec-title" id="task' + day.id.slice(3) + '">' + day.taskTitle + '</div>');
-      if (day.taskDesc) h.push('<p class="sec-desc">' + day.taskDesc + '</p>');
-      day.tasks.forEach(function (t) { h.push(taskHtml(t)); });
+  /* 当天「动手任务 + 术语」只渲染一次，切天不重复堆积 */
+  function renderTail(day) {
+    if (tailDone[day]) return;
+    var d = DATA[day];
+    if (!d) return;
+    var n = day.slice(3);
+    var taskHost = document.getElementById('task' + n);
+    if (taskHost) {
+      var h = [];
+      if (d.tasks && d.tasks.length) {
+        h.push('<div class="sec-title">' + (d.taskTitle || dayName(day) + ' · 今天动手') + '</div>');
+        if (d.taskDesc) h.push('<p class="sec-desc">' + d.taskDesc + '</p>');
+        d.tasks.forEach(function (t) { h.push(taskHtml(t)); });
+      }
+      taskHost.innerHTML = h.join('\n');
     }
-    if (day.gloss) {
-      h.push('<div class="gloss">' + day.gloss.html + '</div>');
-    }
-    mount.innerHTML = h.join('\n');
-
+    var gloss = document.getElementById('gloss' + n);
+    if (gloss) gloss.innerHTML = d.gloss ? '<div class="gloss">' + d.gloss.html + '</div>' : '';
+    tailDone[day] = true;
     A.aiAttachCards && A.aiAttachCards();
-    paintDayProg(day.id);
   }
 
-  function paintDayProg(day) {
-    var el = document.getElementById('prog-' + day);
-    if (!el) return;
-    var cards = document.querySelectorAll('#mount-' + day + ' .card[data-card]');
-    var n = cards.length, m = 0;
-    Array.prototype.forEach.call(cards, function (c) {
-      if (isPassed(c.getAttribute('data-card'))) m++;
-    });
-    el.textContent = '今天 ' + n + ' 张，已过 ' + m + ' 张';
+  /* ---------------- 顶部标题 / 进度 ---------------- */
+  function paintDeckHead() {
+    var meta = metaOf(ST.day);
+    var n = cardCount(ST.day);
+    var cur = n ? Math.min(ST.idx, n - 1) + 1 : 0;
+    var title = document.getElementById('deckTitle');
+    var qi = document.getElementById('qi');
+    var qt = document.getElementById('qt');
+    var bar = document.getElementById('deckBar');
+    var wrap = document.getElementById('deckBarWrap');
+    var ov = document.getElementById('ovBtn');
+    var dt = document.getElementById('drawerTitle');
+    if (title) title.textContent = meta ? (meta.nav || meta.title || meta.id) : ST.day;
+    if (qi) qi.textContent = String(cur || 1);
+    if (qt) qt.textContent = String(n);
+    if (bar) bar.style.width = (n ? cur / n * 100 : 0) + '%';
+    if (wrap) {
+      wrap.setAttribute('aria-valuemax', String(n || 1));
+      wrap.setAttribute('aria-valuenow', String(cur || 1));
+    }
+    if (ov) ov.textContent = '今天 ' + n + ' 张 ▾';
+    if (dt) dt.textContent = '今天 ' + n + ' 张';
+  }
+
+  /* 只渲染当前这一张：innerHTML 覆盖，不追加 */
+  function paintCardHost() {
+    var host = document.getElementById('cardHost');
+    if (!host) return;
+    var cards = cardsOf(ST.day);
+    var card = cards[ST.idx];
+    if (!card) {
+      /* 加载失败时 catch 已经把兜底条写进来了，别被加载提示覆盖 */
+      if (host.querySelector('.load-err')) return;
+      if (!loaded[ST.day]) host.innerHTML = '<div class="load-tip">正在加载 ' + dayName(ST.day) + ' 的内容…</div>';
+      return;
+    }
+    host.innerHTML = cardHtml(card);
+    A.aiAttachCards && A.aiAttachCards();
+    paintDeckHead();
   }
 
   function paintCard(cardId) {
@@ -275,6 +360,153 @@
       if (b) b.classList.toggle('on', !!o[k]);
     });
     el.classList.toggle('passed', isPassed(cardId));
+  }
+
+  /* ---------------- 目录（侧栏与抽屉共用一套 HTML） ---------------- */
+  function tocGroupHtml(day) {
+    var meta = metaOf(day) || {};
+    var cards = cardsOf(day);
+    var total = cards.length || meta.cards || 0;
+    var done = passedCount(day);
+    var folded = !!COLL[day];
+    var h = [];
+    h.push('<div class="toc-group' + (folded ? ' collapsed' : '') + '" data-group="' + day + '">');
+    h.push('<button class="toc-g" type="button" data-day="' + day + '" aria-expanded="' + (folded ? 'false' : 'true') + '">' +
+      '<span class="toc-gt">' + esc(meta.nav || meta.title || day) + '</span>' +
+      '<span class="toc-gn">' + done + '/' + total + '</span>' +
+      '<span class="toc-caret" aria-hidden="true">▾</span></button>');
+    h.push('<div class="toc-rows">');
+    if (!cards.length) {
+      h.push('<button class="toc-row toc-load" type="button" data-day="' + day + '" data-idx="0">' +
+        '<span class="toc-num">→</span>' +
+        '<span class="toc-t">切到这一天（' + total + ' 张）</span>' +
+        '<span class="toc-st">加载</span></button>');
+    } else {
+      cards.forEach(function (c, i) {
+        var k = lvCount(c.id);
+        var on = (ST.day === day && ST.idx === i);
+        h.push('<button class="toc-row' + (on ? ' active' : '') + '" type="button" data-day="' + day +
+          '" data-idx="' + i + '"' + (on ? ' aria-current="true"' : '') + '>' +
+          '<span class="toc-num">' + (i + 1) + '</span>' +
+          '<span class="toc-t">' + esc(c.title || '') + '</span>' +
+          '<span class="toc-st' + (k === 3 ? ' ok' : '') + '">' + (k === 3 ? '✓' : k + '/3') + '</span>' +
+          '</button>');
+      });
+    }
+    h.push('</div></div>');
+    return h.join('');
+  }
+
+  function paintToc() {
+    var html = SYL.map(function (m) { return tocGroupHtml(m.id); }).join('');
+    var tl = document.getElementById('tocList');
+    var dl = document.getElementById('drawerList');
+    if (tl) tl.innerHTML = html;
+    if (dl) dl.innerHTML = html;
+
+    var sum = document.getElementById('tocSum');
+    if (sum) {
+      var total = 0, done = 0;
+      SYL.forEach(function (m) {
+        total += cardCount(m.id);
+        done += passedCount(m.id);
+      });
+      sum.textContent = '已过 ' + done + ' / ' + total;
+    }
+    scrollActiveRow();
+  }
+
+  function scrollActiveRow() {
+    var list = document.getElementById('tocList');
+    if (!list) return;
+    var row = list.querySelector('.toc-row.active');
+    if (!row) return;
+    var top = row.offsetTop, bottom = top + row.offsetHeight;
+    if (top < list.scrollTop) list.scrollTop = top - 8;
+    else if (bottom > list.scrollTop + list.clientHeight) list.scrollTop = bottom - list.clientHeight + 8;
+  }
+
+  /* ---------------- 翻页 ---------------- */
+  function paintPager() {
+    var n = cardCount(ST.day);
+    var prev = document.getElementById('prevBtn');
+    var next = document.getElementById('nextBtn');
+    var last = n > 0 && ST.idx >= n - 1;
+    if (prev) prev.disabled = ST.idx <= 0;
+    if (next) {
+      next.textContent = last ? '今天刷完' : '下一张';
+      next.classList.toggle('done', last);
+    }
+  }
+
+  var toastTimer = null;
+  function toast(msg) {
+    var el = document.getElementById('toast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.classList.remove('show'); }, 3000);
+  }
+
+  /* 切换卡片回顶部（页面已不使用全局 smooth，这里就是瞬时的） */
+  function toTop() {
+    window.scrollTo(0, 0);
+  }
+
+  function showCard(i) {
+    var cards = cardsOf(ST.day);
+    if (!cards.length) return;
+    ST.idx = Math.max(0, Math.min(cards.length - 1, i));
+    paintCardHost();
+    paintToc();
+    paintPager();
+    try { history.replaceState(null, '', '#' + cards[ST.idx].id); }
+    catch (e) { location.hash = cards[ST.idx].id; }
+    toTop();
+  }
+
+  function step(delta) {
+    var cards = cardsOf(ST.day);
+    if (!cards.length) return;
+    var i = ST.idx + delta;
+    if (i < 0) return;
+    if (i > cards.length - 1) {
+      toast('今天的 ' + cards.length + ' 张卡都看完了，往下滑到练习区刷一轮吧。');
+      return;
+    }
+    showCard(i);
+  }
+
+  function showDay(day, idx, opts) {
+    opts = opts || {};
+    if (!metaOf(day)) return Promise.resolve();
+    /* 先把骨架切过去：标题、进度条、卡片区都指向新的一天。
+       这样后面加载失败时，兜底提示会落在卡片区，而不是看不见的隐藏块里。 */
+    ST.day = day;
+    var n = cardCount(day);
+    ST.idx = Math.max(0, Math.min(idx || 0, Math.max(0, n - 1)));
+
+    var deck = document.querySelector('.deck');
+    if (deck) deck.id = day;
+
+    var parts = document.querySelectorAll('.day-part');
+    Array.prototype.forEach.call(parts, function (el) {
+      el.hidden = el.getAttribute('data-day') !== day;
+    });
+
+    paintDeckHead();
+    paintCardHost();
+    paintToc();
+    paintPager();
+    if (opts.scroll !== false) toTop();
+
+    return ensureDay(day).then(function () {
+      paintDeckHead();
+      paintCardHost();
+      paintToc();
+      paintPager();
+    });
   }
 
   /* ---------------- 关卡交互 ---------------- */
@@ -295,6 +527,17 @@
       if (btn.classList.contains('off')) return;
       openQuiz(cardEl, cardId, day, btn);
     }
+  });
+
+  /* 代码折叠 */
+  document.addEventListener('click', function (e) {
+    var b = e.target.closest ? e.target.closest('.codewrap .expand') : null;
+    if (!b) return;
+    var w = b.closest('.codewrap');
+    if (!w) return;
+    var folded = w.classList.toggle('short');
+    b.textContent = folded ? (w.getAttribute('data-more') || '展开全文') : '收起';
+    b.classList.toggle('on', !folded);
   });
 
   /* 今天动手勾选：动态渲染，用事件委托 */
@@ -441,73 +684,139 @@
     return (d.textContent || '').replace(/\s+/g, ' ').trim();
   }
 
-  /* ---------------- 首屏与懒加载 ---------------- */
-  function targetDayFromHash() {
-    var h = (location.hash || '').replace('#', '');
-    var m = /^(day|task|practice)(\d)$/.exec(h);
-    return m ? 'day' + m[2] : '';
+  /* ---------------- 抽屉 ---------------- */
+  function openDrawer() {
+    var mask = document.getElementById('drawerMask');
+    var dr = document.getElementById('drawer');
+    if (!mask || !dr) return;
+    mask.hidden = false;
+    dr.classList.add('open');
+    dr.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('lock');
+    var c = document.getElementById('drawerClose');
+    if (c) c.focus();
+  }
+  function closeDrawer() {
+    var mask = document.getElementById('drawerMask');
+    var dr = document.getElementById('drawer');
+    if (mask) mask.hidden = true;
+    if (dr) {
+      dr.classList.remove('open');
+      dr.setAttribute('aria-hidden', 'true');
+    }
+    document.body.classList.remove('lock');
+  }
+  function drawerOpen() {
+    var dr = document.getElementById('drawer');
+    return !!(dr && dr.classList.contains('open'));
   }
 
-  function jumpTo(hash) {
-    var el = document.getElementById(hash);
-    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  /* ---------------- 深链 ---------------- */
+  function parseHash(h) {
+    h = String(h == null ? location.hash : h).replace('#', '');
+    var m;
+    if ((m = /^(day|task|practice)([123])$/.exec(h))) return { type: m[1], day: 'day' + m[2] };
+    if ((m = /^(d[123]c\d+)$/.exec(h))) return { type: 'card', day: dayOfCard(m[1]), card: m[1] };
+    return null;
+  }
+
+  function navTo(t) {
+    if (!t) return Promise.resolve();
+    if (t.type === 'card') {
+      return showDay(t.day, 0).then(function () {
+        var i = idxOfCard(t.day, t.card);
+        if (i > 0) showCard(i);
+        else toTop();
+      });
+    }
+    if (t.type === 'day') {
+      return showDay(t.day, 0);
+    }
+    return showDay(t.day, 0, { scroll: false }).then(function () {
+      var el = document.getElementById(t.type + t.day.slice(3));
+      if (el) setTimeout(function () {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 40);
+    });
   }
 
   function boot() {
-    /* 顶部按钮：确保当天已经装载 */
+    /* 顶部按钮：切到那天，开新一轮，滚到练习 */
     [1, 2, 3].forEach(function (n) {
       var top = document.getElementById('againTop' + n);
       if (top) top.addEventListener('click', function () {
-        ensureDay('day' + n).then(function () {
+        showDay('day' + n, 0, { scroll: false }).then(function () {
           if (A.goNewRound && A.TRACKS['d' + n]) A.goNewRound(A.TRACKS['d' + n]);
         });
       });
     });
 
-    /* 导航与任意锚点：如果那天还没装载，先装载再跳 */
+    /* 目录行 / 分组 / 翻页 / 抽屉 */
+    document.addEventListener('click', function (e) {
+      var el = e.target.closest ? e.target.closest('.toc-row') : null;
+      if (el) {
+        var day = el.getAttribute('data-day');
+        var idx = parseInt(el.getAttribute('data-idx'), 10) || 0;
+        closeDrawer();
+        showDay(day, idx);
+        return;
+      }
+      var g = e.target.closest ? e.target.closest('.toc-g') : null;
+      if (g) {
+        var d = g.getAttribute('data-day');
+        COLL[d] = !COLL[d];
+        paintToc();
+      }
+    });
+
+    var prev = document.getElementById('prevBtn');
+    var next = document.getElementById('nextBtn');
+    if (prev) prev.addEventListener('click', function () { step(-1); });
+    if (next) next.addEventListener('click', function () { step(1); });
+
+    var ov = document.getElementById('ovBtn');
+    if (ov) ov.addEventListener('click', openDrawer);
+    var dc = document.getElementById('drawerClose');
+    if (dc) dc.addEventListener('click', closeDrawer);
+    var dm = document.getElementById('drawerMask');
+    if (dm) dm.addEventListener('click', closeDrawer);
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && drawerOpen()) closeDrawer();
+    });
+
+    /* 顶部导航与任意 #day / #task / #practice 锚点 */
     document.addEventListener('click', function (e) {
       var a = e.target.closest ? e.target.closest('a[href^="#"]') : null;
       if (!a) return;
-      var hash = a.getAttribute('href').slice(1);
-      var m = /^(day|task|practice)(\d)$/.exec(hash);
-      if (!m) return;
+      var t = parseHash(a.getAttribute('href'));
+      if (!t) return;
       e.preventDefault();
-      Promise.resolve(ensureDay('day' + m[2])).then(function () {
-        if (location.hash !== '#' + hash) history.replaceState(null, '', '#' + hash);
-        setTimeout(function () { jumpTo(hash); }, 30);
-      });
+      try { history.replaceState(null, '', a.getAttribute('href')); } catch (err) {}
+      navTo(t);
     });
 
     window.addEventListener('hashchange', function () {
-      var d = targetDayFromHash();
-      if (d) ensureDay(d).then(function () { setTimeout(function () { jumpTo(location.hash.slice(1)); }, 30); });
+      var t = parseHash();
+      if (t) navTo(t);
     });
 
-    /* 先装 Day 1，再用观察器按需装 Day 2 / Day 3 */
+    /* 首帧：默认 Day 1 第 1 张；带深链则按深链定位 */
+    var t0 = parseHash();
     ensureDay('day1').then(function () {
-      var d = targetDayFromHash();
-      if (d) return ensureDay(d).then(function () { setTimeout(function () { jumpTo(location.hash.slice(1)); }, 30); });
+      if (t0) return navTo(t0);
+      return showDay('day1', 0);
     });
-
-    if ('IntersectionObserver' in window) {
-      var io = new IntersectionObserver(function (entries) {
-        entries.forEach(function (en) {
-          if (!en.isIntersecting) return;
-          var id = en.target.id.replace('mount-', '');
-          ensureDay(id);
-          io.unobserve(en.target);
-        });
-      }, { rootMargin: '900px 0px' });
-      ['mount-day2', 'mount-day3'].forEach(function (id) {
-        var el = document.getElementById(id);
-        if (el) io.observe(el);
-      });
-    }
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
   else boot();
 
   /* 供控制台/测试按需装载某一天 */
-  if (A) { A.ensureDay = ensureDay; A.ensureBank = ensureBank; }
+  if (A) {
+    A.ensureDay = ensureDay;
+    A.ensureBank = ensureBank;
+    A.showDay = showDay;
+    A.showCard = showCard;
+    A.state = ST;
+  }
 })();
