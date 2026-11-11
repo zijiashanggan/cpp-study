@@ -70,6 +70,29 @@
     });
   }
 
+  function mountEl(day) { return document.getElementById('mount-' + day); }
+  function dayName(day) {
+    var m = SYL.filter(function (x) { return x.id === day; })[0];
+    return m ? (m.title || day) : day;
+  }
+  function showLoad(day) {
+    var el = mountEl(day);
+    if (el && !el.querySelector('.card[data-card]')) {
+      el.innerHTML = '<div class="load-tip">正在加载 ' + dayName(day) + ' 的内容…</div>';
+    }
+  }
+  function showFail(day, isBank) {
+    var html = '<div class="load-err">' + (isBank ? '练习题' : dayName(day) + ' 的内容') +
+      '没能加载：网络中断或文件缺失。<button class="again" data-retry="' + day + '">重试</button></div>';
+    if (isBank) {
+      var q = document.getElementById('qlist' + day.slice(3));
+      if (q) q.innerHTML = html;
+    } else {
+      var el = mountEl(day);
+      if (el) el.innerHTML = html;
+    }
+  }
+
   function ensureBank(day) {
     var B = window.BANKS || {};
     if (B[day]) {
@@ -83,6 +106,7 @@
     }).then(function () {
       var BB = window.BANKS || {};
       if (BB[day]) A.mergeBank && A.mergeBank(day, BB[day]);
+      else throw new Error('缺题库：' + day);
     });
   }
 
@@ -91,6 +115,7 @@
     if (loading[day]) return loading[day];
     var meta = SYL.filter(function (x) { return x.id === day; })[0];
     if (!meta) return Promise.resolve();
+    showLoad(day);
     loading[day] = loadScript(meta.data).then(function () {
       return waitFor(function () { return (window.DAYS || {})[day]; });
     }).then(function () {
@@ -99,7 +124,7 @@
       renderDay(data);
       loaded[day] = true;
       delete loading[day];
-      return ensureBank(day);
+      return ensureBank(day).catch(function (e) { console.error(e); showFail(day, true); });
     }).then(function () {
       if (A.TRACKS && A.TRACKS['d' + day.slice(3)] && !started[day]) {
         started[day] = true;
@@ -108,9 +133,28 @@
     }).catch(function (e) {
       delete loading[day];
       console.error(e);
+      showFail(day, false);
     });
     return loading[day];
   }
+
+  /* 失败后的重试：内容缺失则整块重来，只缺题库则只重取题库 */
+  document.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target.closest('[data-retry]') : null;
+    if (!t) return;
+    var day = t.getAttribute('data-retry');
+    var q = document.getElementById('qlist' + day.slice(3));
+    if (q) q.innerHTML = '';
+    if (!loaded[day]) {
+      delete loading[day];
+      ensureDay(day);
+    } else {
+      started[day] = false;
+      ensureBank(day).then(function () {
+        A.startRound && A.startRound(A.TRACKS['d' + day.slice(3)]);
+      }).catch(function (err) { console.error(err); showFail(day, true); });
+    }
+  });
 
   /* ---------------- 渲染 ---------------- */
   function esc(s) {
