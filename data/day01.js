@@ -13,7 +13,7 @@ window.DAYS.day1 = {
       "only": "",
       "guess": "先猜：<code>int&amp; r = a; r = 20;</code> 之后，a 和 r 各是多少？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int a = 10;\n    int& r = a;              // 同一口箱子的第二张纸条\n    r = 99;\n    cout << a << \"\\n\";       // 99\n\n    int b = 20;\n    r = b;                   // 把 20 倒进 r 管的箱子，不是换绑\n    cout << a << \" \" << b << \"\\n\";   // 20 20\n\n    // int& bad;             // 编译报错：'bad' declared as reference but not initialized\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;             // 直接写 cout，不用加 std::\n\nint main() {                     // 程序入口\n    int a = 10;                  // 一口箱子，装 10\n    int& r = a;              // 同一口箱子的第二张纸条\n    r = 99;                      // 往纸条里写，就是往 a 里写\n    cout << a << \"\\n\";       // 99\n\n    int b = 20;                  // 另一口箱子，装 20\n    r = b;                   // 把 20 倒进 r 管的箱子，不是换绑\n    cout << a << \" \" << b << \"\\n\";   // 20 20\n\n    // int& bad;             // 编译报错：'bad' declared as reference but not initialized\n}",
       "output": "99\n20 20",
       "errors": [],
       "pitfalls": [
@@ -41,7 +41,7 @@ window.DAYS.day1 = {
       "only": "",
       "guess": "先猜：三种 swap 里，哪一种调用完外面两个数没变？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nvoid swap1(int x, int y) { int t = x; x = y; y = t; }        // 复印件\nvoid swap2(int* x, int* y) { int t = *x; *x = *y; *y = t; }  // 门牌号\nvoid swap3(int& x, int& y) { int t = x; x = y; y = t; }      // 原件\n\nint main() {\n    int m = 1, n = 2;\n    swap1(m, n);  cout << m << \" \" << n << \"\\n\";   // 1 2（没换）\n    swap2(&m, &n); cout << m << \" \" << n << \"\\n\";  // 2 1\n    swap3(m, n);  cout << m << \" \" << n << \"\\n\";   // 1 2（又换回来）\n\n    // swap2(m, n);   // 编译报错：invalid conversion from 'int' to 'int*'\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;                                          // 直接写 cout\n\nvoid swap1(int x, int y) { int t = x; x = y; y = t; }        // 复印件\nvoid swap2(int* x, int* y) { int t = *x; *x = *y; *y = t; }  // 门牌号\nvoid swap3(int& x, int& y) { int t = x; x = y; y = t; }      // 原件\n\nint main() {                                                  // 程序入口\n    int m = 1, n = 2;                                         // 两口箱子\n    swap1(m, n);  cout << m << \" \" << n << \"\\n\";   // 1 2（没换）\n    swap2(&m, &n); cout << m << \" \" << n << \"\\n\";  // 2 1\n    swap3(m, n);  cout << m << \" \" << n << \"\\n\";   // 1 2（又换回来）\n\n    // swap2(m, n);   // 编译报错：invalid conversion from 'int' to 'int*'\n}",
       "output": "1 2\n2 1\n1 2",
       "errors": [],
       "pitfalls": [
@@ -70,7 +70,7 @@ window.DAYS.day1 = {
       "only": "",
       "guess": "先猜：<code>const int&amp; r = 10;</code> 能编译吗？r 是几？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\n#include <string>\nusing namespace std;\n\nvoid show(const string& s) {   // 递原件 + 贴封条\n    // s += \"!\";  // 编译报错：passing 'const std::string' as 'this' argument discards qualifiers\n    cout << s << \"\\n\";\n}\n\nint main() {\n    string name = \"Tom\";\n    show(name);          // Tom\n    const int& r = 10;   // 临时箱子也能贴封条\n    cout << r << \"\\n\";   // 10\n    // int& bad = 10;    // 编译报错：binding reference of type 'int&' to 'const int' discards qualifiers\n}",
+      "codeFull": "#include <iostream>\n#include <string>\nusing namespace std;             // string 也来自 std\n\nvoid show(const string& s) {   // 递原件 + 贴封条\n    // s += \"!\";  // 编译报错：passing 'const std::string' as 'this' argument discards qualifiers\n    cout << s << \"\\n\";           // 只读不改，也不复制\n}\n\nint main() {                     // 程序入口\n    string name = \"Tom\";         // 一口 string 箱子\n    show(name);          // Tom（递的是原件）\n    const int& r = 10;   // 临时箱子也能贴封条\n    cout << r << \"\\n\";   // 10\n    // int& bad = 10;    // 编译报错：binding reference of type 'int&' to 'const int' discards qualifiers\n}",
       "output": "Tom\n10",
       "errors": [],
       "pitfalls": [
@@ -99,7 +99,7 @@ window.DAYS.day1 = {
       "only": "",
       "guess": "先猜：程序运行时你输入 5 再回车，屏幕上第一行是什么？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int a = 0;\n    cout << \"请输入：\";       // 输出：请输入：\n    cin >> a;                 // 先输入 5，再按回车\n    cout << a << '\\n';        // 输出：5（只换行）\n    cout << a << endl;        // 输出：5（换行 + 立刻冲水）\n    // cout << a;             // 编译报错：'cout' was not declared in this scope（忘写 std::）\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;      // 不写 std:: 也能用 cin、cout\n\nint main() {              // 程序入口\n    int a = 0;            // 先准备一口箱子\n    cout << \"请输入：\";       // 输出：请输入：\n    cin >> a;                 // 先输入 5，再按回车\n    cout << a << '\\n';        // 输出：5（只换行）\n    cout << a << endl;        // 输出：5（换行 + 立刻冲水）\n    // cout << a;             // 编译报错：'cout' was not declared in this scope（忘写 std::）\n}",
       "output": "请输入：5\n5",
       "errors": [],
       "pitfalls": [
@@ -130,7 +130,7 @@ window.DAYS.day1 = {
       "only": "",
       "guess": "先猜：<code>using C::a1;</code> 之后直接写 <code>b1</code> 会怎样？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nnamespace A { int a = 1; }\nnamespace B { int a = 2; }\nusing namespace std;\n\nint main() {\n    cout << A::a << \"\\n\";   // 1\n    cout << B::a << \"\\n\";   // 2\n\n    using A::a;             // 只搬 A 家的 a 进来\n    a = 3;\n    cout << A::a << \"\\n\";   // 3\n\n    // using namespace A;\n    // using namespace B;\n    // a = 3;               // 编译报错：reference to 'a' is ambiguous\n}",
+      "codeFull": "#include <iostream>\nnamespace A { int a = 1; }    // A 家有个 a\nnamespace B { int a = 2; }    // B 家也有个 a\nusing namespace std;          // 标准库的名字全部敞开\n\nint main() {                  // 程序入口\n    cout << A::a << \"\\n\";   // 1\n    cout << B::a << \"\\n\";   // 2\n\n    using A::a;             // 只搬 A 家的 a 进来\n    a = 3;                  // 改的就是 A::a\n    cout << A::a << \"\\n\";   // 3\n\n    // using namespace A;\n    // using namespace B;\n    // a = 3;               // 编译报错：reference to 'a' is ambiguous\n}",
       "output": "1\n2\n3",
       "errors": [],
       "pitfalls": [
@@ -158,7 +158,7 @@ window.DAYS.day1 = {
       "only": "",
       "guess": "先猜：<code>get()</code> 返回的是箱子本身还是复制品？<code>get() = 100;</code> 合法吗？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nint g = 0;\nint& getG() { return g; }          // 全局箱子一直在\nstatic int s = 5;\nint& getS() { return s; }          // static 箱子活到程序结束\nvoid fill(int& out) { out = 42; }   // 调用者自己的箱子\n\nint main() {\n    getG() = 7;   cout << g << \"\\n\";   // 7\n    getS() = 9;   cout << s << \"\\n\";   // 9\n\n    int v = 0;\n    fill(v);      cout << v << \"\\n\";   // 42\n\n    // int& r = bad();   // bad 返回局部变量的引用，别运行：行为未定义\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;               // 直接写 cout\n\nint g = 0;                         // 全局箱子，活到最后\nint& getG() { return g; }          // 全局箱子一直在\nstatic int s = 5;                  // 只在本文件可见的全局箱子\nint& getS() { return s; }          // static 箱子活到程序结束\nvoid fill(int& out) { out = 42; }   // 调用者自己的箱子\n\nint main() {                       // 程序入口\n    getG() = 7;   cout << g << \"\\n\";   // 7\n    getS() = 9;   cout << s << \"\\n\";   // 9\n\n    int v = 0;                     // 调用者自己的箱子\n    fill(v);      cout << v << \"\\n\";   // 42\n\n    // int& r = bad();   // bad 返回局部变量的引用，别运行：行为未定义\n}",
       "output": "7\n9\n42",
       "errors": [],
       "pitfalls": [

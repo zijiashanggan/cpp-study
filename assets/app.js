@@ -8,15 +8,33 @@
 var KEY = ['int','void','const','return','using','namespace','static','class','struct','sizeof',
            'char','float','double','bool','unsigned','long','short','new','delete','true','false',
            'nullptr','for','while','if','else','break','continue','switch','case','default',
-           'typedef','extern','include','main'];
+           'typedef','extern','include','explicit','operator'];
 var TYP = ['std','cout','cin','endl','string','size_t','NULL'];
+
+/* 名字后面紧跟 ( 才算函数名；再确认它前面的东西是类型/关键字/符号，
+   避免把 Demo y(10) 里的 y 也当成函数名 */
+var FN_PREV = /(?:^|[^\w])(?:void|int|char|float|double|bool|unsigned|long|short|static|const|auto|explicit|std)$/;
+
+function isFnPos(before) {
+  var s = before.slice(before.lastIndexOf('\n') + 1).replace(/\s+$/, '');
+  if (!s) return true;                                  /* 行首：构造函数 / 定义 */
+  if (/::|\.|->$/.test(s)) return true;                 /* 类内、成员调用 */
+  if (/[=(,&|^!?+:;{}*]$/.test(s)) return true;         /* 表达式里直接调用 */
+  return FN_PREV.test(s);                               /* void f( ... 返回类型后面 */
+}
 
 function hl(src) {
   var esc = src.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  var re = /(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*")|('(?:[^'\\\n]|\\.)*')|\b([A-Za-z_]\w*)\b|\b(\d+)\b/g;
-  return esc.replace(re, function (m, c1, c2, c3, word, num) {
+  var re = /(\/\/[^\n]*)|("(?:[^"\\\n]|\\.)*")|('(?:[^'\\\n]|\\.)*')|([A-Za-z_]\w*)(?=\s*\()|\b([A-Za-z_]\w*)\b|\b(\d+)\b/g;
+  return esc.replace(re, function (m, c1, c2, c3, fn, word, num, offset, all) {
     if (c1) return '<span class="c">' + m + '</span>';
     if (c2 || c3) return '<span class="s">' + m + '</span>';
+    if (fn) {
+      if (KEY.indexOf(fn) > -1) return '<span class="k">' + m + '</span>';
+      if (TYP.indexOf(fn) > -1) return '<span class="t">' + m + '</span>';
+      if (isFnPos(all.slice(0, offset))) return '<span class="fn">' + m + '</span>';
+      return m;
+    }
     if (num) return '<span class="num">' + m + '</span>';
     if (word) {
       if (KEY.indexOf(word) > -1) return '<span class="k">' + m + '</span>';

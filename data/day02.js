@@ -13,7 +13,7 @@ window.DAYS.day2 = {
       "only": "",
       "guess": "先猜：<code>new int[3]</code> 之后用 <code>delete p;</code> 会怎样？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int* p = new int;        // 租一间房\n    *p = 42;\n    cout << *p << \"\\n\";      // 42\n    delete p;                // 退一间\n    p = nullptr;\n\n    int* arr = new int[10];  // 租一排十间\n    arr[0] = 1;\n    cout << arr[0] << \"\\n\";  // 1\n    delete[] arr;            // 退一排必须带 []\n    arr = nullptr;\n\n    // int* q = new int;\n    // free(q);              // 错：new 的房不能找 free 退\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;             // 直接写 cout\n\nint main() {                     // 程序入口\n    int* p = new int;        // 租一间房\n    *p = 42;                 // 往房里放 42\n    cout << *p << \"\\n\";      // 42\n    delete p;                // 退一间\n    p = nullptr;             // 划掉号码，防止再用\n\n    int* arr = new int[10];  // 租一排十间\n    arr[0] = 1;              // 只往第一间放东西\n    cout << arr[0] << \"\\n\";  // 1\n    delete[] arr;            // 退一排必须带 []\n    arr = nullptr;           // 同样划掉号码\n\n    // int* q = new int;\n    // free(q);              // 错：new 的房不能找 free 退\n}",
       "output": "42\n1",
       "errors": [],
       "pitfalls": [
@@ -42,7 +42,7 @@ window.DAYS.day2 = {
       "only": "",
       "guess": "先猜：<code>int* p = nullptr; if (p)</code> 走哪个分支？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int* p = nullptr;\n    cout << (p == nullptr) << \"\\n\";   // 1\n\n    int* q = new int(7);\n    delete q;\n    q = nullptr;                      // 退完立刻划掉号码\n\n    // int x = nullptr;               // 编译报错：cannot convert 'std::nullptr_t' to 'int'\n    // void f(int); void f(char*);\n    // f(NULL);                       // 二义性：两个版本都能匹配\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;                 // 直接写 cout\n\nint main() {                         // 程序入口\n    int* p = nullptr;                // 一张空卡片：没有门牌号\n    cout << (p == nullptr) << \"\\n\";   // 1\n\n    int* q = new int(7);             // 租一间，顺手放 7\n    delete q;                        // 退房\n    q = nullptr;                      // 退完立刻划掉号码\n\n    // int x = nullptr;               // 编译报错：cannot convert 'std::nullptr_t' to 'int'\n    // void f(int); void f(char*);\n    // f(NULL);                       // 二义性：两个版本都能匹配\n}",
       "output": "1",
       "errors": [],
       "pitfalls": [
@@ -71,8 +71,8 @@ window.DAYS.day2 = {
       "analogy": "只递了门牌号，没告诉你楼有几层",
       "only": "",
       "guess": "先猜：<code>int a[5]; int* p = a;</code> 在 64 位机器上，两个 sizeof 各是多少？",
-      "codeMin": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int a[5] = {10, 20, 30, 40, 50};\n    int* p = a;                    // 数组名退化成首元素地址\n    cout << sizeof(a) << \"\\n\";    // 20：整个数组 5 × 4\n    cout << sizeof(p) << \"\\n\";    // 8：只是个指针\n    cout << a[2] << \" \" << *(a + 2) << \"\\n\";   // 30 30\n}\n// 实际输出：20 / 8 / 30 30",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\n// 数组传参 = 传首元素地址，长度必须另外传\nint sum(int arr[], int n) {\n    cout << \"函数里 sizeof(arr) = \" << sizeof(arr) << \"\\n\";  // 8，不是 20\n    int s = 0;\n    for (int i = 0; i < n; i++) s += arr[i];\n    return s;\n}\n\nint main() {\n    int a[5] = {10, 20, 30, 40, 50};\n    cout << \"数组长度 = \" << sizeof(a) / sizeof(a[0]) << \"\\n\";   // 5\n    cout << \"a[2] = \" << a[2] << \"，*(a + 2) = \" << *(a + 2) << \"\\n\";\n    int total = sum(a, 5);\n    cout << \"sum = \" << total << \"\\n\";\n\n    int* p = a;          // p 指向 a[0]\n    p++;                 // p 指向 a[1]\n    cout << \"*p = \" << *p << \"\\n\";   // 20\n\n    // int b[5]; b = a;   // 编译报错：数组不能整体赋值\n}",
+      "codeMin": "#include <iostream>\nusing namespace std;                     // 直接写 cout\n\nint main() {                             // 程序入口\n    int a[5] = {10, 20, 30, 40, 50};     // 一整排箱子\n    int* p = a;                    // 数组名退化成首元素地址\n    cout << sizeof(a) << \"\\n\";    // 20：整个数组 5 × 4\n    cout << sizeof(p) << \"\\n\";    // 8：只是个指针\n    cout << a[2] << \" \" << *(a + 2) << \"\\n\";   // 30 30\n}\n// 实际输出：20 / 8 / 30 30",
+      "codeFull": "#include <iostream>\nusing namespace std;                     // 直接写 cout\n\n// 数组传参 = 传首元素地址，长度必须另外传\nint sum(int arr[], int n) {              // arr 其实已经是指针\n    cout << \"函数里 sizeof(arr) = \" << sizeof(arr) << \"\\n\";  // 8，不是 20\n    int s = 0;                           // 累加器\n    for (int i = 0; i < n; i++) s += arr[i];   // 一个个加起来\n    return s;                            // 把总和交回去\n}\n\nint main() {                             // 程序入口\n    int a[5] = {10, 20, 30, 40, 50};     // 一整排箱子\n    cout << \"数组长度 = \" << sizeof(a) / sizeof(a[0]) << \"\\n\";   // 5\n    cout << \"a[2] = \" << a[2] << \"，*(a + 2) = \" << *(a + 2) << \"\\n\";   // 30 30\n    int total = sum(a, 5);               // 传首地址 + 长度\n    cout << \"sum = \" << total << \"\\n\";   // 150\n\n    int* p = a;          // p 指向 a[0]\n    p++;                 // p 指向 a[1]\n    cout << \"*p = \" << *p << \"\\n\";   // 20\n\n    // int b[5]; b = a;   // 编译报错：数组不能整体赋值\n}",
       "output": "数组长度 = 5\na[2] = 30，*(a + 2) = 30\n函数里 sizeof(arr) = 8\nsum = 150\n*p = 20",
       "errors": [],
       "pitfalls": [
@@ -103,8 +103,8 @@ window.DAYS.day2 = {
       "analogy": "栈是临时工位，堆是自己租的仓库",
       "only": "",
       "guess": "先猜：栈上的数组和 <code>new</code> 出来的数组，函数返回后哪个还能用？",
-      "codeMin": "#include <iostream>\nusing namespace std;\n\nint main() {\n    int a[3] = {1, 2, 3};          // 栈：函数结束自动收走\n    int* p = new int[3];            // 堆：要自己 delete[]\n    for (int i = 0; i < 3; i++) p[i] = a[i] * 10;\n    cout << a[0] << \" \" << p[0] << \" \" << p[2] << \"\\n\";   // 1 10 30\n    delete[] p;                     // 退了才不占\n}\n// 实际输出：1 10 30",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nint* makeHeap(int n) {              // 返回堆上的数组：安全\n    int* p = new int[n];\n    for (int i = 0; i < n; i++) p[i] = i + 1;\n    return p;\n}\n\nint* makeStack() {                  // 返回栈上的数组：危险\n    int a[3] = {7, 8, 9};\n    return a;                       // 编译能过，但函数一返回 a 就没了\n}\n\nint main() {\n    int stackArr[3] = {1, 2, 3};\n    cout << \"栈数组 sizeof = \" << sizeof(stackArr) << \"\\n\";   // 12\n\n    int* heapArr = makeHeap(3);\n    cout << \"堆数组：\";\n    for (int i = 0; i < 3; i++) cout << heapArr[i] << \" \";    // 1 2 3\n    cout << \"\\n\";\n    delete[] heapArr;               // 谁 new 谁 delete\n\n    // int* bad = makeStack();      // 拿到的是已经拆掉的栈内存，禁止这么写\n    // cout << bad[0];              // 未定义行为：可能乱码，也可能崩\n}",
+      "codeMin": "#include <iostream>\nusing namespace std;                   // 直接写 cout\n\nint main() {                           // 程序入口\n    int a[3] = {1, 2, 3};          // 栈：函数结束自动收走\n    int* p = new int[3];            // 堆：要自己 delete[]\n    for (int i = 0; i < 3; i++) p[i] = a[i] * 10;   // 每项乘 10 搬过去\n    cout << a[0] << \" \" << p[0] << \" \" << p[2] << \"\\n\";   // 1 10 30\n    delete[] p;                     // 退了才不占\n}\n// 实际输出：1 10 30",
+      "codeFull": "#include <iostream>\nusing namespace std;                // 直接写 cout\n\nint* makeHeap(int n) {              // 返回堆上的数组：安全\n    int* p = new int[n];            // 在堆上开 n 间\n    for (int i = 0; i < n; i++) p[i] = i + 1;   // 填 1…n\n    return p;                       // 返回指针，堆内存还在\n}\n\nint* makeStack() {                  // 返回栈上的数组：危险\n    int a[3] = {7, 8, 9};           // 栈上的临时工位\n    return a;                       // 编译能过，但函数一返回 a 就没了\n}\n\nint main() {                        // 程序入口\n    int stackArr[3] = {1, 2, 3};    // 栈数组\n    cout << \"栈数组 sizeof = \" << sizeof(stackArr) << \"\\n\";   // 12\n\n    int* heapArr = makeHeap(3);     // 拿到堆数组的首地址\n    cout << \"堆数组：\";               // 先打印标签\n    for (int i = 0; i < 3; i++) cout << heapArr[i] << \" \";    // 1 2 3\n    cout << \"\\n\";                   // 换行收尾\n    delete[] heapArr;               // 谁 new 谁 delete\n\n    // int* bad = makeStack();      // 拿到的是已经拆掉的栈内存，禁止这么写\n    // cout << bad[0];              // 未定义行为：可能乱码，也可能崩\n}",
       "output": "栈数组 sizeof = 12\n堆数组：1 2 3",
       "errors": [],
       "pitfalls": [
@@ -135,7 +135,7 @@ window.DAYS.day2 = {
       "only": "",
       "guess": "先猜：<code>struct Point</code> 里的成员函数能不能直接改自己的 x、y？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nstruct Point {\n    int x, y;\n    int sum() { return x + y; }   // 函数直接用自己的 x、y\n};\n\nint main() {\n    Point p;              // 不用写 struct Point p;\n    p.x = 3;\n    p.y = 4;\n    cout << p.sum() << \"\\n\";   // 7\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;              // 直接写 cout\n\nstruct Point {\n    int x, y;                     // 两个数据成员\n    int sum() { return x + y; }   // 函数直接用自己的 x、y\n};\n\nint main() {                      // 程序入口\n    Point p;              // 不用写 struct Point p;\n    p.x = 3;              // 给 x 填 3\n    p.y = 4;              // 给 y 填 4\n    cout << p.sum() << \"\\n\";   // 7\n}",
       "output": "7",
       "errors": [],
       "pitfalls": [
@@ -163,7 +163,7 @@ window.DAYS.day2 = {
       "only": "",
       "guess": "先猜：<code>sizeof(bool)</code> 是 1 位还是 1 字节？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nint main() {\n    bool ok = true, err = false;\n    cout << ok << \"\\n\";     // 1\n    cout << err << \"\\n\";    // 0\n\n    int n = true;\n    cout << n << \"\\n\";      // 1\n    // bool flag = 5;       // 只给警告，非 0 都算 true —— 别这么写\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;               // 直接写 cout\n\nint main() {                       // 程序入口\n    bool ok = true, err = false;   // 两个开关\n    cout << ok << \"\\n\";     // 1\n    cout << err << \"\\n\";    // 0\n\n    int n = true;                  // true 转成 int 就是 1\n    cout << n << \"\\n\";      // 1\n    // bool flag = 5;       // 只给警告，非 0 都算 true —— 别这么写\n}",
       "output": "1\n0\n1",
       "errors": [],
       "pitfalls": [
@@ -191,7 +191,7 @@ window.DAYS.day2 = {
       "only": "",
       "guess": "先猜：<code>const int a;</code> 只写这一句，编译器让过吗？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nconst int MAX = 100;\nconst int table[] = {1, 2, 3};\n\nint main() {\n    cout << MAX << \"\\n\";        // 100\n    cout << table[2] << \"\\n\";   // 3\n    // MAX = 200;               // 编译报错：assignment of read-only variable 'MAX'\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;            // 直接写 cout\n\nconst int MAX = 100;            // 贴封条：编译期就定死\nconst int table[] = {1, 2, 3};  // 数组也能整块封住\n\nint main() {                    // 程序入口\n    cout << MAX << \"\\n\";        // 100\n    cout << table[2] << \"\\n\";   // 3\n    // MAX = 200;               // 编译报错：assignment of read-only variable 'MAX'\n}",
       "output": "100\n3",
       "errors": [],
       "pitfalls": [
@@ -219,7 +219,7 @@ window.DAYS.day2 = {
       "only": "",
       "guess": "先猜：<code>void f(int a, int b = 1);</code> 之后 <code>f(5)</code> 合法吗？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\n#include <iomanip>\nusing namespace std;\n\nvoid printNum(int value, int width = 8, char fill = '0') {\n    cout << setw(width) << setfill(fill) << value << \"\\n\";\n}\n\nint main() {\n    printNum(42);          // 00000042\n    printNum(42, 4);       // 0042\n    printNum(7, 3, '.');   // ..7\n\n    // printNum(42, , 2);  // 错：中间不能空着跳过去\n    // 默认值写两处会报：default argument given for parameter ...\n}",
+      "codeFull": "#include <iostream>\n#include <iomanip>\nusing namespace std;            // setw、setfill 都在 std 里\n\nvoid printNum(int value, int width = 8, char fill = '0') {   // 后两个有默认值\n    cout << setw(width) << setfill(fill) << value << \"\\n\";   // 按宽度补齐再打印\n}\n\nint main() {                    // 程序入口\n    printNum(42);          // 00000042\n    printNum(42, 4);       // 0042\n    printNum(7, 3, '.');   // ..7\n\n    // printNum(42, , 2);  // 错：中间不能空着跳过去\n    // 默认值写两处会报：default argument given for parameter ...\n}",
       "output": "00000042\n0042\n..7",
       "errors": [],
       "pitfalls": [
@@ -247,7 +247,7 @@ window.DAYS.day2 = {
       "only": "",
       "guess": "先猜：只改返回值类型，算不算重载？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nvoid f(int x)    { cout << \"int\\n\"; }\nvoid f(double x) { cout << \"double\\n\"; }\n\nvoid g(int x) {}\nvoid g(int x, int y = 0) {}\n\nint main() {\n    f(1);      // int\n    f(1.0);    // double\n    // g(1);   // 二义性：两个版本都能匹配\n\n    // int f(int x);   // 编译报错：只改返回值不算重载\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;                    // 直接写 cout\n\nvoid f(int x)    { cout << \"int\\n\"; }      // 收 int\nvoid f(double x) { cout << \"double\\n\"; }   // 收 double\n\nvoid g(int x) {}                  // 一个参数\nvoid g(int x, int y = 0) {}       // 两个参数，第二个可省\n\nint main() {                      // 程序入口\n    f(1);      // int\n    f(1.0);    // double\n    // g(1);   // 二义性：两个版本都能匹配\n\n    // int f(int x);   // 编译报错：只改返回值不算重载\n}",
       "output": "int\ndouble",
       "errors": [],
       "pitfalls": [
@@ -274,7 +274,7 @@ window.DAYS.day2 = {
       "only": "这不是硬件代码，只是同一个原理的电脑版：用另一个线程代替\"中断里改标志\"。",
       "guess": "先猜：不加 volatile，<code>-O2</code> 下主线程会看到另一个线程改的 flag 吗？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\n#include <thread>\n#include <chrono>\nusing namespace std;\n\nvolatile int flag = 0;   // 另一个线程会改它\n\nint main() {\n    thread t([] {\n        this_thread::sleep_for(chrono::milliseconds(100));\n        flag = 1;        // 相当于\"中断来了\"\n    });\n\n    cout << \"等信号...\\n\";\n    while (!flag) { }    // 加了 volatile：每次都真去内存读，能退出\n    cout << \"收到 \" << flag << \"，退出\\n\";\n    t.join();\n}\n// 本机编译：g++ -std=c++17 -O2 -pthread demo.cpp（-pthread 不能少）\n// 实测输出：\n// 等信号...\n// 收到 1，退出\n// 把 volatile 删掉再 -O2：循环被优化，读到旧值 0，打印\"收到 0，退出\"",
+      "codeFull": "#include <iostream>\n#include <thread>\n#include <chrono>\nusing namespace std;              // thread、this_thread 也在 std\n\nvolatile int flag = 0;   // 另一个线程会改它\n\nint main() {                      // 程序入口\n    thread t([] {                 // 开一个子线程\n        this_thread::sleep_for(chrono::milliseconds(100));   // 先睡 100ms\n        flag = 1;        // 相当于\"中断来了\"\n    });                           // 子线程从这里开始跑\n\n    cout << \"等信号...\\n\";        // 主线程先打一行\n    while (!flag) { }    // 加了 volatile：每次都真去内存读，能退出\n    cout << \"收到 \" << flag << \"，退出\\n\";   // 收到 1，退出\n    t.join();                     // 等子线程收尾\n}\n// 本机编译：g++ -std=c++17 -O2 -pthread demo.cpp（-pthread 不能少）\n// 实测输出：\n// 等信号...\n// 收到 1，退出\n// 把 volatile 删掉再 -O2：循环被优化，读到旧值 0，打印\"收到 0，退出\"",
       "output": "等信号...\n收到 1，退出",
       "errors": [],
       "pitfalls": [
@@ -304,7 +304,7 @@ window.DAYS.day2 = {
       "only": "",
       "guess": "先猜：函数里的 <code>static int n = 0; n++;</code> 连续调用三次，打印什么？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\nstatic void helper() { cout << \"helper\\n\"; }   // 只在本文件可见\n\nvoid tick() {\n    static int count = 0;   // 只初始化一次\n    count++;\n    cout << count << \"\\n\";\n}\n\nint main() {\n    tick(); tick(); tick();   // 1 2 3\n    helper();                 // helper\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;                           // 直接写 cout\n\nstatic void helper() { cout << \"helper\\n\"; }   // 只在本文件可见\n\nvoid tick() {                               // 每调一次，计数加一\n    static int count = 0;   // 只初始化一次\n    count++;                                // 记忆留在静态区\n    cout << count << \"\\n\";                  // 打印当前次数\n}\n\nint main() {                                // 程序入口\n    tick(); tick(); tick();   // 1 2 3\n    helper();                 // helper\n}",
       "output": "1\n2\n3\nhelper",
       "errors": [],
       "pitfalls": [
@@ -332,7 +332,7 @@ window.DAYS.day2 = {
       "only": "",
       "guess": "先猜：<code>x |= (1 &lt;&lt; 3)</code> 之后，第 3 位是几？其他位动了吗？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;\n\n#define BIT(n) (1u << (n))\n\nint main() {\n    unsigned int leds = 0;    // 用低 8 位模拟 8 个灯的状态\n    leds |=  BIT(3);          // 点亮 3 号灯\n    cout << leds << \"\\n\";     // 8\n    leds &= ~BIT(3);          // 熄灭 3 号灯\n    cout << leds << \"\\n\";     // 0\n    leds ^=  BIT(3);          // 翻转 3 号灯\n    cout << leds << \"\\n\";     // 8\n\n    cout << ((leds & BIT(3)) ? \"亮\" : \"灭\") << \"\\n\";   // 亮\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;            // 直接写 cout\n\n#define BIT(n) (1u << (n))      // 第 n 位置 1 的掩码\n\nint main() {                    // 程序入口\n    unsigned int leds = 0;    // 用低 8 位模拟 8 个灯的状态\n    leds |=  BIT(3);          // 点亮 3 号灯\n    cout << leds << \"\\n\";     // 8\n    leds &= ~BIT(3);          // 熄灭 3 号灯\n    cout << leds << \"\\n\";     // 0\n    leds ^=  BIT(3);          // 翻转 3 号灯\n    cout << leds << \"\\n\";     // 8\n\n    cout << ((leds & BIT(3)) ? \"亮\" : \"灭\") << \"\\n\";   // 亮\n}",
       "output": "8\n0\n8\n亮",
       "errors": [],
       "pitfalls": [

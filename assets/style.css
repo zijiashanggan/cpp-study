@@ -111,19 +111,21 @@
   }
   pre.code code {
     font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Consolas, "Courier New", monospace;
-    color: #c9d4e0;
+    color: #dbe5f1;
     white-space: pre;
     font-variant-ligatures: none;
     font-feature-settings: "liga" 0, "calt" 0;
   }
-  .k { color: #c792ea; }
-  .t { color: #7dd3fc; }
-  .s { color: #a5e075; }
+  .k { color: #d9b4fb; }
+  .t { color: #9fdcfd; }
+  .s { color: #c3ef93; }
   /* 注释：去掉 italic（中文没有真斜体，浏览器合成斜体会发虚），
-     颜色提到 #8fb3a0，在 #0a0e13 上实测 8.5:1，字号与代码一致 */
-  .c { color: #8fb3a0; font-style: normal; letter-spacing: .15px; }
+     绿色取自 VS / Keil 的注释色再提亮：#86cf7d，在 #0a0e13 上实测 10.35:1 */
+  .c { color: #86cf7d; font-style: normal; letter-spacing: .15px; }
+  /* 函数名：名字后面紧跟 ( 才标这个类 */
+  .fn { color: #f2d06b; }
   /* 数字 token 用 .num：.n 是卡片编号徽章（24×24），两者不能共用类名 */
-  .num { color: #f0a868; }
+  .num { color: #ffc189; }
 
   ul.pts { margin: 10px 0 0; padding-left: 18px; font-size: 14px; color: #b9c4d1; }
   ul.pts li { margin: 5px 0; }
@@ -882,10 +884,10 @@
 }
 .deck-card .card { margin-bottom: 0; }
 
-/* ---- 代码块 8 行折叠 ---- */
+/* ---- 代码块 6 行折叠（逐行注释后行数变多，折叠行数相应下调） ---- */
 .codewrap { position: relative; }
 .codewrap.short pre.code {
-  max-height: calc(8 * 1.85em + 26px);
+  max-height: calc(6 * 1.85em + 26px);
   overflow: hidden;
   margin: 12px 0 0;
 }
@@ -1061,7 +1063,7 @@ body.lock { overflow: hidden; }
 .toc-empty { font-size: 11.5px; color: #7f8ea0; padding: 6px 10px; }
 
 @media (max-width: 600px) {
-  .codewrap.short pre.code { max-height: calc(8 * 1.8em + 22px); }
+  .codewrap.short pre.code { max-height: calc(6 * 1.8em + 22px); }
 }
 
 @media (max-width: 1023px) {
@@ -1510,17 +1512,18 @@ ul.pts code, p code, .q-text code, .why code, .wa code, .sum-note code, .card co
 pre.code, pre.code code {
   background: #0a0e13;
   border: 0;
-  color: #c9d4e0;
+  color: #dbe5f1;
 }
 pre.code {
   border: 1px solid #1b2330;
   border-radius: 10px;
 }
-pre.code .k { color: #c792ea; }
-pre.code .t { color: #7dd3fc; }
-pre.code .s { color: #a5e075; }
-pre.code .c { color: #8fb3a0; }
-pre.code .num { color: #f0a868; }
+pre.code .k { color: #d9b4fb; }
+pre.code .t { color: #9fdcfd; }
+pre.code .s { color: #c3ef93; }
+pre.code .c { color: #86cf7d; }
+pre.code .fn { color: #f2d06b; }
+pre.code .num { color: #ffc189; }
 .errs {
   color: #6B2A24;
   background: #FDF3F2;

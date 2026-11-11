@@ -209,13 +209,14 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  /* 代码块：超过 8 行默认折叠，只露前 8 行；按钮文案写明总行数和剩余行数 */
+  /* 代码块：超过 6 行默认折叠，只露前 6 行；按钮文案写明总行数和剩余行数 */
+  var FOLD = 6;
   function codeHtml(code) {
     var raw = String(code == null ? '' : code).replace(/\n+$/, '');
     var n = raw ? raw.split('\n').length : 0;
     var body = A.hl ? A.hl(raw) : esc(raw);
-    if (n <= 8) return '<pre class="code"><code>' + body + '</code></pre>';
-    var more = '展开全文 · 共 ' + n + ' 行（还有 ' + (n - 8) + ' 行）';
+    if (n <= FOLD) return '<pre class="code"><code>' + body + '</code></pre>';
+    var more = '展开全文 · 共 ' + n + ' 行（还有 ' + (n - FOLD) + ' 行）';
     return '<div class="codewrap short" data-more="' + esc(more) + '">' +
       '<pre class="code"><code>' + body + '</code></pre>' +
       '<button class="expand" type="button">' + esc(more) + '</button>' +
