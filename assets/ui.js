@@ -128,7 +128,7 @@
     if (card.pain) h.push('<p class="concl">' + card.pain + '</p>');
     if (card.analogy) h.push('<p class="analogy"><b>打个比方</b>：' + card.analogy + '</p>');
     if (card.only) h.push('<p class="only">' + card.only + '</p>');
-    if (card.guess) h.push('<div class="guess"><b>先猜输出</b>：' + card.guess + '</div>');
+    if (card.guess) h.push('<div class="guess"><b>先猜输出</b>：' + String(card.guess).replace(/^先猜[：:]\s*/, '') + '</div>');
     if (card.codeMin) {
       h.push('<p class="stage">最小版 · 先看懂这一步</p>');
       h.push(codeHtml(card.codeMin));
