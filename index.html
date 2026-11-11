@@ -746,10 +746,13 @@ int main() {
     // s += "!";   // 编译报错：error: passing 'const std::string' as 'this' argument discards qualifiers
     std::cout &lt;&lt; s;   // 只能看
 }
-show(name);          // 不复印，直接看 name 那口箱子
 
-const int&amp; r = 10;   // 可以：临时箱子也能贴封条
-// int&amp; r = 10;      // 编译报错：error: binding reference of type 'int&amp;' to 'const int' discards qualifiers</code></pre>
+int main() {
+    std::string name = "Tom";
+    show(name);          // 不复印，直接看 name 那口箱子，输出：Tom
+    const int&amp; r = 10;   // 可以：临时箱子也能贴封条
+    // int&amp; bad = 10;    // 编译报错：error: binding reference of type 'int&amp;' to 'const int' discards qualifiers
+}</code></pre>
     <ul class="pts">
       <li><b>三种写法一条线</b>：值传递 = 复印；<code>T&amp;</code> = 不复印但能改；<code>const T&amp;</code> = 不复印也不能改。</li>
       <li><b>只看看、不打算改的大参数</b>，一律写 <code>const 类型&amp;</code>，这是团队里最常见的函数签名。</li>
@@ -979,7 +982,7 @@ const int table[] = {1, 2, 3};   // 配置表加 const，通常进 flash，不�
   <!-- 12 -->
   <div class="card">
     <h3><span class="n">12</span>默认参数：只能从右往左连续给</h3>
-    <p class="concl"><b>没有它会怎样</b>：串口 99% 的调用都是 8 数据位、1 停止位，每次全写又长又容易写错。默认参数让常用配置直接省略，只写和默认不一样的那几个。</p>
+    <p class="concl"><b>没有它会怎样</b>：串口 99% 的调用都是 8 数据位、1 停止位，每次全写又长又容易写错。默认参数让常用配置直接省略，只写和默认不一样的那几个。像<b>点外卖默认不加香菜</b>：没特别交代就按默认来，想换才开口。</p>
     <pre class="code"><code>void uart(int baud, int bits = 8, int stop = 1);  // 默认值写在声明里
 
 uart(115200);        // bits=8，stop=1（最常用）
@@ -1003,7 +1006,7 @@ uart(115200, 7);     // bits=7，stop=1
   <!-- 13 -->
   <div class="card">
     <h3><span class="n">13</span>函数重载：同名不同参数，别看返回值</h3>
-    <p class="concl"><b>没有它会怎样</b>：C 里同一件事、不同类型得起 <code>abs_i</code>、<code>abs_f</code> 一堆名字，调用时还得记住用哪套。重载让同名函数按<b>参数</b>自动挑，返回值不参与挑。</p>
+    <p class="concl"><b>没有它会怎样</b>：C 里同一件事、不同类型得起 <code>abs_i</code>、<code>abs_f</code> 一堆名字，调用时还得记住用哪套。重载让同名函数按<b>参数</b>自动挑，返回值不参与挑。像<b>同一个窗口办不同业务</b>：递身份证办身份证、递驾照办驾照，窗口名字一样，看你递什么。</p>
     <pre class="code"><code>void f(int x)    { std::cout &lt;&lt; "int\n"; }
 void f(double x) { std::cout &lt;&lt; "double\n"; }
 
@@ -1028,7 +1031,7 @@ void g(int x, int y = 0);
   <!-- 14 -->
   <div class="card">
     <h3><span class="n">14</span>volatile：告诉编译器"这个值会自己变"</h3>
-    <p class="concl"><b>没有它会怎样</b>：中断把 flag 改成 1，编译器却不知道有人在外面改，把 <code>while (!flag)</code> 优化成死循环——程序"卡死"，而且<b>一个错都不报</b>。volatile 就是在说：这个值会自己变，每次都必须真去内存读。</p>
+    <p class="concl"><b>没有它会怎样</b>：中断把 flag 改成 1，编译器却不知道有人在外面改，把 <code>while (!flag)</code> 优化成死循环——程序"卡死"，而且<b>一个错都不报</b>。volatile 就是在说：这个值会自己变，每次都必须真去内存读。像<b>有人在你背后偷偷改白板上的数字</b>，你不每眼都去看，就永远读到旧的。</p>
     <pre class="code"><code>volatile unsigned int* const GPIOA_ODR =
         (volatile unsigned int*)0x40020014;   // 寄存器地址
 *GPIOA_ODR |= (1u &lt;&lt; 5);                    // 每次写都真的落到寄存器
@@ -1079,7 +1082,7 @@ static int s_err;                    // 其他文件链接不到</code></pre>
   <!-- 16 -->
   <div class="card">
     <h3><span class="n">16</span>位操作写寄存器：只动那一位，别把别的位冲掉</h3>
-    <p class="concl"><b>没有它会怎样</b>：直接写 <code>reg = 0x08</code> 会把其他位一起清零，别的外设配置瞬间全丢。改寄存器只动目标位：<b>置位 <code>|=</code>、清零 <code>&amp;= ~</code>、翻转 <code>^=</code></b>，判断用 <code>&amp;</code>。</p>
+    <p class="concl"><b>没有它会怎样</b>：直接写 <code>reg = 0x08</code> 会把其他位一起清零，别的外设配置瞬间全丢。改寄存器只动目标位：<b>置位 <code>|=</code>、清零 <code>&amp;= ~</code>、翻转 <code>^=</code></b>，判断用 <code>&amp;</code>。<b>寄存器就像一排并排的开关</b>，只能拨你要的那一个，别把总闸拉下来。</p>
     <pre class="code"><code>#define BIT(n) (1u &lt;&lt; (n))
 
 unsigned int reg = 0;
