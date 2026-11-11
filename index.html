@@ -251,6 +251,29 @@
     border: 1px solid rgba(210,153,34,.2);
   }
 
+  /* ===== 今天动手 ===== */
+  .taskdone {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 12px 0 0;
+    font-size: 13.5px;
+    color: #a5e075;
+    padding: 7px 12px;
+    border-radius: 8px;
+    background: rgba(165,224,117,.07);
+    border: 1px solid rgba(165,224,117,.22);
+    cursor: pointer;
+    user-select: none;
+  }
+  .taskdone input {
+    width: 15px;
+    height: 15px;
+    accent-color: #5eead4;
+    cursor: pointer;
+  }
+  .taskdone input:checked + span { color: #5eead4; }
+
   /* ===== AI 问答 ===== */
   .aiwrap { margin-top: 12px; }
   .aibtn {
@@ -656,7 +679,7 @@
     <div class="head-top">
       <div>
         <h1>C++ 前三天重点 + 练习</h1>
-        <p class="sub">给刚学完 C、正在转 C++ 的嵌入式初学者：先吃透引用和内存，再把类、构造、析构这条线串起来，后面看 STM32 库函数才不会发懵。</p>
+        <p class="sub">给刚学完 C、正在转 C++ 的嵌入式初学者：先吃透引用和内存，再把类、构造、析构这条线串起来。所有示例都能在电脑上直接编译运行，不需要开发板；等以后有板子，再回来看标了「以后有板子再看」的部分。</p>
         <p class="only">本页只保留当前阶段必学内容，其余等学完对象生命周期再补。</p>
       </div>
       <div class="head-btns">
@@ -675,6 +698,7 @@
       <span class="tag">Day 2 题库 38 道</span>
       <span class="tag">Day 3 题库 41 道</span>
       <span class="tag">三套练习各自独立</span>
+      <span class="tag">动手任务无需开发板</span>
     </div>
     <div class="nav">
       <a href="#day1">Day 1 · 引用</a>
@@ -683,6 +707,9 @@
       <a href="#practice1">Day 1 练习</a>
       <a href="#practice2">Day 2 练习</a>
       <a href="#practice3">Day 3 练习</a>
+      <a href="#task1">Day 1 动手</a>
+      <a href="#task2">Day 2 动手</a>
+      <a href="#task3">Day 3 动手</a>
     </div>
   </header>
 
@@ -693,17 +720,21 @@
   <div class="card">
     <h3><span class="n">1</span>引用：同一个箱子又贴了一张纸条</h3>
     <p class="concl"><b>没有它会怎样</b>：C 里想让函数改外面的变量，只能传指针——调用处写 <code>&amp;</code>、函数里写 <code>*</code>，还得随时防着空指针。引用就是<b>给 a 那口箱子再贴一张写着 r 的纸条</b>：写起来跟普通变量一样，改的却是同一口箱子。</p>
-    <pre class="code"><code>int a = 10;
-int&amp; r = a;      // 给 a 那口箱子再贴一张纸条 r
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-r = 99;
-std::cout &lt;&lt; a;  // 输出：99（改 r 就是改 a）
+int main() {
+    int a = 10;
+    int&amp; r = a;              // 同一口箱子的第二张纸条
+    r = 99;
+    cout &lt;&lt; a &lt;&lt; "\n";       // 99
 
-int b = 20;
-r = b;           // 把 b 里的 20 倒进 r 管的箱子
-                 // 结果：a = 20，b 还是 20
+    int b = 20;
+    r = b;                   // 把 20 倒进 r 管的箱子，不是换绑
+    cout &lt;&lt; a &lt;&lt; " " &lt;&lt; b &lt;&lt; "\n";   // 20 20
 
-// int&amp; bad;    // 编译报错：error: 'bad' declared as reference but not initialized</code></pre>
+    // int&amp; bad;             // 编译报错：'bad' declared as reference but not initialized
+}</code></pre>
     <ul class="pts">
       <li><b>为什么必须当场贴</b>：引用出生时就得绑到一口真实的箱子，之后不能换绑——这正是它比指针安全的地方。</li>
       <li><b>贴了撕不掉</b>：<code>r = b;</code> 是"倒东西"，不是"换箱子"。想换目标只能用指针。</li>
@@ -717,22 +748,25 @@ r = b;           // 把 b 里的 20 倒进 r 管的箱子
   <div class="card">
     <h3><span class="n">2</span>三种 swap：抄一份 / 递门牌号 / 递原件</h3>
     <p class="concl"><b>没有它会怎样</b>：新手最常写的 <code>swap1</code> 是值传递，看着换了，函数一结束外面纹丝不动——这就是"我明明改了怎么没反应"。想让函数真把外面两个箱子互换，必须<b>把原件递进去</b>。</p>
-    <pre class="code"><code>void swap1(int x, int y) { int t = x; x = y; y = t; }        // 复印件
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+void swap1(int x, int y) { int t = x; x = y; y = t; }        // 复印件
 void swap2(int* x, int* y) { int t = *x; *x = *y; *y = t; }  // 门牌号
 void swap3(int&amp; x, int&amp; y) { int t = x; x = y; y = t; }      // 原件
 
 int main() {
     int m = 1, n = 2;
-    swap1(m, n);     std::cout &lt;&lt; m &lt;&lt; " " &lt;&lt; n;  // 输出：1 2（没换）
-    swap2(&amp;m, &amp;n);    std::cout &lt;&lt; m &lt;&lt; " " &lt;&lt; n;  // 输出：2 1
-    swap3(m, n);     std::cout &lt;&lt; m &lt;&lt; " " &lt;&lt; n;  // 输出：1 2（又换回来）
-}
+    swap1(m, n);  cout &lt;&lt; m &lt;&lt; " " &lt;&lt; n &lt;&lt; "\n";   // 1 2（没换）
+    swap2(&amp;m, &amp;n); cout &lt;&lt; m &lt;&lt; " " &lt;&lt; n &lt;&lt; "\n";  // 2 1
+    swap3(m, n);  cout &lt;&lt; m &lt;&lt; " " &lt;&lt; n &lt;&lt; "\n";   // 1 2（又换回来）
 
-// swap2(m, n);   // 编译报错：error: invalid conversion from 'int' to 'int*'</code></pre>
+    // swap2(m, n);   // 编译报错：invalid conversion from 'int' to 'int*'
+}</code></pre>
     <ul class="pts">
       <li><b>为什么值传递改不到</b>：参数是复印出来的，函数一结束复印件就扔了，你的箱子没动过。</li>
       <li><b>指针能改，但要干三件事</b>：调用写 <code>&amp;</code>、函数里写 <code>*</code>、还得先判空。漏一个就编译不过或运行崩。</li>
-      <li><b>什么时候非用指针不可</b>：读写寄存器——硬件那边没有箱子给你贴纸条，只有一个地址（如 <code>0x40020000</code>），只能拿门牌号去找。</li>
+      <li><b>什么时候非用指针不可</b>：函数运行时要按数量申请一块内存（Day 2 卡 7），只能用指针接门牌号。<b>以后有板子再看</b>：读写寄存器——硬件那边没有箱子给你贴纸条，只有一个地址（如 <code>0x40020000</code>），只能拿门牌号去找。</li>
     </ul>
     <p class="keep">记住这句就行：互换两个变量直接写引用版，别自己折腾门牌号。</p>
     <p class="terms">术语对照：这三个版本依次叫「值传递」「地址传递（指针）」「引用传递（pass by reference）」。</p>
@@ -742,16 +776,21 @@ int main() {
   <div class="card">
     <h3><span class="n">3</span>const T&amp;：把原件递给他看，但不许改</h3>
     <p class="concl"><b>没有它会怎样</b>：传 <code>std::string</code> 这种大对象时，值传递每次调用都复印一整串字符，又慢又费内存；只加引用，函数又能顺手把你的东西改了。<code>const 类型&amp;</code> 就是<b>把原件递过去看，再贴一张"不许改"的封条</b>。</p>
-    <pre class="code"><code>void show(const std::string&amp; s) {  // 递原件 + 贴封条
-    // s += "!";   // 编译报错：error: passing 'const std::string' as 'this' argument discards qualifiers
-    std::cout &lt;&lt; s;   // 只能看
+    <pre class="code"><code>#include &lt;iostream&gt;
+#include &lt;string&gt;
+using namespace std;
+
+void show(const string&amp; s) {   // 递原件 + 贴封条
+    // s += "!";  // 编译报错：passing 'const std::string' as 'this' argument discards qualifiers
+    cout &lt;&lt; s &lt;&lt; "\n";
 }
 
 int main() {
-    std::string name = "Tom";
-    show(name);          // 不复印，直接看 name 那口箱子，输出：Tom
-    const int&amp; r = 10;   // 可以：临时箱子也能贴封条
-    // int&amp; bad = 10;    // 编译报错：error: binding reference of type 'int&amp;' to 'const int' discards qualifiers
+    string name = "Tom";
+    show(name);          // Tom
+    const int&amp; r = 10;   // 临时箱子也能贴封条
+    cout &lt;&lt; r &lt;&lt; "\n";   // 10
+    // int&amp; bad = 10;    // 编译报错：binding reference of type 'int&amp;' to 'const int' discards qualifiers
 }</code></pre>
     <ul class="pts">
       <li><b>三种写法一条线</b>：值传递 = 复印；<code>T&amp;</code> = 不复印但能改；<code>const T&amp;</code> = 不复印也不能改。</li>
@@ -766,18 +805,20 @@ int main() {
   <div class="card">
     <h3><span class="n">4</span>cout、endl、::：箭头、"冲水"和"谁家的"</h3>
     <p class="concl"><b>没有它会怎样</b>：<code>printf</code> 要手写 <code>%d</code>、<code>%f</code>，类型和格式符对不上就打出乱码甚至崩；<code>cout</code> 让编译器自己认类型。<b>箭头朝右把东西塞进屏幕</b>，<code>endl</code> 是换行 + 冲水，<code>::</code> 读作"谁家的"。</p>
-    <pre class="code"><code>int a = 0;
-std::cout &lt;&lt; "请输入：";     // 输出：请输入：
-std::cin  &gt;&gt; a;              // 键盘输入 5
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-std::cout &lt;&lt; a &lt;&lt; '\n';        // 输出：5（只换行，快）
-std::cout &lt;&lt; a &lt;&lt; std::endl;    // 输出：5（换行 + 立刻冲出去）
-
-// cout &lt;&lt; a;                 // 编译报错：error: 'cout' was not declared in this scope
-                               // 忘了写 std:: 或 using namespace std;</code></pre>
+int main() {
+    int a = 0;
+    cout &lt;&lt; "请输入：";       // 输出：请输入：
+    cin &gt;&gt; a;                 // 键盘输入 5
+    cout &lt;&lt; a &lt;&lt; '\n';        // 输出：5（只换行）
+    cout &lt;&lt; a &lt;&lt; endl;        // 输出：5（换行 + 立刻冲水）
+    // cout &lt;&lt; a;             // 编译报错：'cout' was not declared in this scope（忘写 std::）
+}</code></pre>
     <ul class="pts">
       <li><b>endl 是换行 + 冲水</b>：冲水 = 把攒在缓冲区里的字立刻推出去；<code>'\n'</code> 只换行，攒够了一起走。</li>
-      <li><b>串口为什么用 '\n'</b>：每行都冲一次水，等于每行都等一次硬件，几十行下来明显拖时间。</li>
+      <li><b>刷日志为什么用 '\n'</b>：往文件或终端连续打几万行时，每行都冲一次水会明显拖慢；只有"程序卡住前必须立刻看到"的那几行才用 <code>endl</code>。</li>
       <li><b>:: 读作"谁家的"</b>：<code>std::cout</code> 是标准库那家的；只写 <code>::a</code> 是全局那个 a。</li>
     </ul>
     <p class="keep">记住这句就行：箭头朝哪儿东西就往哪儿走；endl 多了个冲水；:: 就是在说"谁家的"。</p>
@@ -788,18 +829,23 @@ std::cout &lt;&lt; a &lt;&lt; std::endl;    // 输出：5（换行 + 立刻冲�
   <div class="card">
     <h3><span class="n">5</span>命名空间：给名字加个"谁家的"</h3>
     <p class="concl"><b>没有它会怎样</b>：两个库都提供 <code>log()</code>，C 里只能改名或加前缀，越写越长。命名空间就是<b>给名字分家</b>：<code>A::log</code> 和 <code>B::log</code> 各叫各的，互不打架。</p>
-    <pre class="code"><code>namespace A { int a = 1; }
+    <pre class="code"><code>#include &lt;iostream&gt;
+namespace A { int a = 1; }
 namespace B { int a = 2; }
+using namespace std;
 
-std::cout &lt;&lt; A::a;   // 输出：1
-std::cout &lt;&lt; B::a;   // 输出：2
+int main() {
+    cout &lt;&lt; A::a &lt;&lt; "\n";   // 1
+    cout &lt;&lt; B::a &lt;&lt; "\n";   // 2
 
-using namespace A;
-using namespace B;
-// a = 3;            // 编译报错：error: reference to 'a' is ambiguous
+    using A::a;             // 只搬 A 家的 a 进来
+    a = 3;
+    cout &lt;&lt; A::a &lt;&lt; "\n";   // 3
 
-using A::a;          // 只搬 A 家的 a，二义性消失
-a = 3;               // 改的是 A::a</code></pre>
+    // using namespace A;
+    // using namespace B;
+    // a = 3;               // 编译报错：reference to 'a' is ambiguous
+}</code></pre>
     <ul class="pts">
       <li><b>为什么写全名最保险</b>：<code>using namespace</code> 把两家东西倒在同一张桌子上，一旦重名，编译器不替你猜。</li>
       <li><b>头文件里别写 using namespace</b>：会把"污染"带给所有 include 它的文件，工程大了很难查。</li>
@@ -813,19 +859,24 @@ a = 3;               // 改的是 A::a</code></pre>
   <div class="card">
     <h3><span class="n">6</span>返回引用：别把拆掉的房子的门牌号给别人</h3>
     <p class="concl"><b>没有它会怎样</b>：返回引用能省一次拷贝，但函数里临时造的箱子，函数一结束就拆房。把它的引用交出去，别人拿到的是<b>作废的门牌号</b>——这次刚好没被盖住，不代表下次还能开门。</p>
-    <pre class="code"><code>int g = 0;
-int&amp; getG() { return g; }          // 安全：全局箱子一直在
-static int s = 5;
-int&amp; getS() { return s; }          // 安全：static 箱子活到程序结束
-void fill(int&amp; out) { out = 42; }   // 安全：调用者自己的箱子
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-int&amp; bad() { int x = 1; return x; }  // 危险：x 随函数结束销毁
+int g = 0;
+int&amp; getG() { return g; }          // 全局箱子一直在
+static int s = 5;
+int&amp; getS() { return s; }          // static 箱子活到程序结束
+void fill(int&amp; out) { out = 42; }   // 调用者自己的箱子
 
 int main() {
-    int&amp; r = bad();
-    std::cout &lt;&lt; r;   // 可能打印 1，也可能乱码/崩溃：行为未定义
-}
-// 编译器通常只给警告：warning: reference to local variable 'x' returned</code></pre>
+    getG() = 7;   cout &lt;&lt; g &lt;&lt; "\n";   // 7
+    getS() = 9;   cout &lt;&lt; s &lt;&lt; "\n";   // 9
+
+    int v = 0;
+    fill(v);      cout &lt;&lt; v &lt;&lt; "\n";   // 42
+
+    // int&amp; r = bad();   // bad 返回局部变量的引用，别运行：行为未定义
+}</code></pre>
     <ul class="pts">
       <li><b>为什么"有时看着能跑"</b>：栈上那块内存还没被别的函数盖掉；换编译器、换优化等级就现原形。</li>
       <li><b>能安全返回的只有三种</b>：全局变量、static 变量、调用者自己传进来的引用/指针。</li>
@@ -833,6 +884,49 @@ int main() {
     </ul>
     <p class="keep">记住这句就行：返回引用之前先问一句——这口箱子，函数结束后还在不在？</p>
     <p class="terms">术语对照：这种情况正式叫「悬空引用（dangling reference）」，属于「未定义行为（UB）」。</p>
+  </div>
+
+  <div class="sec-title" id="task1">Day 1 · 今天动手</div>
+  <p class="sec-desc">两个小任务，不需要开发板，复制到 VS 或 g++ 里直接编译。先自己写，再对下面的预期输出；勾选状态会存在本机浏览器里。</p>
+
+  <div class="card">
+    <h3>任务 1 · 让函数真的改到外面的变量</h3>
+    <p class="concl"><b>目标</b>：分别用值传递和引用传递写 <code>addOne</code>，亲眼看到哪一个能改到 <code>score</code>。</p>
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+void addOneWrong(int x) { x = x + 1; }   // 复印件上改，原件不动
+void addOne(int&amp; x)     { x = x + 1; }   // 直接改原件
+
+int main() {
+    int score = 10;
+    addOneWrong(score);
+    cout &lt;&lt; "值传递后：" &lt;&lt; score &lt;&lt; "\n";    // 10
+    addOne(score);
+    cout &lt;&lt; "引用传递后：" &lt;&lt; score &lt;&lt; "\n";  // 11
+}</code></pre>
+    <p class="terms"><b>预期看到</b>：</p>
+    <pre class="code"><code>值传递后：10
+引用传递后：11</code></pre>
+    <label class="taskdone"><input type="checkbox" data-task="d1t1"><span>做完了，勾上</span></label>
+  </div>
+
+  <div class="card">
+    <h3>任务 2 · 把函数调用写在等号左边</h3>
+    <p class="concl"><b>目标</b>：让 <code>at(a, 1)</code> 返回那一格的引用，然后直接给它赋值，验证 <code>a[1]</code> 真的变了。</p>
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+int&amp; at(int* arr, int i) { return arr[i]; }   // 返回那一格的引用
+
+int main() {
+    int a[3] = {1, 2, 3};
+    at(a, 1) = 99;    // 函数调用出现在等号左边，改的是 a[1]
+    cout &lt;&lt; a[0] &lt;&lt; " " &lt;&lt; a[1] &lt;&lt; " " &lt;&lt; a[2] &lt;&lt; "\n";   // 1 99 3
+}</code></pre>
+    <p class="terms"><b>预期看到</b>：</p>
+    <pre class="code"><code>1 99 3</code></pre>
+    <label class="taskdone"><input type="checkbox" data-task="d1t2"><span>做完了，勾上</span></label>
   </div>
 
   <div class="gloss">
@@ -865,20 +959,25 @@ int main() {
   <div class="card">
     <h3><span class="n">7</span>new / delete：租房子和退房子必须对上</h3>
     <p class="concl"><b>没有它会怎样</b>：栈上数组的大小必须编译时定死，数据一多就爆栈；想按运行时的数量申请，只能找堆。<code>new</code> 是<b>租一间房、拿到门牌号</b>，<code>delete</code> 是退租；<b>怎么租的就怎么退</b>，这是唯一死规矩。</p>
-    <pre class="code"><code>int* p = new int;      // 租一间房，门牌号交给 p
-*p = 42;
-std::cout &lt;&lt; *p;       // 输出：42
-delete p;              // 退租：一间房就用 delete
-p = nullptr;           // 退完把号码划掉
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-int* arr = new int[10]; // 租一排十间房
-arr[0] = 1;
-std::cout &lt;&lt; arr[0];    // 输出：1
-delete[] arr;           // 退一排：必须用带方括号的 delete[]
-arr = nullptr;
+int main() {
+    int* p = new int;        // 租一间房
+    *p = 42;
+    cout &lt;&lt; *p &lt;&lt; "\n";      // 42
+    delete p;                // 退一间
+    p = nullptr;
 
-// int* q = new int;
-// free(q);             // 错：new 的房不能找 free 退</code></pre>
+    int* arr = new int[10];  // 租一排十间
+    arr[0] = 1;
+    cout &lt;&lt; arr[0] &lt;&lt; "\n";  // 1
+    delete[] arr;            // 退一排必须带 []
+    arr = nullptr;
+
+    // int* q = new int;
+    // free(q);              // 错：new 的房不能找 free 退
+}</code></pre>
     <ul class="pts">
       <li><b>配对表只有两行</b>：<code>new</code> ↔ <code>delete</code>，<code>new[]</code> ↔ <code>delete[]</code>。拿错钥匙属于未定义行为，常见表现是当场崩溃。</li>
       <li><b>退完不置空 = 悬垂指针</b>：号码还捏在手里，再照着找过去就是开一扇已经不属于你的门。</li>
@@ -892,22 +991,27 @@ arr = nullptr;
   <div class="card">
     <h3><span class="n">8</span>nullptr：一张写着"没有门牌号"的卡片</h3>
     <p class="concl"><b>没有它会怎样</b>：C 里 <code>NULL</code> 本质就是数字 0，遇到重载或模板，编译器分不清你要"整数 0"还是"空指针"。<code>nullptr</code> 是<b>一张写着"没有门牌号"的专用卡片</b>，只认指针，不认整数。</p>
-    <pre class="code"><code>int* p = nullptr;              // 空指针的标准写法（C++11 起）
-std::cout &lt;&lt; (p == nullptr);   // 输出：1
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-int* q = new int(7);
-delete q;
-q = nullptr;                   // 退完立刻划掉号码，防野指针
+int main() {
+    int* p = nullptr;
+    cout &lt;&lt; (p == nullptr) &lt;&lt; "\n";   // 1
 
-// int x = nullptr;            // 编译报错：error: cannot convert 'std::nullptr_t' to 'int'
-// void f(int); void f(char*);
-// f(NULL);                    // 二义性：两个版本都能匹配，编译器不替你猜</code></pre>
+    int* q = new int(7);
+    delete q;
+    q = nullptr;                      // 退完立刻划掉号码
+
+    // int x = nullptr;               // 编译报错：cannot convert 'std::nullptr_t' to 'int'
+    // void f(int); void f(char*);
+    // f(NULL);                       // 二义性：两个版本都能匹配
+}</code></pre>
     <ul class="pts">
       <li><b>是啥</b>：C++11 引入的空指针字面量，类型是 <code>std::nullptr_t</code>，能隐式转成任何指针类型。</li>
       <li><b>干嘛用</b>：初始化、判空、<code>delete</code> 之后立刻置空防野指针。</li>
       <li><b>和 NULL 的本质区别</b>：<code>NULL</code> 是 0 的宏，模板还会把它推导成 <code>int</code>；<code>nullptr</code> 能转任意指针，但<b>不能转成整数</b>（上面那条报错就是证据）。</li>
-      <li><b>最容易踩的坑</b>：<code>nullptr</code> 是 C++ 的东西，<b>.c 文件里没有</b>（那里只能写 <code>NULL</code> 或 <code>0</code>）。Keil 工程 .c/.cpp 混着写，最容易在这报错。</li>
-      <li><b>嵌入式影响</b>：解引用空指针在 STM32 上等于读地址 0，直接进 HardFault。HAL 库里到处写 <code>if (p == NULL) return HAL_ERROR;</code> 就是这个原因。</li>
+      <li><b>最容易踩的坑</b>：<code>nullptr</code> 是 C++ 的东西，<b>.c 文件里没有</b>（那里只能写 <code>NULL</code> 或 <code>0</code>）。以后用 Keil 时，.c/.cpp 混着写最容易在这报错。</li>
+      <li><b>电脑上解引用空指针会怎样</b>：进程当场崩溃，Windows 报 <code>0xC0000005</code>（访问冲突），Linux 报 <code>Segmentation fault</code>。<b>以后有板子再看</b>：STM32 上等于读地址 0，直接进 HardFault；HAL 库里到处写 <code>if (p == NULL) return HAL_ERROR;</code> 就是这个原因。</li>
     </ul>
     <p class="keep">记住这句就行：<code>.cpp</code> 里判空一律写 <code>nullptr</code>，<code>.c</code> 里只能写 <code>NULL</code> 或 <code>0</code>。</p>
     <p class="terms">术语对照：<code>nullptr</code>（空指针字面量）、<code>NULL</code>（C 里的 0 宏）、<code>std::nullptr_t</code>（它的类型）、野指针（dangling pointer）。</p>
@@ -917,7 +1021,10 @@ q = nullptr;                   // 退完立刻划掉号码，防野指针
   <div class="card">
     <h3><span class="n">9</span>struct 加强：箱子自己也会干活了</h3>
     <p class="concl"><b>没有它会怎样</b>：C 里数据和函数分家，函数只能叫 <code>Point_sum(&amp;p)</code>，点一多就分不清谁管谁。C++ 的 struct 能把函数装进去，<code>p.sum()</code> 一眼看出这是 p 的事——这就是通往"类"的那级台阶。</p>
-    <pre class="code"><code>struct Point {
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+struct Point {
     int x, y;
     int sum() { return x + y; }   // 函数直接用自己的 x、y
 };
@@ -926,7 +1033,7 @@ int main() {
     Point p;              // 不用写 struct Point p;
     p.x = 3;
     p.y = 4;
-    std::cout &lt;&lt; p.sum(); // 输出：7
+    cout &lt;&lt; p.sum() &lt;&lt; "\n";   // 7
 }</code></pre>
     <ul class="pts">
       <li><code>p.sum()</code> 读作"让 p 这口箱子干 sum 这件事"：点左边是箱子，右边是动作。</li>
@@ -941,15 +1048,18 @@ int main() {
   <div class="card">
     <h3><span class="n">10</span>bool：只有"是"和"否"两个格子</h3>
     <p class="concl"><b>没有它会怎样</b>：C 里用 <code>int</code> 装真假，0、1、-1 混着用，读代码先得猜"这个 1 是数量还是真"。<code>bool</code> 只有 <code>true</code>/<code>false</code>，意图一眼看懂，占 <b>1 个字节</b>。</p>
-    <pre class="code"><code>bool ok = true;
-bool err = false;
-std::cout &lt;&lt; ok;       // 输出：1（true 当数字用就是 1）
-std::cout &lt;&lt; err;      // 输出：0
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-int n = true;          // n 变成 1
-bool flag = 5;         // 只给警告，非 0 都算 true —— 别这么写
+int main() {
+    bool ok = true, err = false;
+    cout &lt;&lt; ok &lt;&lt; "\n";     // 1
+    cout &lt;&lt; err &lt;&lt; "\n";    // 0
 
-if (ok) { /* 直接当条件用，不用写 ok == true */ }</code></pre>
+    int n = true;
+    cout &lt;&lt; n &lt;&lt; "\n";      // 1
+    // bool flag = 5;       // 只给警告，非 0 都算 true —— 别这么写
+}</code></pre>
     <ul class="pts">
       <li>它是 1 <b>字节</b>，不是 1 位。8 个 bool 就是 8 字节，别指望靠它省 RAM；真要按位省，得自己用位操作（Day 2 卡 16）。</li>
       <li>数字变 bool 只认"是不是 0"：0 是 false，非 0 都是 true。</li>
@@ -963,37 +1073,46 @@ if (ok) { /* 直接当条件用，不用写 ok == true */ }</code></pre>
   <div class="card">
     <h3><span class="n">11</span>const：贴了封条就不许改</h3>
     <p class="concl"><b>没有它会怎样</b>：100 这种"魔法数字"散落在十个文件里，改需求时漏一处就是一个 bug。<code>const</code> 给数字起名、加类型、上封条，改错地方编译器当场拦。</p>
-    <pre class="code"><code>const int MAX = 100;
-// MAX = 200;            // 编译报错：error: assignment of read-only variable 'MAX'
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-#define SIZE 10          // 老写法：纯文字替换，没有类型
-const int size = 10;     // 新写法：有类型、有作用域，调试器看得见
+const int MAX = 100;
+const int table[] = {1, 2, 3};
 
-const int table[] = {1, 2, 3};   // 配置表加 const，通常进 flash，不占 RAM</code></pre>
+int main() {
+    cout &lt;&lt; MAX &lt;&lt; "\n";        // 100
+    cout &lt;&lt; table[2] &lt;&lt; "\n";   // 3
+    // MAX = 200;               // 编译报错：assignment of read-only variable 'MAX'
+}</code></pre>
     <ul class="pts">
       <li>const 变量必须当场给值：<code>const int a;</code> 单独一句编译不过。</li>
-      <li>嵌入式重点：全局 const 数组一般被放进 flash，RAM 里不占地方；把 const 去掉，它才会被搬进 RAM。</li>
+      <li>编译器通常把全局 const 放进只读数据段，程序运行时改不了它。<b>以后有板子再看</b>：在单片机上这块数据一般放在 flash 里，不占 RAM；把 const 去掉，它才会被搬进 RAM。</li>
       <li><code>#define</code> 出错时报错会指向替换后的怪代码；const 是真变量，报错直接指到名字。</li>
     </ul>
-    <p class="keep">记住这句就行：不想被改就贴封条；只读的大参数写 <code>const T&amp;</code>；配置表加 const 省 RAM。</p>
-    <p class="terms">术语对照：const 修饰的变量叫「常量」，<code>const T&amp;</code> 形参叫「常量引用」，放进 flash 的那块叫「只读数据段（.rodata）」。</p>
+    <p class="keep">记住这句就行：不想被改就贴封条；只读的大参数写 <code>const T&amp;</code>；配置表加 const，既防误改也方便编译器优化。</p>
+    <p class="terms">术语对照：const 修饰的变量叫「常量」，<code>const T&amp;</code> 形参叫「常量引用」；只读数据段在板子上通常对应放在 flash（以后再看）。</p>
   </div>
 
   <!-- 12 -->
   <div class="card">
     <h3><span class="n">12</span>默认参数：只能从右往左连续给</h3>
-    <p class="concl"><b>没有它会怎样</b>：串口 99% 的调用都是 8 数据位、1 停止位，每次全写又长又容易写错。默认参数让常用配置直接省略，只写和默认不一样的那几个。像<b>点外卖默认不加香菜</b>：没特别交代就按默认来，想换才开口。</p>
-    <pre class="code"><code>void uart(int baud, int bits = 8, int stop = 1);  // 默认值写在声明里
+    <p class="concl"><b>没有它会怎样</b>：按固定宽度打印数字时，绝大多数调用都是"宽度 8、左边补 0"，每次把这些参数全写一遍又长又容易写错。默认参数让常用配置直接省略，只写和默认不一样的那几个。像<b>点外卖默认不加香菜</b>：没特别交代就按默认来，想换才开口。</p>
+    <pre class="code"><code>#include &lt;iostream&gt;
+#include &lt;iomanip&gt;
+using namespace std;
 
-uart(115200);        // bits=8，stop=1（最常用）
-uart(115200, 7);     // bits=7，stop=1
-// uart(115200, , 2);  // 错：中间不能空着跳过去
+void printNum(int value, int width = 8, char fill = '0') {
+    cout &lt;&lt; setw(width) &lt;&lt; setfill(fill) &lt;&lt; value &lt;&lt; "\n";
+}
 
-// void f(int a = 1, int b);
-// 编译报错：error: default argument missing for parameter 2 of 'void f(int, int)'
+int main() {
+    printNum(42);          // 00000042
+    printNum(42, 4);       // 0042
+    printNum(7, 3, '.');   // ..7
 
-// void uart(int baud, int bits = 8, int stop = 1) { }  // 定义里又写一遍
-// 编译报错：error: default argument given for parameter 1 of 'void uart(int, int, int)'</code></pre>
+    // printNum(42, , 2);  // 错：中间不能空着跳过去
+    // 默认值写两处会报：default argument given for parameter ...
+}</code></pre>
     <ul class="pts">
       <li><b>为什么必须从右往左</b>：实参按位置填，中间空着编译器不知道给谁。</li>
       <li><b>只写一处</b>：声明和定义都写会报"重定义默认参数"，习惯写在声明（头文件）里。</li>
@@ -1007,18 +1126,22 @@ uart(115200, 7);     // bits=7，stop=1
   <div class="card">
     <h3><span class="n">13</span>函数重载：同名不同参数，别看返回值</h3>
     <p class="concl"><b>没有它会怎样</b>：C 里同一件事、不同类型得起 <code>abs_i</code>、<code>abs_f</code> 一堆名字，调用时还得记住用哪套。重载让同名函数按<b>参数</b>自动挑，返回值不参与挑。像<b>同一个窗口办不同业务</b>：递身份证办身份证、递驾照办驾照，窗口名字一样，看你递什么。</p>
-    <pre class="code"><code>void f(int x)    { std::cout &lt;&lt; "int\n"; }
-void f(double x) { std::cout &lt;&lt; "double\n"; }
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-f(1);      // 输出：int
-f(1.0);    // 输出：double
+void f(int x)    { cout &lt;&lt; "int\n"; }
+void f(double x) { cout &lt;&lt; "double\n"; }
 
-// int f(int x);   // 编译报错：error: ambiguating new declaration of 'int f(int)'
-                    // 只改返回值不算重载
+void g(int x) {}
+void g(int x, int y = 0) {}
 
-void g(int x);
-void g(int x, int y = 0);
-// g(1);           // 二义性：两个版本都能匹配</code></pre>
+int main() {
+    f(1);      // int
+    f(1.0);    // double
+    // g(1);   // 二义性：两个版本都能匹配
+
+    // int f(int x);   // 编译报错：只改返回值不算重载
+}</code></pre>
     <ul class="pts">
       <li>参数个数、类型、顺序，只要有一处不同就算重载；返回值不参与挑选，因为调用处看不见返回值。</li>
       <li><code>f(1.0f)</code> 会让编译器在 <code>f(int)</code> 和 <code>f(double)</code> 之间替你挑（float→double 是提升，转 int 是截断），不报错但你要知道它在挑。</li>
@@ -1030,45 +1153,60 @@ void g(int x, int y = 0);
 
   <!-- 14 -->
   <div class="card">
-    <h3><span class="n">14</span>volatile：告诉编译器"这个值会自己变"</h3>
-    <p class="concl"><b>没有它会怎样</b>：中断把 flag 改成 1，编译器却不知道有人在外面改，把 <code>while (!flag)</code> 优化成死循环——程序"卡死"，而且<b>一个错都不报</b>。volatile 就是在说：这个值会自己变，每次都必须真去内存读。像<b>有人在你背后偷偷改白板上的数字</b>，你不每眼都去看，就永远读到旧的。</p>
-    <pre class="code"><code>volatile unsigned int* const GPIOA_ODR =
-        (volatile unsigned int*)0x40020014;   // 寄存器地址
-*GPIOA_ODR |= (1u &lt;&lt; 5);                    // 每次写都真的落到寄存器
+    <h3><span class="n">14</span>volatile：告诉编译器"这个值会自己变"（电脑版）</h3>
+    <p class="concl"><b>没有它会怎样</b>：另一个线程把 flag 改成 1，编译器却不知道有人在外面改，把 <code>while (!flag)</code> 优化成死循环——程序"卡死"，而且<b>一个错都不报</b>。volatile 就是在说：这个值会自己变，每次都必须真去内存读。像<b>有人在你背后偷偷改白板上的数字</b>，你不每眼都去看，就永远读到旧的。</p>
+    <p class="only">这不是硬件代码，只是同一个原理的电脑版：用另一个线程代替"中断里改标志"。</p>
+    <pre class="code"><code>#include &lt;iostream&gt;
+#include &lt;thread&gt;
+#include &lt;chrono&gt;
+using namespace std;
 
-volatile unsigned char flag = 0;   // 中断里会把它置 1
+volatile int flag = 0;   // 另一个线程会改它
 
 int main() {
-    while (!flag) { }   // 加了 volatile：中断置 1 后循环退出
-                        // 不加：-O2 下可能变成永远退不出的死循环
-}</code></pre>
+    thread t([] {
+        this_thread::sleep_for(chrono::milliseconds(100));
+        flag = 1;        // 相当于"中断来了"
+    });
+
+    cout &lt;&lt; "等信号...\n";
+    while (!flag) { }    // 加了 volatile：每次都真去内存读，能退出
+    cout &lt;&lt; "收到 " &lt;&lt; flag &lt;&lt; "，退出\n";
+    t.join();
+}
+// 本机 g++ -O2 实测输出：
+// 等信号...
+// 收到 1，退出
+// 把 volatile 删掉再 -O2：循环被优化，读到旧值 0，打印"收到 0，退出"</code></pre>
     <ul class="pts">
-      <li><b>这个例子要在板子/中断环境里跑</b>；电脑上可以用 <code>-O2</code> 看反汇编验证，别指望它打印什么。</li>
-      <li><b>三种必须加的场景</b>：外设寄存器指针、中断与主循环共享的变量、DMA 收发的缓冲区。</li>
-      <li><b>它只管"别优化"</b>，不管"安不安全"。<code>volatile int n; n++;</code> 仍不是原子操作，中断同时改会丢数据，得关中断或用原子操作。</li>
-      <li><b>可以跟 const 一起用</b>：只读的状态寄存器就是 <code>volatile const</code>；普通局部变量别乱加，只会变慢。</li>
+      <li><b>先跑这个电脑版</b>：加 volatile 时本机实测输出 <code>等信号... / 收到 1，退出</code>；删掉 volatile 再用 <code>-O2</code> 编译，本机实测输出 <code>收到 0，退出</code>（有的编译器会直接卡死）。</li>
+      <li><b>以后有板子再看</b>：外设寄存器指针、中断与主循环共享的变量、DMA 收发的缓冲区，这三种场景必须加 volatile——差别只是"改它的人"从中断换成了线程。</li>
+      <li><b>它只管"别优化"</b>，不管"安不安全"。<code>volatile int n; n++;</code> 仍不是原子操作，两个线程同时改会丢数据；真并发要用 <code>std::atomic</code> 或加锁。</li>
+      <li><b>可以跟 const 一起用</b>：只读的状态寄存器就是 <code>volatile const</code>（以后有板子再看）；普通局部变量别乱加，只会变慢。</li>
     </ul>
-    <p class="keep">记住这句就行：会被硬件或中断改的变量和寄存器指针，必须加 volatile；它挡的是编译器优化，不是并发。</p>
-    <p class="terms">术语对照：正式叫「volatile 限定符」，读作"易变的"；把地址写成指针叫「寄存器映射」，中断和主循环共用的变量叫「共享变量」。</p>
+    <p class="keep">记住这句就行：会被"别人"改的变量必须加 volatile；它挡的是编译器优化，不是并发。</p>
+    <p class="terms">术语对照：正式叫「volatile 限定符」，读作"易变的"；中断和主循环共用的变量叫「共享变量」，电脑上对应「多线程共享变量」。</p>
   </div>
 
   <!-- 15 -->
   <div class="card">
     <h3><span class="n">15</span>static：函数里的"记忆"，文件里的"私事"</h3>
     <p class="concl"><b>没有它会怎样</b>：想让函数记住"上次调到哪一步"，C 里只能用全局变量，结果全工程都能改它。函数里的 <code>static</code> 是<b>只有这个函数能碰的"记忆"</b>：只初始化一次，函数退出也不销毁。</p>
-    <pre class="code"><code>void tick() {
-    static int count = 0;   // 只初始化一次，下次调用接着上次的值
-    count++;
-    std::cout &lt;&lt; count &lt;&lt; '\n';
-}
-int main() { tick(); tick(); tick(); }
-// 输出：
-// 1
-// 2
-// 3
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-static void led_on() { /* ... */ }   // 只在本 .c 里能调用
-static int s_err;                    // 其他文件链接不到</code></pre>
+static void helper() { cout &lt;&lt; "helper\n"; }   // 只在本文件可见
+
+void tick() {
+    static int count = 0;   // 只初始化一次
+    count++;
+    cout &lt;&lt; count &lt;&lt; "\n";
+}
+
+int main() {
+    tick(); tick(); tick();   // 1 2 3
+    helper();                 // helper
+}</code></pre>
     <ul class="pts">
       <li><b>函数内 static</b>：适合计数器、状态机的上一步状态，不用把变量暴露成全局。</li>
       <li><b>文件作用域 static</b>：嵌入式里常用来做"模块私有函数"，多个 .c 里同名也不冲突。</li>
@@ -1081,27 +1219,80 @@ static int s_err;                    // 其他文件链接不到</code></pre>
 
   <!-- 16 -->
   <div class="card">
-    <h3><span class="n">16</span>位操作写寄存器：只动那一位，别把别的位冲掉</h3>
-    <p class="concl"><b>没有它会怎样</b>：直接写 <code>reg = 0x08</code> 会把其他位一起清零，别的外设配置瞬间全丢。改寄存器只动目标位：<b>置位 <code>|=</code>、清零 <code>&amp;= ~</code>、翻转 <code>^=</code></b>，判断用 <code>&amp;</code>。<b>寄存器就像一排并排的开关</b>，只能拨你要的那一个，别把总闸拉下来。</p>
-    <pre class="code"><code>#define BIT(n) (1u &lt;&lt; (n))
+    <h3><span class="n">16</span>位操作：只动那一位，别把别的位冲掉</h3>
+    <p class="concl"><b>没有它会怎样</b>：直接写 <code>leds = 8</code> 会把其他灯的状态一起覆盖掉。改一位只动目标位：<b>置位 <code>|=</code>、清零 <code>&amp;= ~</code>、翻转 <code>^=</code></b>，判断用 <code>&amp;</code>。<b>一个整数就像一排并排的开关</b>，只能拨你要的那一个，别把总闸拉下来。</p>
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-unsigned int reg = 0;
-reg |=  BIT(3);   std::cout &lt;&lt; reg;   // 输出：8（第 3 位变 1）
-reg &amp;= ~BIT(3);   std::cout &lt;&lt; reg;   // 输出：0（第 3 位变 0）
-reg ^=  BIT(3);   std::cout &lt;&lt; reg;   // 输出：8（翻转）
+#define BIT(n) (1u &lt;&lt; (n))
 
-if (reg &amp; BIT(3)) { }   // 判断第 3 位是不是 1
+int main() {
+    unsigned int leds = 0;    // 用低 8 位模拟 8 个灯的状态
+    leds |=  BIT(3);          // 点亮 3 号灯
+    cout &lt;&lt; leds &lt;&lt; "\n";     // 8
+    leds &amp;= ~BIT(3);          // 熄灭 3 号灯
+    cout &lt;&lt; leds &lt;&lt; "\n";     // 0
+    leds ^=  BIT(3);          // 翻转 3 号灯
+    cout &lt;&lt; leds &lt;&lt; "\n";     // 8
 
-// 改多位：先把这几位清零，再写新值
-reg = (reg &amp; ~(0x3u &lt;&lt; 4)) | (0x2u &lt;&lt; 4);</code></pre>
+    cout &lt;&lt; ((leds &amp; BIT(3)) ? "亮" : "灭") &lt;&lt; "\n";   // 亮
+}</code></pre>
     <ul class="pts">
       <li><b><code>1 &lt;&lt; 31</code> 的坑</b>：有符号 int 左移到最高位是未定义行为，写 <code>1u &lt;&lt; 31</code> 才稳。</li>
-      <li><b>读-改-写不是原子的</b>：主循环和中断同时改同一个寄存器，可能互相覆盖。要么关中断，要么用硬件的置位/清除寄存器。</li>
-      <li><b>别用魔法数字</b>：地址和位号用宏或头文件定义，换板子只改一处。</li>
-      <li><b>位域（bit-field）</b> 每个编译器排布可能不同，通信协议里别用，寄存器操作优先用宏。</li>
+      <li><b>读-改-写不是原子的</b>：两个线程同时改同一个变量，可能互相覆盖；需要时用 <code>std::atomic</code> 或加锁。<b>以后有板子再看</b>：主循环和中断同时改同一个寄存器，要么关中断，要么用硬件的置位/清除寄存器。</li>
+      <li><b>别用魔法数字</b>：位号用宏或常量定义，换芯片只改一处。</li>
+      <li><b>位域（bit-field）</b> 每个编译器排布可能不同，通信协议里别用，改位优先用宏。</li>
     </ul>
     <p class="keep">记住这句就行：改一位用 |= 和 &amp;= ~，别直接赋值，否则会把旁边的位一起冲掉。</p>
     <p class="terms">术语对照：那串用来挑位的 0/1 叫「位掩码（mask）」，<code>|=</code> 叫「置位」，<code>&amp;= ~</code> 叫「清零」，读一遍再写回去叫「读-改-写」。</p>
+  </div>
+
+  <div class="sec-title" id="task2">Day 2 · 今天动手</div>
+  <p class="sec-desc">两个小任务，全部在本机跑。任务 2 是很多人栽过的坑：在函数里改指针，外面为什么没反应。</p>
+
+  <div class="card">
+    <h3>任务 1 · 按运行时数量租一排房</h3>
+    <p class="concl"><b>目标</b>：用 <code>new[]</code> 申请 8 个 <code>int</code>，填平方数、求和，最后用 <code>delete[]</code> 归还。</p>
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int n = 8;
+    int* a = new int[n];              // 运行时才决定租几间
+    for (int i = 0; i &lt; n; i++) a[i] = i * i;
+    int sum = 0;
+    for (int i = 0; i &lt; n; i++) sum += a[i];
+    cout &lt;&lt; "和 = " &lt;&lt; sum &lt;&lt; "\n";   // 140
+    delete[] a;                       // 一排房必须用 delete[]
+    a = nullptr;
+}</code></pre>
+    <p class="terms"><b>预期看到</b>：</p>
+    <pre class="code"><code>和 = 140</code></pre>
+    <label class="taskdone"><input type="checkbox" data-task="d2t1"><span>做完了，勾上</span></label>
+  </div>
+
+  <div class="card">
+    <h3>任务 2 · 在函数里换指针，外面为什么没变</h3>
+    <p class="concl"><b>目标</b>：先看 <code>wrong</code> 改不到外面的指针，再用 <code>int*&amp;</code> 把指针本人递进去，看第二次为什么成功。</p>
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+void wrong(int* p) { p = new int(99); }   // 只改了复印件，外面没动
+void right(int*&amp; p) { p = new int(99); }  // 递的是指针本人的引用
+
+int main() {
+    int x = 1;
+    int* p = &amp;x;
+    wrong(p);
+    cout &lt;&lt; *p &lt;&lt; "\n";    // 1：外面还是指着 x
+    right(p);
+    cout &lt;&lt; *p &lt;&lt; "\n";    // 99：这次真的换了指向
+    delete p;              // right 里 new 的那间房
+}</code></pre>
+    <p class="terms"><b>预期看到</b>：</p>
+    <pre class="code"><code>1
+99</code></pre>
+    <label class="taskdone"><input type="checkbox" data-task="d2t2"><span>做完了，勾上</span></label>
   </div>
 
   <!-- ===== Day 2 练习（独立一套） ===== -->
@@ -1126,27 +1317,27 @@ reg = (reg &amp; ~(0x3u &lt;&lt; 4)) | (0x2u &lt;&lt; 4);</code></pre>
   <div class="card">
     <h3><span class="n">17</span>面向过程 vs 面向对象：自己造车，还是找专业的人</h3>
     <p class="concl"><b>没有它会怎样</b>：外设一多，数据散在一堆全局变量里、函数名越叫越长，改一处要翻遍文件。<b>面向过程</b>是自己从挖矿开始一步步干；<b>面向对象</b>是把活儿拆给发动机厂、轮胎厂，自己只定接口、验收。</p>
-    <pre class="code"><code>// C 的写法：数据和操作分家，函数名得自己带前缀
-struct CPerson { const char* name; int age; };
-void c_eat(CPerson* p) { std::cout &lt;&lt; p-&gt;name &lt;&lt; " 吃饭\n"; }
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
 
-// C++ 的写法：数据和操作捆进一个类
+struct CPerson { const char* name; int age; };
+void c_eat(CPerson* p) { cout &lt;&lt; p-&gt;name &lt;&lt; " 吃饭\n"; }
+
 class Person {
 public:
     const char* name;
     int age;
-    void eat() { std::cout &lt;&lt; name &lt;&lt; " 吃饭\n"; }  // 行为跟着数据走
+    void eat() { cout &lt;&lt; name &lt;&lt; " 吃饭\n"; }
 };
 
 int main() {
     CPerson a{"小明", 20};
-    c_eat(&amp;a);        // 输出：小明 吃饭
+    c_eat(&amp;a);            // 小明 吃饭
     Person b{"小红", 18};
-    b.eat();          // 输出：小红 吃饭
-}
+    b.eat();              // 小红 吃饭
 
-// c_eat(&amp;b);    // 编译报错：error: cannot convert 'Person*' to 'CPerson*'
-                 // 两套写法类型不通用，得按对象那一套来</code></pre>
+    // c_eat(&amp;b);         // 编译报错：cannot convert 'Person*' to 'CPerson*'
+}</code></pre>
     <ul class="pts">
       <li><b>面向过程的特点</b>：开发慢一点，但性能高、看得见每一步。小项目、单片机裸机程序，很多时候这么写最合适。</li>
       <li><b>面向对象的特点</b>：开发快、好扩展，代价是多一点间接开销。十几个外设模块、状态一堆时，用它更好管。</li>
@@ -1160,20 +1351,23 @@ int main() {
   <div class="card">
     <h3><span class="n">18</span>封装：把东西装进盒子，再上一把锁</h3>
     <p class="concl"><b>没有它会怎样</b>：所有成员都敞开，谁都能写 <code>user.id = -999;</code>，等发现数据不对，全工程几百处赋值根本查不出是谁干的。封装 = <b>把东西装进盒子，再上一把锁，只留几扇门</b>。</p>
-    <pre class="code"><code>class User {
-    int id;                                   // 默认 private：外面碰不到
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+class User {
+    int id;                                   // 默认 private
 public:
-    void setId(int v) { if (v &gt; 0) id = v; }  // 门：还能顺手检查合法性
+    void setId(int v) { if (v &gt; 0) id = v; }  // 门：顺手检查合法性
     int  getId() const { return id; }
 };
 
 int main() {
     User u;
-    // u.id = -999;      // 编译报错：error: 'int User::id' is private within this context
+    // u.id = -999;      // 编译报错：'int User::id' is private within this context
     u.setId(100);
-    std::cout &lt;&lt; u.getId();   // 输出：100
-    u.setId(-5);              // 被门拦住，id 不变
-    std::cout &lt;&lt; u.getId();   // 输出：100
+    cout &lt;&lt; u.getId() &lt;&lt; "\n";   // 100
+    u.setId(-5);                 // 被门拦住
+    cout &lt;&lt; u.getId() &lt;&lt; "\n";   // 100
 }</code></pre>
     <ul class="pts">
       <li><b>public</b>：外面能直接用；<b>private</b>：只有类自己的成员函数能用；<b>protected</b>：类和子类能用，没继承时等同 private。</li>
@@ -1188,28 +1382,32 @@ int main() {
   <div class="card">
     <h3><span class="n">19</span>class 与 struct：只差一个默认权限</h3>
     <p class="concl"><b>没有它会怎样</b>：C 的 struct 默认全公开，照搬到 C++ 里如果也敞开，封装就白做了。C++ 保留 struct 是为了兼容 C（默认 public），新写的类用 class（默认 private）——<b>两个关键字只差这一条默认权限</b>。</p>
-    <pre class="code"><code>class User {
-    int id;                 // 没写权限：class 默认 private
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+class User {
+    int id;                 // class 默认 private
 public:
     void setId(int mid);
     int  getId();
 };
 
-// 类外实现：函数名前必须加 类名::
-void User::setId(int mid) { id = mid; }
+void User::setId(int mid) { id = mid; }   // 类外实现必须加 User::
 int  User::getId() { return id; }
 
-struct Point {
-    int x, y;               // 没写权限：struct 默认 public
-};
+struct Point { int x, y; };                // struct 默认 public
 
 int main() {
-    Point p{3, 4};
-    std::cout &lt;&lt; p.x + p.y;  // 输出：7
-}
+    User u;
+    u.setId(5);
+    cout &lt;&lt; u.getId() &lt;&lt; "\n";   // 5
 
-// void setId(int mid) { id = mid; }   // 忘了 User::
-// 编译报错：error: 'id' was not declared in this scope</code></pre>
+    Point p{3, 4};
+    cout &lt;&lt; p.x + p.y &lt;&lt; "\n";   // 7
+
+    // void setId(int mid) { id = mid; }
+    // 编译报错：'id' was not declared in this scope
+}</code></pre>
     <ul class="pts">
       <li><b>忘了 <code>User::</code></b>：写出来的就是普通全局函数，碰不到类的成员；编译器会在 <code>id</code> 这一行报"未声明"。</li>
       <li><b>工程里的常规拆法</b>：<code>Demo.h</code> 放类声明（加 <code>#pragma once</code>），<code>Demo.cpp</code> 写 <code>Demo::</code> 实现，<code>main.cpp</code> 只 include 头文件。</li>
@@ -1223,22 +1421,24 @@ int main() {
   <div class="card">
     <h3><span class="n">20</span>构造函数：对象一出生就自动跑的那段</h3>
     <p class="concl"><b>没有它会怎样</b>：C 里 <code>struct Point p;</code> 之后 x、y 是垃圾值，每个对象创建后都得手动赋值，忘一个就带着随机数跑。构造函数就是<b>对象一出厂自动执行的出厂设置</b>：名字和类名一样、没有返回值、可以重载。</p>
-    <pre class="code"><code>class Demo {
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+class Demo {
     int a;
 public:
-    Demo()      { a = 0; std::cout &lt;&lt; "无参构造\n"; }
-    Demo(int v) { a = v; std::cout &lt;&lt; "有参构造 " &lt;&lt; a &lt;&lt; "\n"; }
+    Demo()      { a = 0; cout &lt;&lt; "无参构造\n"; }
+    Demo(int v) { a = v; cout &lt;&lt; "有参构造 " &lt;&lt; a &lt;&lt; "\n"; }
 };
 
 int main() {
-    Demo x;        // 输出：无参构造
-    Demo y(10);    // 输出：有参构造 10
-    Demo z = 30;   // 输出：有参构造 30（单参隐式转换，卡 25 讲为什么危险）
-}
-// 为什么是这个顺序：main 按书写顺序执行，一个对象触发一次构造
+    Demo x;        // 无参构造
+    Demo y(10);    // 有参构造 10
+    Demo z = 30;   // 有参构造 30（单参隐式转换，卡 25 讲为什么危险）
 
-// 只写了 Demo(int) 却想写 Demo d;
-// 编译报错：error: no matching function for call to 'Demo::Demo()'</code></pre>
+    // 只写 Demo(int) 却写 Demo d; 会报：
+    // no matching function for call to 'Demo::Demo()'
+}</code></pre>
     <ul class="pts">
       <li><b>默认构造会失效</b>：只要你自己写了任何一个构造函数，编译器就不再送你那个空的无参构造。</li>
       <li><b>所以两个都写</b>：无参和有参都实现，别人写 <code>Demo d;</code> 才不会突然编译不过（就是上面那条报错）。</li>
@@ -1252,24 +1452,28 @@ int main() {
   <div class="card">
     <h3><span class="n">21</span>拷贝构造：拿一个旧对象，造一个新对象</h3>
     <p class="concl"><b>没有它会怎样</b>：编译器会白送一个"逐成员抄一遍"的拷贝构造，普通成员够用；但它只在<b>用旧对象造新对象</b>时被调用，很多人以为赋值也会走它。拷贝构造 = <b>照着图纸另盖一栋一模一样的房子</b>，不是同一栋房挂两个门牌。</p>
-    <pre class="code"><code>class Demo {
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+class Demo {
 public:
     int a;
-    Demo(int v) { a = v; std::cout &lt;&lt; "有参构造 a=" &lt;&lt; a &lt;&lt; "\n"; }
-    Demo(const Demo&amp; o) { a = o.a; std::cout &lt;&lt; "拷贝构造 a=" &lt;&lt; a &lt;&lt; "\n"; }
-    ~Demo() { std::cout &lt;&lt; "析构 a=" &lt;&lt; a &lt;&lt; "\n"; }
+    Demo(int v) { a = v; cout &lt;&lt; "有参构造 a=" &lt;&lt; a &lt;&lt; "\n"; }
+    Demo(const Demo&amp; o) { a = o.a; cout &lt;&lt; "拷贝构造 a=" &lt;&lt; a &lt;&lt; "\n"; }
+    ~Demo() { cout &lt;&lt; "析构 a=" &lt;&lt; a &lt;&lt; "\n"; }
 };
 
 int main() {
-    Demo x(1);          // 输出：有参构造 a=1
+    Demo x(1);          // 有参构造 a=1
     {
-        Demo y = x;     // 输出：拷贝构造 a=1（旧对象造新对象）
-    }                   // 输出：析构 a=1（y 先走）
-    Demo z(x);          // 输出：拷贝构造 a=1
-    Demo&amp; r = x;        // 不打印：只是第二张纸条，不是新对象
-}                       // 输出：析构 a=1（z 走）、析构 a=1（x 走）
+        Demo y = x;     // 拷贝构造 a=1
+    }                   // 析构 a=1（y 先走）
+    Demo z(x);          // 拷贝构造 a=1
+    Demo&amp; r = x;        // 不起别名，不打印
+    (void)r;
+}                       // 析构 a=1（z 走）、析构 a=1（x 走）
 
-// Demo(Demo o) { }    // 编译报错：error: invalid constructor; you probably meant 'Demo (const Demo&amp;)'</code></pre>
+// Demo(Demo o) { }    // 编译报错：invalid constructor; you probably meant 'Demo (const Demo&amp;)'</code></pre>
     <ul class="pts">
       <li><b>三种常见时机</b>：用旧对象初始化新对象、对象按值传参、对象按值返回（最后一种编译器常会优化掉）。</li>
       <li><b>先定义再赋值不是拷贝构造</b>：<code>Demo y; y = x;</code> 走的是赋值运算，不会打印"拷贝构造"。</li>
@@ -1283,31 +1487,36 @@ int main() {
   <div class="card">
     <h3><span class="n">22</span>浅拷贝与深拷贝：指针成员的生死问题</h3>
     <p class="concl"><b>没有它会怎样</b>：默认拷贝是<b>浅拷贝</b>——指针成员只抄地址，两个对象共用一块堆。像<b>两个人只有一把钥匙</b>：一个人退租把房退了，另一个人手里的钥匙就成了废铁。表现是改一个动两个，析构时二次释放直接崩。</p>
-    <pre class="code"><code>class Demo {
+    <pre class="code"><code>#include &lt;iostream&gt;
+#include &lt;cstring&gt;
+using namespace std;
+
+class Demo {
     char* name;
 public:
     Demo(const char* s) {
         name = new char[strlen(s) + 1];
         strcpy(name, s);
-        std::cout &lt;&lt; "申请 " &lt;&lt; name &lt;&lt; "\n";
+        cout &lt;&lt; "申请 " &lt;&lt; name &lt;&lt; "\n";
     }
     Demo(const Demo&amp; o) {                       // 深拷贝：自己再租一块
         name = new char[strlen(o.name) + 1];
         strcpy(name, o.name);
-        std::cout &lt;&lt; "深拷贝 " &lt;&lt; name &lt;&lt; "\n";
+        cout &lt;&lt; "深拷贝 " &lt;&lt; name &lt;&lt; "\n";
     }
-    ~Demo() { std::cout &lt;&lt; "释放 " &lt;&lt; name &lt;&lt; "\n"; delete[] name; }
+    ~Demo() {
+        cout &lt;&lt; "释放 " &lt;&lt; name &lt;&lt; "\n";
+        delete[] name;
+    }
 };
 
 int main() {
-    Demo a("Tom");   // 输出：申请 Tom
-    Demo b = a;      // 输出：深拷贝 Tom
-}
-// 输出：释放 Tom
-//       释放 Tom   ← 两块不同的内存，各释放一次，安全
+    Demo a("Tom");   // 申请 Tom
+    Demo b = a;      // 深拷贝 Tom
+}                    // 释放 Tom、释放 Tom（两块内存，各释放一次）
 
-// 如果没写深拷贝：两个 name 指向同一块
-// 第二次释放会崩：free(): double free detected in tcache 2</code></pre>
+// 没写深拷贝时两个 name 指向同一块，第二次释放会崩：
+// free(): double free detected in tcache 2</code></pre>
     <ul class="pts">
       <li><b>浅拷贝的后果</b>：改 <code>b.name</code> 连带改掉 <code>a.name</code>；两个析构各释放一次同一块内存，程序直接崩。</li>
       <li><b>深拷贝的做法</b>：先按对方长度 <code>new</code> 一块新的，再 <code>strcpy</code> 过来。</li>
@@ -1322,24 +1531,27 @@ int main() {
   <div class="card">
     <h3><span class="n">23</span>析构函数：对象退房前自动收拾</h3>
     <p class="concl"><b>没有它会怎样</b>：类里有 <code>new</code> 出来的内存，对象销毁时没人还，跑久了 RAM 被吃光——单片机一共就几十 KB，最先出事。析构函数就是<b>退房前自动收拾行李、交钥匙</b>：<code>~类名()</code>，无返回值、不能写 void、不能带参数、不能重载。</p>
-    <pre class="code"><code>class Demo {
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+class Demo {
 public:
     const char* name;
-    Demo(const char* n) : name(n) { std::cout &lt;&lt; "出生 " &lt;&lt; name &lt;&lt; "\n"; }
-    ~Demo() { std::cout &lt;&lt; "退房 " &lt;&lt; name &lt;&lt; "\n"; }
+    Demo(const char* n) : name(n) { cout &lt;&lt; "出生 " &lt;&lt; name &lt;&lt; "\n"; }
+    ~Demo() { cout &lt;&lt; "退房 " &lt;&lt; name &lt;&lt; "\n"; }
 };
 
 int main() {
-    Demo a("a");       // 输出：出生 a
+    Demo a("a");       // 出生 a
     {
-        Demo b("b");   // 输出：出生 b
-        Demo c("c");   // 输出：出生 c
-    }                  // 输出：退房 c、退房 b（后进先出，像叠盘子）
-    Demo d("d");       // 输出：出生 d
-}                      // 输出：退房 d、退房 a（栈清空）
+        Demo b("b");   // 出生 b
+        Demo c("c");   // 出生 c
+    }                  // 退房 c、退房 b（后进先出）
+    Demo d("d");       // 出生 d
+}                      // 退房 d、退房 a
 
-// void ~Demo() { }    // 编译报错：error: return type specification for destructor invalid
-// ~Demo(int x) { }    // 编译报错：error: destructors may not have parameters</code></pre>
+// void ~Demo() { }    // 编译报错：return type specification for destructor invalid
+// ~Demo(int x) { }    // 编译报错：destructors may not have parameters</code></pre>
     <ul class="pts">
       <li><b>栈上的顺序</b>：同一作用域后构造的先析构，先构造的后析构；析构顺序永远和构造相反。</li>
       <li><b>全局对象</b>：main 结束后析构，一般也后进先出，但不同编译器可能略有差别，别依赖它。</li>
@@ -1354,29 +1566,33 @@ int main() {
   <div class="card">
     <h3><span class="n">24</span>初始化列表：成员对象的"有参构造"只能在这儿点</h3>
     <p class="concl"><b>没有它会怎样</b>：成员本身是个对象、又只有带参构造时，函数体里再赋值已经晚了——编译器会先要求它"默认出生"，没有默认构造就直接编译不过。初始化列表 <code>: a(mA), b(mB)</code> 就是<b>盖房子前先按图纸订好材料</b>，而不是先随便盖再拆了重装。</p>
-    <pre class="code"><code>class Part {
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+class Part {
 public:
-    Part(int id) { std::cout &lt;&lt; "Part 构造 " &lt;&lt; id &lt;&lt; "\n"; }
-    ~Part() { std::cout &lt;&lt; "Part 析构\n"; }
+    Part(int id) { cout &lt;&lt; "Part 构造 " &lt;&lt; id &lt;&lt; "\n"; }
+    ~Part() { cout &lt;&lt; "Part 析构\n"; }
 };
 
 class Car {
     Part engine;   // 声明在前：先构造
     Part wheel;    // 声明在后：后构造
 public:
-    Car() : wheel(2), engine(1) { std::cout &lt;&lt; "Car 函数体\n"; }
+    Car() : wheel(2), engine(1) { cout &lt;&lt; "Car 函数体\n"; }
 };
 
-int main() { Car c; }
+int main() {
+    Car c;
+}
 // 输出：Part 构造 1
 //       Part 构造 2      ← 按声明顺序，不按列表书写顺序
 //       Car 函数体
 //       Part 析构
 //       Part 析构        ← 析构顺序和构造相反
 
-// 成员只有 Part(int)，却想在函数体里赋值：
 // class Car { Part p; public: Car() { p = Part(1); } };
-// 编译报错：error: no matching function for call to 'Part::Part()'</code></pre>
+// 编译报错：no matching function for call to 'Part::Part()'</code></pre>
     <ul class="pts">
       <li><b>构造顺序</b>：先按成员在类里的<b>定义顺序</b>构造，和初始化列表的书写顺序无关；最后才执行自己的函数体。</li>
       <li><b>析构顺序</b>：和构造相反，先析构自己，再析构成员对象。</li>
@@ -1390,17 +1606,20 @@ int main() { Car c; }
   <div class="card">
     <h3><span class="n">25</span>explicit 与默认成员函数：今天最容易踩的四个坑</h3>
     <p class="concl"><b>没有它会怎样</b>：单参构造默认允许隐式转换，<code>Dept d = 100;</code> 这种像赋值的写法、甚至函数传参 <code>show(100)</code> 都会偷偷造对象，写错了编译器还帮你圆。<code>explicit</code> 就是<b>门禁必须刷卡</b>：想进门，老老实实写 <code>Dept(100)</code>。</p>
-    <pre class="code"><code>class Dept {
+    <pre class="code"><code>#include &lt;iostream&gt;
+using namespace std;
+
+class Dept {
 public:
     explicit Dept(int id) { did = id; }
     int did;
 };
 
-void show(Dept d) { std::cout &lt;&lt; d.did &lt;&lt; "\n"; }
+void show(Dept d) { cout &lt;&lt; d.did &lt;&lt; "\n"; }
 
 int main() {
-    show(Dept(100));   // 输出：100（明确造对象）
-    // show(100);      // 编译报错：error: could not convert '100' from 'int' to 'Dept'
+    show(Dept(100));   // 100
+    // show(100);      // 编译报错：could not convert '100' from 'int' to 'Dept'
     // Dept d = 100;   // 同样被挡住
 }</code></pre>
     <ul class="pts">
@@ -1412,6 +1631,86 @@ int main() {
     </ul>
     <p class="keep">记住这句就行：单参构造加 explicit，指针成员自己写拷贝和析构，能挡掉今天一半的坑。</p>
     <p class="terms">术语对照：<code>explicit</code> 读作"显式的"，挡掉的叫「隐式转换（implicit conversion）」；编译器白送的这几个合称「默认成员函数」。</p>
+  </div>
+
+  <div class="sec-title" id="task3">Day 3 · 今天动手</div>
+  <p class="sec-desc">今天两个任务是一组对照实验：先故意不写深拷贝，亲眼看到崩溃；再补上深拷贝，看同样的代码为什么就安全了。都在本机跑，不用开发板。</p>
+
+  <div class="card">
+    <h3>任务 1 · 故意不写深拷贝，看双重释放</h3>
+    <p class="concl"><b>目标</b>：写一个带 <code>char*</code> 成员的类，不写拷贝构造，让 <code>A b = a;</code> 触发两次 <code>delete[]</code>，亲眼看到进程崩溃。</p>
+    <pre class="code"><code>#include &lt;iostream&gt;
+#include &lt;cstring&gt;
+using namespace std;
+
+class A {
+public:
+    char* name;
+    A(const char* s) {                       // 构造：自己租一块
+        name = new char[strlen(s) + 1];
+        strcpy(name, s);
+        cout &lt;&lt; "申请 " &lt;&lt; name &lt;&lt; endl;
+    }
+    // 故意不写拷贝构造：编译器只做浅拷贝
+    ~A() {
+        cout &lt;&lt; "释放" &lt;&lt; endl;
+        delete[] name;                       // 同一块内存被退两次
+    }
+};
+
+int main() {
+    A a("Tom");
+    A b = a;      // 浅拷贝：b.name 和 a.name 指向同一块
+    cout &lt;&lt; "b 也用 " &lt;&lt; b.name &lt;&lt; endl;
+}</code></pre>
+    <p class="terms"><b>预期看到</b>（本机 g++ 实测）：</p>
+    <pre class="code"><code>申请 Tom
+b 也用 Tom
+释放
+释放</code></pre>
+    <p class="check-tip">崩溃怎么读：最后一行 <code>释放</code> 之后程序直接退出，控制台不一定再打印别的。本机实测退出码 <b>3221226356</b>，即十六进制 <b>0xC0000374</b>（STATUS_HEAP_CORRUPTION，堆损坏）。两次「释放」说明两个对象都析构了，但只有一次 <code>new[]</code>——第二次 <code>delete[]</code> 退的是已经退过的同一块，这就是 double free。Linux/glibc 下常见 <code>free(): double free detected in tcache 2</code>；VS 调试器里可能弹 <code>Critical error detected c0000374</code>。看到这个码，先想"同一块内存释放了两次"。</p>
+    <label class="taskdone"><input type="checkbox" data-task="d3t1"><span>做完了，勾上</span></label>
+  </div>
+
+  <div class="card">
+    <h3>任务 2 · 补上深拷贝，同样的代码不再崩</h3>
+    <p class="concl"><b>目标</b>：在任务 1 的类里补一个拷贝构造，让 <code>b</code> 自己再租一块内存，再跑一遍对比结果。</p>
+    <pre class="code"><code>#include &lt;iostream&gt;
+#include &lt;cstring&gt;
+using namespace std;
+
+class A {
+public:
+    char* name;
+    A(const char* s) {
+        name = new char[strlen(s) + 1];
+        strcpy(name, s);
+        cout &lt;&lt; "申请 " &lt;&lt; name &lt;&lt; endl;
+    }
+    A(const A&amp; o) {                          // 深拷贝：自己再租一块
+        name = new char[strlen(o.name) + 1];
+        strcpy(name, o.name);
+        cout &lt;&lt; "深拷贝 " &lt;&lt; name &lt;&lt; endl;
+    }
+    ~A() {
+        cout &lt;&lt; "释放 " &lt;&lt; name &lt;&lt; endl;
+        delete[] name;
+    }
+};
+
+int main() {
+    A a("Tom");
+    A b = a;
+    cout &lt;&lt; "a=" &lt;&lt; a.name &lt;&lt; " b=" &lt;&lt; b.name &lt;&lt; endl;
+}</code></pre>
+    <p class="terms"><b>预期看到</b>（本机 g++ 实测）：</p>
+    <pre class="code"><code>申请 Tom
+深拷贝 Tom
+a=Tom b=Tom
+释放 Tom
+释放 Tom</code></pre>
+    <p class="keep">对比任务 1：多了一行「深拷贝」，说明 <code>b</code> 自己租了一块；两次「释放」各退各的，进程正常结束。</p>
+    <label class="taskdone"><input type="checkbox" data-task="d3t2"><span>做完了，勾上</span></label>
   </div>
 
   <div class="gloss">
@@ -1527,21 +1826,21 @@ single: [
       '让变量不能被修改'
     ],
     ans: 1,
-    why: 'volatile 只负责"别缓存、别优化掉"，常见于寄存器指针、中断共享变量、DMA 缓冲区。它不保证原子性；不想被改的是 const，不是 volatile。'
+    why: 'volatile 只负责"别缓存、别优化掉"，常见于多线程共享标志、寄存器指针、中断共享变量、DMA 缓冲区（后三种以后有板子再看）。它不保证原子性；不想被改的是 const，不是 volatile。'
   },
   {
     id: 'd2s15',
     day: 'day2',
-    code: 'volatile unsigned char flag = 0;\n// 中断服务函数里：flag = 1;\n\nint main() {\n    while (!flag) { }\n    // 等中断把 flag 置 1\n}',
+    code: 'volatile int flag = 0;\n// 另一个线程 100ms 后：flag = 1;\n\nint main() {\n    while (!flag) { }\n    // 等另一个线程把 flag 置 1\n}',
     q: '如果 flag 不加 <code>volatile</code>，可能出什么问题？',
     options: [
       '编译不过',
       '编译器可能把 flag 缓存进寄存器，while 变成永远退不出的死循环',
-      '中断进不来',
+      '另一个线程改不了 flag',
       'flag 会变成随机值'
     ],
     ans: 1,
-    why: '主循环里 flag 一直没人"在眼皮底下"改，编译器可能只读一次就反复用旧值。加了 volatile 才会每次都去内存读，能看到中断里改的新值。'
+    why: '主循环里 flag 一直没人"在眼皮底下"改，编译器可能只读一次就反复用旧值。加了 volatile 才会每次都去内存读，能看到另一个线程改的新值。'
   },
   {
     id: 'd2s16',
@@ -1843,7 +2142,7 @@ single: [
       'endl 只能用在文件里，\'\\n\' 只能用在屏幕上'
     ],
     ans: 1,
-    why: '冲水（flush）就是把攒在管子里的字立刻推出去。endl 每用一次就冲一次，串口那头就得等一次硬件；\'\\n\' 只换行，攒够了一起走。'
+    why: '冲水（flush）就是把攒在管子里的字立刻推出去。endl 每用一次就冲一次，往文件或终端连续输出时明显变慢；\'\\n\' 只换行，攒够了一起走。'
   },
   {
     id: 's09',
@@ -2188,7 +2487,7 @@ single: [
       'const 完全不占内存'
     ],
     ans: 2,
-    why: '#define 是预处理阶段的文字替换，没有类型，出错时报错信息会指向替换后的怪代码，调试器也看不到这个名字。const 是真变量，有类型、有作用域。至于占不占内存，得看用法：全局 const 数组通常进 flash，本来就不占 RAM，光加 const 并不能保证"完全不占"。'
+    why: '#define 是预处理阶段的文字替换，没有类型，出错时报错信息会指向替换后的怪代码，调试器也看不到这个名字。const 是真变量，有类型、有作用域。至于占不占内存，得看用法：全局 const 数组通常被放进只读数据段；在板子上它才会进一步放进 flash、不占 RAM（以后再看），光加 const 并不能保证"完全不占"。'
   },
   {
     id: 'd2s09',
@@ -2422,7 +2721,7 @@ fill: [
     q: '<code>endl</code> 比 <code>\'\\n\'</code> 多做了一个动作，填 <b>flush</b> 或「冲水」「刷新」。',
     answers: ['flush', 'flush()', '刷新', '刷新缓冲区', '冲水'],
     display: 'flush（冲水：把管子里的字立刻推出去）',
-    why: 'endl 先换个行，再冲一次水，把攒着的字立刻送出去；\'\\n\' 只换行不冲水，攒够了一起走。串口每冲一次都要等硬件，所以打印多行时 \'\\n\' 更快。'
+    why: 'endl 先换个行，再冲一次水，把攒着的字立刻送出去；\'\\n\' 只换行不冲水，攒够了一起走。往文件或终端连续输出时，每行都冲一次水会明显变慢。'
   },
   {
     id: 'f09',
@@ -2498,9 +2797,9 @@ judge: [
   {
     id: 'd2j91',
     day: 'day2',
-    q: '<code>volatile</code> 能保证中断和主循环同时改变量时不丢数据。',
+    q: '<code>volatile</code> 能保证两个线程同时改变量时不丢数据。',
     ans: 1,
-    why: '不能。volatile 只保证每次都真去内存读，<code>n++</code> 这种"读-改-写"仍然可能被打断，导致丢更新。要安全得关中断或用原子操作。'
+    why: '不能。volatile 只保证每次都真去内存读，<code>n++</code> 这种"读-改-写"仍然可能被打断，导致丢更新。要安全得用 std::atomic 或加锁。'
   },
   {
     id: 'd2j92',
@@ -2605,7 +2904,7 @@ judge: [
     day: 'day1',
     q: '<code>endl</code> 和 <code>\'\\n\'</code> 完全一样，都是换行。',
     ans: 1,
-    why: 'endl 除了换行还会冲一次水，强制把攒着的字推出去；\'\\n\' 只换行。串口这种每冲一次都要等的地方，差别很明显。'
+    why: 'endl 除了换行还会冲一次水，强制把攒着的字推出去；\'\\n\' 只换行。往文件或终端连续输出时，这个差别会越积越明显。'
   },
   {
     id: 'j04',
@@ -3506,6 +3805,29 @@ document.querySelectorAll('pre.code > code').forEach(function (node) {
 startRound(TRACKS.d1);
 startRound(TRACKS.d2);
 startRound(TRACKS.d3);
+
+/* ============================================================
+   今天动手：勾选状态存本机（键名独立，不和题库、AI 配置冲突）
+   ============================================================ */
+var TASK_STORE = 'cpp_task_done_v1';
+var TASK_DONE = (function () {
+  try {
+    var raw = localStorage.getItem(TASK_STORE);
+    var o = raw ? JSON.parse(raw) : null;
+    return o && typeof o === 'object' ? o : {};
+  } catch (e) {
+    return {};
+  }
+})();
+
+document.querySelectorAll('input[data-task]').forEach(function (cb) {
+  var id = cb.getAttribute('data-task');
+  cb.checked = !!TASK_DONE[id];
+  cb.addEventListener('change', function () {
+    TASK_DONE[id] = cb.checked;
+    try { localStorage.setItem(TASK_STORE, JSON.stringify(TASK_DONE)); } catch (e) {}
+  });
+});
 
 /* ============================================================
    AI 问答（和函数卡页面共用同一份配置 cpp_ai_cfg_v1）
