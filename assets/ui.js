@@ -50,6 +50,7 @@
     writeJson(LV_STORE, LV);
     paintCard(cardId);
     paintToc();
+    paintRail();
   }
   function dayOfCard(cardId) {
     var m = /^d(\d)c/.exec(cardId);
@@ -311,18 +312,33 @@
   }
 
   /* ---------------- 顶部标题 / 进度 ---------------- */
+  function totalCards() {
+    var t = 0;
+    SYL.forEach(function (m) { t += (m.cards || 0); });
+    return t;
+  }
+  function passedTotal() {
+    var n = 0;
+    Object.keys(LV).forEach(function (id) { if (isPassed(id)) n++; });
+    return n;
+  }
+
   function paintDeckHead() {
-    var meta = metaOf(ST.day);
+    var meta = metaOf(ST.day) || {};
     var n = cardCount(ST.day);
     var cur = n ? Math.min(ST.idx, n - 1) + 1 : 0;
-    var title = document.getElementById('deckTitle');
+    var card = cardsOf(ST.day)[ST.idx];
+
     var qi = document.getElementById('qi');
     var qt = document.getElementById('qt');
     var bar = document.getElementById('deckBar');
     var wrap = document.getElementById('deckBarWrap');
     var ov = document.getElementById('ovBtn');
     var dt = document.getElementById('drawerTitle');
-    if (title) title.textContent = meta ? (meta.nav || meta.title || meta.id) : ST.day;
+    var sub = document.getElementById('deckSub');
+    var hero = document.getElementById('deckTitle');
+    var eyebrow = document.getElementById('heroEyebrow');
+
     if (qi) qi.textContent = String(cur || 1);
     if (qt) qt.textContent = String(n);
     if (bar) bar.style.width = (n ? cur / n * 100 : 0) + '%';
@@ -332,6 +348,74 @@
     }
     if (ov) ov.textContent = '今天 ' + n + ' 张 ▾';
     if (dt) dt.textContent = '今天 ' + n + ' 张';
+
+    /* 大标题 = 当前这张卡的标题；卡内 h3 不再重复 */
+    if (hero) hero.textContent = card ? card.title : (meta.title || ST.day);
+    if (eyebrow) eyebrow.textContent = meta.nav || meta.title || ST.day;
+    if (sub) sub.textContent = meta.nav || meta.title || ST.day;
+
+    var cd = document.getElementById('crumbDay');
+    if (cd) {
+      cd.textContent = meta.nav || meta.id || ST.day;
+      cd.setAttribute('href', '#' + ST.day);
+    }
+    var ct = document.getElementById('crumbTrack');
+    if (ct) ct.setAttribute('href', '#' + ST.day);
+    var cc = document.getElementById('crumbCard');
+    if (cc) cc.textContent = '第 ' + (cur || 1) + ' 张';
+
+    paintRail();
+  }
+
+  /* 右侧「今天进度」：全局第 X/30 张 + 当前卡三关状态 */
+  function paintRail() {
+    var n = cardCount(ST.day);
+    var meta = metaOf(ST.day) || {};
+    var card = cardsOf(ST.day)[ST.idx];
+    var total = totalCards();
+    var before = 0;
+    for (var i = 0; i < SYL.length; i++) {
+      if (SYL[i].id === ST.day) break;
+      before += (SYL[i].cards || 0);
+    }
+    var gi = Math.min(before + ST.idx + 1, total);
+
+    var dEl = document.getElementById('railDay');
+    var iEl = document.getElementById('railIdx');
+    var tEl = document.getElementById('railTotal');
+    var bEl = document.getElementById('railBar');
+    var tip = document.getElementById('railTip');
+    var rbtn = document.getElementById('railNext');
+    if (dEl) dEl.textContent = meta.nav || meta.id || ST.day;
+    if (iEl) iEl.textContent = String(gi);
+    if (tEl) tEl.textContent = String(total);
+    if (bEl) bEl.style.width = (total ? gi / total * 100 : 0) + '%';
+
+    var o = card ? lvOf(card.id) : {};
+    Array.prototype.forEach.call(document.querySelectorAll('#railLvs .rlv'), function (el) {
+      el.classList.toggle('on', !!o[el.getAttribute('data-lv')]);
+    });
+
+    var cnt = card ? lvCount(card.id) : 0;
+    if (tip) {
+      tip.textContent = !card ? '这一天的内容还在加载…'
+        : cnt === 3 ? '这张卡三关都过了，接着下一张。'
+        : cnt === 0 ? '先读讲解，再自己敲一遍。'
+        : (cnt === 2 ? '就差最后一关了。' : '还差 ' + (3 - cnt) + ' 关，读完、跑过、做对题才算过。');
+    }
+    var hs = document.getElementById('heroState');
+    if (hs) {
+      hs.textContent = !card ? '加载中' : cnt === 3 ? '已通过' : cnt === 0 ? '未开始' : '进行中';
+      hs.className = 'pill pill-run' + (cnt === 3 ? ' done' : cnt === 0 ? ' idle' : '');
+    }
+
+    if (rbtn) {
+      var last = n > 0 && ST.idx >= n - 1;
+      rbtn.textContent = last ? '今天刷完' : '继续下一张';
+      rbtn.classList.toggle('done', last);
+    }
+    var tp = document.getElementById('tnProg');
+    if (tp) tp.textContent = '已过 ' + passedTotal() + '/' + total;
   }
 
   /* 只渲染当前这一张：innerHTML 覆盖，不追加 */
@@ -773,6 +857,35 @@
     var next = document.getElementById('nextBtn');
     if (prev) prev.addEventListener('click', function () { step(-1); });
     if (next) next.addEventListener('click', function () { step(1); });
+
+    /* 讲解 / 练习 tab：不销毁卡片，只切当前视图并滚到对应区块 */
+    var tabL = document.getElementById('tabLearn');
+    var tabP = document.getElementById('tabPractice');
+    function setTab(which) {
+      var learn = which === 'learn';
+      if (tabL) {
+        tabL.classList.toggle('on', learn);
+        tabL.setAttribute('aria-selected', learn ? 'true' : 'false');
+      }
+      if (tabP) {
+        tabP.classList.toggle('on', !learn);
+        tabP.setAttribute('aria-selected', learn ? 'false' : 'true');
+      }
+      var target = learn ? document.getElementById(ST.day)
+        : document.getElementById('practice' + ST.day.slice(3));
+      if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    if (tabL) tabL.addEventListener('click', function () { setTab('learn'); });
+    if (tabP) tabP.addEventListener('click', function () { setTab('practice'); });
+
+    /* 右栏主按钮：与底部「下一张」同一套逻辑 */
+    var railBtn = document.getElementById('railNext');
+    if (railBtn) railBtn.addEventListener('click', function () { step(1); });
+
+    var bell = document.getElementById('tnBell');
+    if (bell) bell.addEventListener('click', function () {
+      toast('没有新通知。今天的 ' + cardCount(ST.day) + ' 张卡在左侧目录里。');
+    });
 
     var ov = document.getElementById('ovBtn');
     if (ov) ov.addEventListener('click', openDrawer);

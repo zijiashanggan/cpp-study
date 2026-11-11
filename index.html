@@ -3,54 +3,45 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="color-scheme" content="dark">
-<meta name="theme-color" content="#0d1117">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
 <title>C++ 前三天重点 + 练习</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230d1117'/%3E%3Ctext x='16' y='22' font-size='15' text-anchor='middle' fill='%235eead4' font-family='monospace'%3EC%2B%2B%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23130B43'/%3E%3Ctext x='16' y='22' font-size='15' text-anchor='middle' fill='%23ffffff' font-family='monospace'%3EC%2B%2B%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/style.css">
 </head>
 <body>
 <div id="bar"></div>
 
+<header class="topnav" id="topnav">
+  <div class="tn-inner">
+    <a class="brand" href="#day1" aria-label="C++ 前三天 · 回到 Day 1">
+      <span class="brand-mark" aria-hidden="true">C++</span>
+      <span class="brand-name">cpp<span>·</span>study</span>
+    </a>
+    <nav class="tn-links" aria-label="主导航">
+      <a href="#day1">学习</a>
+      <a href="#practice1">练习</a>
+      <a href="#task1">动手</a>
+    </nav>
+    <div class="tn-right">
+      <span class="tn-prog" id="tnProg">已过 0/30</span>
+      <button class="tn-ic" id="tnBell" type="button" aria-label="通知">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
+      </button>
+      <span class="tn-avatar" title="学习者" aria-hidden="true">C</span>
+    </div>
+  </div>
+</header>
+
 <div class="wrap">
   <noscript><div class="load-err">这个页面需要开启 JavaScript：卡片和练习是按天从 data/ 目录加载的。开启后刷新即可。</div></noscript>
-  <header>
-    <div class="head-top">
-      <div>
-        <h1>C++ 前三天重点 + 练习</h1>
-        <p class="sub">给刚学完 C、正在转 C++ 的嵌入式初学者：先吃透引用和内存，再把类、构造、析构这条线串起来。所有示例都能在电脑上直接编译运行，不需要开发板；等以后有板子，再回来看标了「以后有板子再看」的部分。</p>
-        <p class="only">本页只保留当前阶段必学内容，其余等学完对象生命周期再补。</p>
-      </div>
-      <div class="head-btns">
-        <button class="again" id="againTop1">Day 1 刷题</button>
-        <button class="again" id="againTop2">Day 2 刷题</button>
-        <button class="again" id="againTop3">Day 3 刷题</button>
-      </div>
-    </div>
-    <div class="tags">
-      <span class="tag">C 已学完</span>
-      <span class="tag">嵌入式方向</span>
-      <span class="tag">Day 1</span>
-      <span class="tag">Day 2</span>
-      <span class="tag">Day 3</span>
-      <span class="tag">Day 1 题库 56 道</span>
-      <span class="tag">Day 2 题库 38 道</span>
-      <span class="tag">Day 3 题库 41 道</span>
-      <span class="tag">三套练习各自独立</span>
-      <span class="tag">动手任务无需开发板</span>
-    </div>
-    <div class="nav">
-      <a href="#day1">Day 1 · 引用</a>
-      <a href="#day2">Day 2 · 内存 / 类型</a>
-      <a href="#day3">Day 3 · 类与对象</a>
-      <a href="#practice1">Day 1 练习</a>
-      <a href="#practice2">Day 2 练习</a>
-      <a href="#practice3">Day 3 练习</a>
-      <a href="#task1">Day 1 动手</a>
-      <a href="#task2">Day 2 动手</a>
-      <a href="#task3">Day 3 动手</a>
-    </div>
-  </header>
+
+  <nav class="crumbs" aria-label="面包屑">
+    <a href="#topnav" id="crumbRoot">轨道</a><i aria-hidden="true">/</i>
+    <a href="#day1" id="crumbTrack">C++</a><i aria-hidden="true">/</i>
+    <a href="#day1" id="crumbDay">Day 1</a><i aria-hidden="true">/</i>
+    <span class="crumb-cur" id="crumbCard" aria-current="page">第 1 张</span>
+  </nav>
 
   <div class="layout">
     <aside class="toc" id="toc" aria-label="卡片目录">
@@ -62,87 +53,156 @@
     </aside>
 
     <main class="stage" id="stage">
-      <section class="deck" id="day1" aria-label="卡片">
-        <div class="deck-head">
-          <div class="deck-title" id="deckTitle">Day 1</div>
-          <div class="deck-meta">
-            <span class="qidx">第 <b id="qi">1</b> 张 / 共 <span id="qt">6</span> 张</span>
-            <button class="ovbtn" id="ovBtn" type="button" aria-haspopup="dialog" aria-controls="drawer">今天 6 张 ▾</button>
+      <div class="pagegrid">
+        <section class="hero" aria-labelledby="deckTitle">
+          <div class="hero-ill" aria-hidden="true"><i class="ill-tr t1"></i><i class="ill-tr t2"></i><i class="ill-cloud"></i></div>
+          <div class="hero-txt">
+            <p class="hero-eyebrow" id="heroEyebrow">Day 1 · 引用</p>
+            <h1 id="deckTitle">正在加载…</h1>
+            <div class="hero-pills">
+              <span class="pill pill-run" id="heroState">进行中</span>
+              <span class="pill">教程</span>
+            </div>
+            <div class="tabs" role="tablist" aria-label="讲解与练习">
+              <button class="tab on" id="tabLearn" role="tab" aria-selected="true" type="button">讲解</button>
+              <button class="tab" id="tabPractice" role="tab" aria-selected="false" type="button">练习</button>
+            </div>
+            <nav class="nav" aria-label="页面锚点">
+              <a href="#day1">Day 1</a><a href="#day2">Day 2</a><a href="#day3">Day 3</a>
+              <a href="#practice1">Day 1 练习</a><a href="#practice2">Day 2 练习</a><a href="#practice3">Day 3 练习</a>
+              <a href="#task1">Day 1 动手</a><a href="#task2">Day 2 动手</a><a href="#task3">Day 3 动手</a>
+            </nav>
           </div>
+        </section>
+
+        <section class="deck" id="day1" aria-label="卡片">
+          <div class="deck-head">
+            <div class="deck-title" id="deckSub">Day 1</div>
+            <div class="deck-meta">
+              <span class="qidx">第 <b id="qi">1</b> 张 / 共 <span id="qt">6</span> 张</span>
+              <button class="ovbtn" id="ovBtn" type="button" aria-haspopup="dialog" aria-controls="drawer">今天 6 张 ▾</button>
+            </div>
+          </div>
+          <div class="deck-bar" id="deckBarWrap" role="progressbar" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1" aria-label="当天卡片进度"><i id="deckBar"></i></div>
+          <div class="deck-card" id="cardHost"><div class="load-tip">正在加载 Day 1 的内容…</div></div>
+        </section>
+
+        <aside class="rail" id="rail" aria-label="今天进度">
+          <div class="rail-card">
+            <div class="rail-head">
+              <b>今天进度</b>
+              <span class="rail-badge" id="railDay">Day 1</span>
+            </div>
+            <p class="rail-num">第 <b id="railIdx">1</b><span>/<span id="railTotal">30</span> 张</span></p>
+            <div class="rail-track" aria-hidden="true"><i id="railBar"></i></div>
+            <div class="rail-lvs" id="railLvs">
+              <span class="rlv" data-lv="read"><i></i>读讲解</span>
+              <span class="rlv" data-lv="do"><i></i>跑代码</span>
+              <span class="rlv" data-lv="quiz"><i></i>过题</span>
+            </div>
+            <p class="rail-tip" id="railTip">先读讲解，再自己敲一遍。</p>
+            <button class="rail-btn" id="railNext" type="button">继续下一张</button>
+          </div>
+          <div class="rail-card rail-mini">
+            <b>换一天 / 刷题</b>
+            <p>三天各自独立计分，切换只影响当前这一屏。</p>
+            <div class="rail-brush">
+              <button class="again" id="againTop1" type="button">Day 1 刷题</button>
+              <button class="again" id="againTop2" type="button">Day 2 刷题</button>
+              <button class="again" id="againTop3" type="button">Day 3 刷题</button>
+            </div>
+          </div>
+          <details class="rail-card about">
+            <summary>这份页面在讲什么</summary>
+            <p class="sub">给刚学完 C、正在转 C++ 的嵌入式初学者：先吃透引用和内存，再把类、构造、析构这条线串起来。所有示例都能在电脑上直接编译运行，不需要开发板；等以后有板子，再回来看标了「以后有板子再看」的部分。</p>
+            <p class="only">本页只保留当前阶段必学内容，其余等学完对象生命周期再补。</p>
+            <div class="tags">
+              <span class="tag">C 已学完</span>
+              <span class="tag">嵌入式方向</span>
+              <span class="tag">Day 1</span>
+              <span class="tag">Day 2</span>
+              <span class="tag">Day 3</span>
+              <span class="tag">Day 1 题库 56 道</span>
+              <span class="tag">Day 2 题库 38 道</span>
+              <span class="tag">Day 3 题库 41 道</span>
+              <span class="tag">三套练习各自独立</span>
+              <span class="tag">动手任务无需开发板</span>
+            </div>
+          </details>
+        </aside>
+
+        <div class="below">
+          <div class="day-part" data-day="day1">
+            <section class="tasks" id="task1"></section>
+            <div class="gloss-wrap" id="gloss1"></div>
+          </div>
+          <div class="day-part" data-day="day2" hidden>
+            <section class="tasks" id="task2"></section>
+            <div class="gloss-wrap" id="gloss2"></div>
+          </div>
+          <div class="day-part" data-day="day3" hidden>
+            <section class="tasks" id="task3"></section>
+            <div class="gloss-wrap" id="gloss3"></div>
+          </div>
+
+          <div class="day-part" data-day="day1">
+            <div class="sec-title pr-title" id="practice1">Day 1 练习<span class="pr-tag">只抽 Day 1 的题 · 独立计分</span></div>
+            <p class="sec-desc">从 Day 1 的 <b>56</b> 道题里随机抽 <b>8 单选 + 4 填空 + 3 判断 + 3 代码</b>，题目顺序和选项都打乱，同一轮不重复。这一套的进度、得分、错题、报告只算 Day 1，和下面 Day 2 那一套互不影响。</p>
+
+            <div class="stats">
+              <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg1">0 / 18</div></div>
+              <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore1">0</div></div>
+              <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate1">—</div></div>
+              <button class="again" id="againBar1">再来一轮</button>
+            </div>
+
+            <div id="qlist1"></div>
+            <div id="summary1"></div>
+          </div>
+
+          <div class="day-part" data-day="day2" hidden>
+            <div class="sec-title pr-title" id="practice2">Day 2 练习<span class="pr-tag">只抽 Day 2 的题 · 独立计分</span></div>
+            <p class="sec-desc">从 Day 2 的 <b>38</b> 道题里随机抽 <b>6 单选 + 3 填空 + 2 判断 + 3 代码</b>，同样打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 2，和上面 Day 1 那一套互不影响。</p>
+
+            <div class="stats">
+              <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg2">0 / 14</div></div>
+              <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore2">0</div></div>
+              <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate2">—</div></div>
+              <button class="again" id="againBar2">再来一轮</button>
+            </div>
+
+            <div id="qlist2"></div>
+            <div id="summary2"></div>
+          </div>
+
+          <div class="day-part" data-day="day3" hidden>
+            <div class="sec-title pr-title" id="practice3">Day 3 练习<span class="pr-tag">只抽 Day 3 的题 · 独立计分</span></div>
+            <p class="sec-desc">从 Day 3 的 <b>41</b> 道题里随机抽 <b>7 单选 + 3 填空 + 3 判断 + 3 代码</b>，打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 3，和 Day 1、Day 2 互不影响。</p>
+
+            <div class="stats">
+              <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg3">0 / 16</div></div>
+              <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore3">0</div></div>
+              <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate3">—</div></div>
+              <button class="again" id="againBar3">再来一轮</button>
+            </div>
+
+            <div id="qlist3"></div>
+            <div id="summary3"></div>
+          </div>
+
+          <section class="check">
+            <h3>怎么判断自己真的会了</h3>
+            <ol>
+              <li><b>关掉所有资料，从空白文件写出 swap，能编译能跑</b> —— 这才叫会。看着网页点头不算。</li>
+              <li><b>能看懂编译器的报错在说什么</b> —— 报错是最便宜的老师，它每次都直说哪一行不对。</li>
+              <li><b>能用人话把这件事讲给一个完全不懂的人听</b> —— 讲不清，就是还没懂。</li>
+            </ol>
+            <p class="check-tip">提醒一句：网页刷题只能暴露盲点，不能替代动手。刷十轮，不如自己从零敲一遍。</p>
+          </section>
+
+          <footer>做完这一页，Day 3 就可以进「继承与多态」了。</footer>
         </div>
-        <div class="deck-bar" id="deckBarWrap" role="progressbar" aria-valuemin="1" aria-valuemax="6" aria-valuenow="1" aria-label="当天卡片进度"><i id="deckBar"></i></div>
-        <div class="deck-card" id="cardHost"><div class="load-tip">正在加载 Day 1 的内容…</div></div>
-      </section>
-
-      <div class="day-part" data-day="day1">
-        <section class="tasks" id="task1"></section>
-        <div class="gloss-wrap" id="gloss1"></div>
       </div>
-      <div class="day-part" data-day="day2" hidden>
-        <section class="tasks" id="task2"></section>
-        <div class="gloss-wrap" id="gloss2"></div>
-      </div>
-      <div class="day-part" data-day="day3" hidden>
-        <section class="tasks" id="task3"></section>
-        <div class="gloss-wrap" id="gloss3"></div>
-      </div>
-
-      <div class="day-part" data-day="day1">
-        <div class="sec-title pr-title" id="practice1">Day 1 练习<span class="pr-tag">只抽 Day 1 的题 · 独立计分</span></div>
-        <p class="sec-desc">从 Day 1 的 <b>56</b> 道题里随机抽 <b>8 单选 + 4 填空 + 3 判断 + 3 代码</b>，题目顺序和选项都打乱，同一轮不重复。这一套的进度、得分、错题、报告只算 Day 1，和下面 Day 2 那一套互不影响。</p>
-
-        <div class="stats">
-          <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg1">0 / 18</div></div>
-          <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore1">0</div></div>
-          <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate1">—</div></div>
-          <button class="again" id="againBar1">再来一轮</button>
-        </div>
-
-        <div id="qlist1"></div>
-        <div id="summary1"></div>
-      </div>
-
-      <div class="day-part" data-day="day2" hidden>
-        <div class="sec-title pr-title" id="practice2">Day 2 练习<span class="pr-tag">只抽 Day 2 的题 · 独立计分</span></div>
-        <p class="sec-desc">从 Day 2 的 <b>38</b> 道题里随机抽 <b>6 单选 + 3 填空 + 2 判断 + 3 代码</b>，同样打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 2，和上面 Day 1 那一套互不影响。</p>
-
-        <div class="stats">
-          <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg2">0 / 14</div></div>
-          <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore2">0</div></div>
-          <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate2">—</div></div>
-          <button class="again" id="againBar2">再来一轮</button>
-        </div>
-
-        <div id="qlist2"></div>
-        <div id="summary2"></div>
-      </div>
-
-      <div class="day-part" data-day="day3" hidden>
-        <div class="sec-title pr-title" id="practice3">Day 3 练习<span class="pr-tag">只抽 Day 3 的题 · 独立计分</span></div>
-        <p class="sec-desc">从 Day 3 的 <b>41</b> 道题里随机抽 <b>7 单选 + 3 填空 + 3 判断 + 3 代码</b>，打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 3，和 Day 1、Day 2 互不影响。</p>
-
-        <div class="stats">
-          <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg3">0 / 16</div></div>
-          <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore3">0</div></div>
-          <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate3">—</div></div>
-          <button class="again" id="againBar3">再来一轮</button>
-        </div>
-
-        <div id="qlist3"></div>
-        <div id="summary3"></div>
-      </div>
-
-      <section class="check">
-        <h3>怎么判断自己真的会了</h3>
-        <ol>
-          <li><b>关掉所有资料，从空白文件写出 swap，能编译能跑</b> —— 这才叫会。看着网页点头不算。</li>
-          <li><b>能看懂编译器的报错在说什么</b> —— 报错是最便宜的老师，它每次都直说哪一行不对。</li>
-          <li><b>能用人话把这件事讲给一个完全不懂的人听</b> —— 讲不清，就是还没懂。</li>
-        </ol>
-        <p class="check-tip">提醒一句：网页刷题只能暴露盲点，不能替代动手。刷十轮，不如自己从零敲一遍。</p>
-      </section>
-
-      <footer>做完这一页，Day 3 就可以进「继承与多态」了。</footer>
     </main>
   </div>
 </div>
