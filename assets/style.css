@@ -1450,7 +1450,7 @@ main.stage {
   margin: 10px 0 8px;
 }
 /* 日期已经在标题区上方显示，这里不再重复一遍 */
-.deck-title { display: none; }
+.deck-title { display: none; color: var(--ink-2); }
 .deck-meta { font-size: 12.5px; color: var(--muted); margin-left: auto; }
 .qidx b { color: var(--purple-ink); font-size: 15px; }
 .ovbtn {
