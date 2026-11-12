@@ -290,6 +290,10 @@
     if (card.concl) h.push('<p class="keep">记住这句就行：' + card.concl + '</p>');
     if (card.terms) h.push('<p class="terms">术语对照：' + card.terms + '</p>');
     h.push(levelsHtml(card));
+    if (card.fn) {
+      var fq = '?f=' + encodeURIComponent(card.fn) + (card.fg ? '&g=' + encodeURIComponent(card.fg) : '');
+      h.push('<p class="fnrow"><a class="fnlink" href="functions.html' + fq + '">去函数卡背这个：<b>' + esc(card.fn) + '</b> →</a></p>');
+    }
     h.push('</div>');
     return h.join('\n');
   }

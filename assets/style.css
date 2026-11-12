@@ -2212,3 +2212,19 @@ html[data-fs="lg"] .rvpanel { zoom: 1.1; }
 .pill2.lv2 { background: #FFF3E2; border-color: #E8CDA4; color: #6B4A12; }
 html[data-eye="1"] .pill2.lv { background: #EDF6E4; border-color: #C6D8B2; color: #2F4A1E; }
 html[data-eye="1"] .pill2.lv2 { background: #FAEFD9; border-color: #E3D0AE; color: #5C430F; }
+
+/* 知识卡底部：去函数卡背这个 */
+.fnrow { margin: 12px 0 0; }
+.fnlink {
+  display: inline-block; max-width: 100%; box-sizing: border-box;
+  padding: 6px 11px; border: 1px solid var(--line); border-radius: 999px;
+  background: var(--surface); color: var(--purple-ink);
+  font-size: 12.5px; line-height: 1.55; text-decoration: none;
+  overflow-wrap: anywhere; word-break: break-word;
+}
+.fnlink b { font-weight: 600; }
+.fnlink:hover { border-color: #C9C2E8; background: var(--lav-2); }
+html[data-eye="1"] .fnlink { background: #FFFCF3; border-color: #E8DCC2; color: #4B34C6; }
+@media (max-width: 600px) {
+  .fnlink { font-size: 12px; padding: 6px 10px; }
+}

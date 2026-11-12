@@ -3602,6 +3602,43 @@ function renderAll(){
 }
 
 renderAll();
+
+/* 深链：?f=名字（可选 &g=分组）—— 从知识卡跳来时直接落到那张卡 */
+(function(){
+  var m = /[?&]f=([^&#]+)/.exec(location.search + location.hash);
+  if(!m) return;
+  var want = "";
+  try { want = decodeURIComponent(m[1]); } catch(e){ want = m[1]; }
+  var gm = /[?&]g=([^&#]+)/.exec(location.search + location.hash);
+  var gWant = "";
+  if(gm){ try { gWant = decodeURIComponent(gm[1]); } catch(e){ gWant = gm[1]; } }
+  var pool = CARDS.concat(typeof CARE !== "undefined" ? CARE : [], typeof LATER !== "undefined" ? LATER : []);
+  var hit = null;
+  for(var i=0;i<pool.length && !hit;i++){
+    var c = pool[i];
+    if(!c || c.name !== want) continue;
+    if(gWant && c.g !== gWant) continue;
+    hit = c;
+  }
+  if(!hit){ toast("函数卡里没找到「" + want + "」"); return; }
+  ses = { mode:"single", queue:[hit], i:0, flip:false };
+  studyEl.classList.remove("hidden");
+  document.body.style.overflow = "hidden";
+  document.getElementById("finish").classList.add("hidden");
+  document.getElementById("flash").style.display = "";
+  document.getElementById("grades").classList.add("hidden");
+  document.getElementById("gradeHint").classList.remove("hidden");
+  renderStudy();
+  document.getElementById("studyMode").innerHTML = "从知识卡跳来 · <b>" + G[hit.g].name + "</b>";
+  document.getElementById("fTag").textContent = "从知识卡跳来 · " + (hit.later ? "了解即可" : "必背");
+  document.getElementById("gradeHint").textContent = "点卡片翻面看讲解；看完点右上角 × 关闭";
+  /* 单卡查看不打分，避免误点改掉函数卡进度 */
+  document.getElementById("grades").addEventListener("click", function(e){
+    e.stopPropagation();
+    e.preventDefault();
+  }, true);
+})();
+
 })();
 </script>
 </body>
