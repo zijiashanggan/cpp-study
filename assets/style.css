@@ -1991,3 +1991,12 @@ footer {
   .nav a { font-size: 11.5px; }
 }
 
+
+/* 超窄屏（<=384px）：顶栏链接改为条内横向滚动，避免 320px 撑破页面；390px 不受影响 */
+@media (max-width: 384px) {
+  .tn-inner { padding: 0 12px; gap: 8px; }
+  .tn-links { min-width: 0; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .tn-links::-webkit-scrollbar { display: none; }
+  .tn-links a { padding: 6px 9px; font-size: 13px; }
+  .tn-right { gap: 6px; }
+}
