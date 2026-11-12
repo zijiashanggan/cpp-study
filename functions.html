@@ -801,8 +801,6 @@ var GROUPS = [
   {id:'vector',name:'C++ std::vector', color:'#a9c1f5'},
   {id:'io',    name:'C++ 输入输出',    color:'#c0a4f7'},
   {id:'tool',  name:'C++ 常用工具',    color:'#c0a4f7'},
-  {id:'cpp',   name:'C++ 类与对象',    color:'#c0a4f7'},
-  {id:'kw',    name:'C++ 关键字与语法', color:'#c0a4f7'},
   {id:'heap',  name:'new / delete 配对', color:'#f0c674'},
   {id:'cstr',  name:'C 字符串',        color:'#5eead4'},
   {id:'cmem',  name:'C 内存',          color:'#5eead4'},
@@ -855,34 +853,34 @@ var D = [
 ['tool','std::find','在一排东西里找一个，找到就把位置指给你。','InputIt std::find(InputIt first, InputIt last, const T& value);','在区间里从头到尾查找 value。','返回：指向第一个相等元素的迭代器；找不到返回 last。','找不到返回的是 last，不是 NULL；判断要写 it != v.end()，直接 *it 就崩。','auto it = std::find(v.begin(), v.end(), 7); if (it != v.end()) puts("有");'],
 ['tool','std::reverse','把一排东西整体掉个头。','void std::reverse(BidirIt first, BidirIt last);','反转区间 [first, last)。','无返回值，原地修改。','s.rbegin()/rend() 是“反向遍历”，不是反转；真要反转得用 std::reverse(s.begin(), s.end())。','std::string s = "abc"; std::reverse(s.begin(), s.end());  // cba'],
 /* ---------- C++ 类与对象（对照学习站 Day 3–4 补卡） ---------- */
-['cpp','sizeof','问一句“这个东西在内存里占几个字节”。','size_t sizeof(类型或表达式);   // 它是运算符，不是函数','求类型、对象或数组占多少字节。','返回：size_t 字节数；类型要加括号，变量可以不加。','sizeof(指针) 永远是指针大小（64 位是 8），不是它指向的数组长度；数组传进函数后退化成指针，sizeof 就不再是数组总长。','int a[10]; printf("%zu\\n", sizeof(a));  // 40', '平台提示：int 在多数平台是 4 字节，但别把 4 写死。'],
-['cpp','explicit','给构造函数上锁，别让一个数字悄悄变成对象。','explicit 类名(参数);','禁止单参数构造的隐式类型转换。','写在构造函数前；只挡隐式转换，显式构造照常。','加了 explicit 后，把 int 直接传给要对象的函数会编不过；想通过就得写 Meter(5)。','class Meter{ public: explicit Meter(int v):v(v){} int v; };','平台提示：老代码里很多单参构造没加，改之前先看调用处。'],
-['cpp','static 成员变量','这个变量不属于某一个对象，而是整个类共用一份。','class A { static 类型 名字; };   类型 A::名字 = 初值;','所有对象共享同一份数据，比如对象计数。','类内声明，类外定义一次；C++17 可以用 inline 直接在类内给初值。','只在类里写 static 不定义，链接时会报 undefined reference；它不是每个对象各一份。','class A{ public: static int n; };  int A::n = 0;'],
-['cpp','static 成员函数','这个函数不用造对象，直接拿类名就能调。','static 返回类型 类名::函数名(参数);','提供和类相关、但不需要对象数据的工具函数。','没有 this；只能访问静态成员。','静态成员函数里写普通成员变量会编不过；调用写 类名::函数()，不用先造对象。','class M{ public: static int add(int a,int b){ return a+b; } };'],
-['cpp','const 成员函数','在函数后面盖个“我只看看，不改”的章。','返回类型 函数名(参数) const;','承诺不修改对象成员；常对象只能调这种函数。','const 写在参数表后面；const 对象只能调 const 成员函数。','忘了写 const，常对象就调不了；在 const 函数里改成员会编不过，除非那个成员是 mutable。','int size() const { return n; }'],
-['cpp','mutable','给某个成员开个小口，const 函数里也能改它。','mutable 类型 名字;','缓存、调用计数这类“逻辑上不算修改对象”的成员。','写在成员声明前；只对 const 成员函数生效。','别拿它绕开 const 承诺乱改业务数据，滥用会让“只读”变成假话。','mutable int calls;'],
-['cpp','operator=','把一个对象的内容，重新装进另一个已经存在的对象里。','类名& operator=(const 类名& other);','自定义赋值行为，尤其是类里有指针时。','返回 *this 的引用才能连等；参数用 const 引用。','不写就由编译器生成浅拷贝，两个对象指向同一块堆，析构时 double free；有指针要自己写深拷贝。','A& operator=(const A& o){ if(this!=&o){ /* 深拷贝 */ } return *this; }'],
-['cpp','this','在成员函数里，指向“正在干活的那个对象”。','this   // 类型是 类名*，const 函数里是 const 类名*','区分同名形参和成员，或者返回对象自己。','成员函数隐含的参数；静态成员函数没有 this。','静态成员函数里不能用 this；返回 *this 时别返回局部对象的引用。','void set(int x){ this->x = x; }'],
-['cpp','friend','给信得过的人一把备用钥匙，允许它直接看私有成员。','friend 返回类型 函数名(参数);   或   friend class 类名;','运算符重载、两个类紧密协作时用。','写在类里；友元不是成员，没有 this。','友元会破坏封装，能不用就不用；友元关系不能继承，也不互相传递。','class Box{ int v; friend int peek(const Box&); };'],
-['cpp','构造函数','对象一造出来，自动执行的那段初始化代码。','类名(参数);   // 没有返回值，名字和类名一样','给成员赋初值、申请资源。','可以重载、可以有默认参数；不写编译器会送一个默认构造。','构造函数不能手动调用 a.A()；有指针成员时记得在初始化列表里置空。','class A{ public: A(int x):x(x){} int x; };'],
-['cpp','拷贝构造函数','用一个已经存在的对象，复制出一个新对象。','类名(const 类名& other);','传值、返回对象、显式复制时调用。','参数必须是 const 引用，否则会无限递归。','默认只做浅拷贝，类里有指针时两个对象指同一块内存，析构 double free；要自己写深拷贝。','A(const A& o){ p = new int(*o.p); }'],
-['cpp','析构函数','对象快没了的时候，自动执行的清理代码。','~类名();   // 无参数、无返回值、不能重载','释放 new 出来的内存、关文件、解锁。','没有参数；一个类只有一个析构函数。','基类析构要写 virtual，否则通过基类指针 delete 派生对象时派生类析构不跑，资源泄漏。','~A(){ delete[] p; }'],
-['cpp','初始化列表','在构造函数冒号后面，直接把成员的初值点好。','类名(参数) : 成员1(值1), 成员2(值2) {}','初始化 const 成员、引用成员和没有默认构造的成员对象。','初始化顺序按成员声明顺序，不按你写的顺序。','成员初始化顺序看声明不看列表；在函数体里赋值，对 const 和引用成员直接编不过。','A(int x):x(x),r(x){}'],
-['cpp','= default / = delete','告诉编译器“这个默认版本我要”，或者“这个版本不许有”。','类名() = default;   类名(const 类名&) = delete;','保留默认行为，或者禁止拷贝、禁止隐式转换。','只能用在特殊成员函数上；= delete 的版本被调用会编不过。','手写一个构造函数后，默认构造就不再自动生成，要补 = default；= delete 是编译期拦住，不是运行时报错。','A() = default;  A(const A&) = delete;'],
+['cstr','sizeof','问一句“这个东西在内存里占几个字节”。','size_t sizeof(类型或表达式);   // 它是运算符，不是函数','求类型、对象或数组占多少字节。','返回：size_t 字节数；类型要加括号，变量可以不加。','sizeof(指针) 永远是指针大小（64 位是 8），不是它指向的数组长度；数组传进函数后退化成指针，sizeof 就不再是数组总长。','int a[10]; printf("%zu\\n", sizeof(a));  // 40', '平台提示：int 在多数平台是 4 字节，但别把 4 写死。'],
+['tool','explicit','给构造函数上锁，别让一个数字悄悄变成对象。','explicit 类名(参数);','禁止单参数构造的隐式类型转换。','写在构造函数前；只挡隐式转换，显式构造照常。','加了 explicit 后，把 int 直接传给要对象的函数会编不过；想通过就得写 Meter(5)。','class Meter{ public: explicit Meter(int v):v(v){} int v; };','平台提示：老代码里很多单参构造没加，改之前先看调用处。'],
+['tool','static 成员变量','这个变量不属于某一个对象，而是整个类共用一份。','class A { static 类型 名字; };   类型 A::名字 = 初值;','所有对象共享同一份数据，比如对象计数。','类内声明，类外定义一次；C++17 可以用 inline 直接在类内给初值。','只在类里写 static 不定义，链接时会报 undefined reference；它不是每个对象各一份。','class A{ public: static int n; };  int A::n = 0;'],
+['tool','static 成员函数','这个函数不用造对象，直接拿类名就能调。','static 返回类型 类名::函数名(参数);','提供和类相关、但不需要对象数据的工具函数。','没有 this；只能访问静态成员。','静态成员函数里写普通成员变量会编不过；调用写 类名::函数()，不用先造对象。','class M{ public: static int add(int a,int b){ return a+b; } };'],
+['tool','const 成员函数','在函数后面盖个“我只看看，不改”的章。','返回类型 函数名(参数) const;','承诺不修改对象成员；常对象只能调这种函数。','const 写在参数表后面；const 对象只能调 const 成员函数。','忘了写 const，常对象就调不了；在 const 函数里改成员会编不过，除非那个成员是 mutable。','int size() const { return n; }'],
+['cmem','mutable','给某个成员开个小口，const 函数里也能改它。','mutable 类型 名字;','缓存、调用计数这类“逻辑上不算修改对象”的成员。','写在成员声明前；只对 const 成员函数生效。','别拿它绕开 const 承诺乱改业务数据，滥用会让“只读”变成假话。','mutable int calls;'],
+['heap','operator=','把一个对象的内容，重新装进另一个已经存在的对象里。','类名& operator=(const 类名& other);','自定义赋值行为，尤其是类里有指针时。','返回 *this 的引用才能连等；参数用 const 引用。','不写就由编译器生成浅拷贝，两个对象指向同一块堆，析构时 double free；有指针要自己写深拷贝。','A& operator=(const A& o){ if(this!=&o){ /* 深拷贝 */ } return *this; }'],
+['cmem','this','在成员函数里，指向“正在干活的那个对象”。','this   // 类型是 类名*，const 函数里是 const 类名*','区分同名形参和成员，或者返回对象自己。','成员函数隐含的参数；静态成员函数没有 this。','静态成员函数里不能用 this；返回 *this 时别返回局部对象的引用。','void set(int x){ this->x = x; }'],
+['cmem','friend','给信得过的人一把备用钥匙，允许它直接看私有成员。','friend 返回类型 函数名(参数);   或   friend class 类名;','运算符重载、两个类紧密协作时用。','写在类里；友元不是成员，没有 this。','友元会破坏封装，能不用就不用；友元关系不能继承，也不互相传递。','class Box{ int v; friend int peek(const Box&); };'],
+['heap','构造函数','对象一造出来，自动执行的那段初始化代码。','类名(参数);   // 没有返回值，名字和类名一样','给成员赋初值、申请资源。','可以重载、可以有默认参数；不写编译器会送一个默认构造。','构造函数不能手动调用 a.A()；有指针成员时记得在初始化列表里置空。','class A{ public: A(int x):x(x){} int x; };'],
+['heap','拷贝构造函数','用一个已经存在的对象，复制出一个新对象。','类名(const 类名& other);','传值、返回对象、显式复制时调用。','参数必须是 const 引用，否则会无限递归。','默认只做浅拷贝，类里有指针时两个对象指同一块内存，析构 double free；要自己写深拷贝。','A(const A& o){ p = new int(*o.p); }'],
+['heap','析构函数','对象快没了的时候，自动执行的清理代码。','~类名();   // 无参数、无返回值、不能重载','释放 new 出来的内存、关文件、解锁。','没有参数；一个类只有一个析构函数。','基类析构要写 virtual，否则通过基类指针 delete 派生对象时派生类析构不跑，资源泄漏。','~A(){ delete[] p; }'],
+['heap','初始化列表','在构造函数冒号后面，直接把成员的初值点好。','类名(参数) : 成员1(值1), 成员2(值2) {}','初始化 const 成员、引用成员和没有默认构造的成员对象。','初始化顺序按成员声明顺序，不按你写的顺序。','成员初始化顺序看声明不看列表；在函数体里赋值，对 const 和引用成员直接编不过。','A(int x):x(x),r(x){}'],
+['heap','= default / = delete','告诉编译器“这个默认版本我要”，或者“这个版本不许有”。','类名() = default;   类名(const 类名&) = delete;','保留默认行为，或者禁止拷贝、禁止隐式转换。','只能用在特殊成员函数上；= delete 的版本被调用会编不过。','手写一个构造函数后，默认构造就不再自动生成，要补 = default；= delete 是编译期拦住，不是运行时报错。','A() = default;  A(const A&) = delete;'],
 /* ---------- C++ 关键字与语法（对照学习站 Day 1–4 补卡） ---------- */
-['kw','const','给变量或参数贴上“只读”封条。','const 类型 名字 = 值;','防止误改、表达接口承诺。','能修饰变量、参数、返回值、成员函数。','const int* p 是不能改指向的内容；int* const p 是不能改指针本身，两个 const 位置含义不同。','const int n = 10;'],
-['kw','static（局部 / 文件）','函数里的 static 只初始化一次；文件里的 static 别人看不见。','static 类型 名字;','函数内做“记忆”，全局或函数前限制链接范围。','局部 static 生命周期到程序结束；全局 static 只在本编译单元可见。','局部 static 的初始化在 C++11 起是线程安全的，但读写要自己保护；别把大对象放局部 static 占着不放。','static int count = 0;'],
-['kw','namespace / ::','把一堆名字装进一个盒子，用的时候写“盒子::名字”。','namespace 名字 { ... }   名字::成员','避免不同库里的同名函数打架。',':: 是作用域解析运算符；std:: 就是标准库这个盒子。','头文件里别写 using namespace std;，会把一堆名字倒进别人的作用域；:: 前面空着表示全局。','namespace net { int open(); }  net::open();'],
-['kw','位运算符','直接对二进制位做与、或、异或、取反、移位。','&  |  ^  ~  <<  >>','操作寄存器、标志位、协议字段。','位运算只对整数类型有意义；移位位数别超过类型宽度。','& 和 && 不是一回事；1 << 31 对 int 是未定义行为，要用 1u << 31；右移负数结果由实现决定。','flags |= (1u << 3);'],
-['kw','bool','只装 true / false 两个值的类型。','bool 名字 = true;','表示判断结果，比 int 的 0/1 更清楚。','常见实现占 1 字节；非 0 转 true，0 转 false。','bool 打印默认是 1/0，不是 true/false；别拿它和 TRUE 宏混用。','bool ok = (n > 0);'],
-['kw','struct / class','都是把数据和函数打包在一起；struct 默认公开，class 默认私有。','struct 名字 { ... };   class 名字 { ... };','描述一个对象有哪些数据和操作。','struct 默认 public，class 默认 private；两者都能有构造、析构、成员函数。','忘了写 public:，class 里的成员默认私有，外面访问编不过；struct 里写了 private: 也一样私有。','struct P { int x, y; };'],
-['kw','默认参数','调用时可以不写的参数，提前给个默认值。','void f(int a, int b = 0);','让常用调用更短。','默认值必须从右往左连续给；声明和定义只能写一处。','默认参数在编译期就定死，不会随运行期变化；虚函数的默认参数看静态类型，容易踩坑。','void log(const char* s, int level = 1);'],
-['kw','函数重载','几个函数叫同一个名字，靠参数类型或个数区分。','int f(int);   double f(double);','同一类操作给不同参数类型用。','只看参数列表，不看返回值；类型、个数或顺序不同才算重载。','只改返回值不算重载，编不过；f(1) 可能同时匹配 int 和 double，产生二义性。','int add(int,int);  double add(double,double);'],
-['kw','T& 引用','给一个已有变量起个别名，改别名就是改原变量。','类型& 名字 = 原变量;','函数传参不想拷贝、又想改外面。','必须初始化，之后不能换绑；概念上不占独立存储。','不能有空引用；返回局部变量的引用是悬空引用；r = b 是赋值不是换绑。','int& r = a;'],
-['kw','const T&','把原件借给你看，但不许改，也不用复制一份。','void f(const 类型& x);','传大对象时避免拷贝，同时保证不修改。','const 引用可以接临时量；普通引用不行。','函数里忘了 const 就会编不过；返回 const 引用时别返回局部变量。','void show(const std::string& s);'],
-['kw','nullptr','表示“这个指针不指向任何东西”的空指针。','类型* p = nullptr;','指针初始化、判空。','类型是 std::nullptr_t，能转成任意指针类型。','别再用 NULL 或 0，重载时 f(NULL) 可能选到 int 版本；解引用空指针直接崩。','int* p = nullptr; if(!p) puts("空");'],
-['kw','返回引用','函数返回一个变量的别名，而不是复制一份。','类型& 函数名(...)','返回成员、全局变量或容器元素，支持链式修改。','返回的变量必须比函数活得久。','返回局部变量的引用，函数一结束就悬空；返回临时量的引用同样危险。','int& at(int i){ return a[i]; }'],
-['kw','数组退化','数组传进函数时，只剩下指向首元素的指针，长度没了。','void f(int a[])   // 等价于 void f(int *a)','传数组给函数时，要额外传长度。','sizeof(数组) 在函数里变成 sizeof(指针)。','在函数里 sizeof(a)/sizeof(a[0]) 算不出元素个数；二维数组退化更复杂。','void f(int a[], int n);'],
+['tool','const','给变量或参数贴上“只读”封条。','const 类型 名字 = 值;','防止误改、表达接口承诺。','能修饰变量、参数、返回值、成员函数。','const int* p 是不能改指向的内容；int* const p 是不能改指针本身，两个 const 位置含义不同。','const int n = 10;'],
+['cmem','static（局部 / 文件）','函数里的 static 只初始化一次；文件里的 static 别人看不见。','static 类型 名字;','函数内做“记忆”，全局或函数前限制链接范围。','局部 static 生命周期到程序结束；全局 static 只在本编译单元可见。','局部 static 的初始化在 C++11 起是线程安全的，但读写要自己保护；别把大对象放局部 static 占着不放。','static int count = 0;'],
+['io','namespace / ::','把一堆名字装进一个盒子，用的时候写“盒子::名字”。','namespace 名字 { ... }   名字::成员','避免不同库里的同名函数打架。',':: 是作用域解析运算符；std:: 就是标准库这个盒子。','头文件里别写 using namespace std;，会把一堆名字倒进别人的作用域；:: 前面空着表示全局。','namespace net { int open(); }  net::open();'],
+['math','位运算符','直接对二进制位做与、或、异或、取反、移位。','&  |  ^  ~  <<  >>','操作寄存器、标志位、协议字段。','位运算只对整数类型有意义；移位位数别超过类型宽度。','& 和 && 不是一回事；1 << 31 对 int 是未定义行为，要用 1u << 31；右移负数结果由实现决定。','flags |= (1u << 3);'],
+['fmt','bool','只装 true / false 两个值的类型。','bool 名字 = true;','表示判断结果，比 int 的 0/1 更清楚。','常见实现占 1 字节；非 0 转 true，0 转 false。','bool 打印默认是 1/0，不是 true/false；别拿它和 TRUE 宏混用。','bool ok = (n > 0);'],
+['cmem','struct / class','都是把数据和函数打包在一起；struct 默认公开，class 默认私有。','struct 名字 { ... };   class 名字 { ... };','描述一个对象有哪些数据和操作。','struct 默认 public，class 默认 private；两者都能有构造、析构、成员函数。','忘了写 public:，class 里的成员默认私有，外面访问编不过；struct 里写了 private: 也一样私有。','struct P { int x, y; };'],
+['tool','默认参数','调用时可以不写的参数，提前给个默认值。','void f(int a, int b = 0);','让常用调用更短。','默认值必须从右往左连续给；声明和定义只能写一处。','默认参数在编译期就定死，不会随运行期变化；虚函数的默认参数看静态类型，容易踩坑。','void log(const char* s, int level = 1);'],
+['tool','函数重载','几个函数叫同一个名字，靠参数类型或个数区分。','int f(int);   double f(double);','同一类操作给不同参数类型用。','只看参数列表，不看返回值；类型、个数或顺序不同才算重载。','只改返回值不算重载，编不过；f(1) 可能同时匹配 int 和 double，产生二义性。','int add(int,int);  double add(double,double);'],
+['vector','T& 引用','给一个已有变量起个别名，改别名就是改原变量。','类型& 名字 = 原变量;','函数传参不想拷贝、又想改外面。','必须初始化，之后不能换绑；概念上不占独立存储。','不能有空引用；返回局部变量的引用是悬空引用；r = b 是赋值不是换绑。','int& r = a;'],
+['string','const T&','把原件借给你看，但不许改，也不用复制一份。','void f(const 类型& x);','传大对象时避免拷贝，同时保证不修改。','const 引用可以接临时量；普通引用不行。','函数里忘了 const 就会编不过；返回 const 引用时别返回局部变量。','void show(const std::string& s);'],
+['cmem','nullptr','表示“这个指针不指向任何东西”的空指针。','类型* p = nullptr;','指针初始化、判空。','类型是 std::nullptr_t，能转成任意指针类型。','别再用 NULL 或 0，重载时 f(NULL) 可能选到 int 版本；解引用空指针直接崩。','int* p = nullptr; if(!p) puts("空");'],
+['cmem','返回引用','函数返回一个变量的别名，而不是复制一份。','类型& 函数名(...)','返回成员、全局变量或容器元素，支持链式修改。','返回的变量必须比函数活得久。','返回局部变量的引用，函数一结束就悬空；返回临时量的引用同样危险。','int& at(int i){ return a[i]; }'],
+['cmem','数组退化','数组传进函数时，只剩下指向首元素的指针，长度没了。','void f(int a[])   // 等价于 void f(int *a)','传数组给函数时，要额外传长度。','sizeof(数组) 在函数里变成 sizeof(指针)。','在函数里 sizeof(a)/sizeof(a[0]) 算不出元素个数；二维数组退化更复杂。','void f(int a[], int n);'],
 /* ---------- new / delete 配对 ---------- */
 ['heap','new','跟系统临时借一块内存，在上面造一个对象。','T* p = new T;','在堆上创建一个对象。','返回：指向新对象的指针；失败抛 std::bad_alloc（老编译器可能返回 NULL）。','借了必须还（delete），漏一次就少一块内存；中断里、频繁调用的函数里别 new，堆会被切得七零八落。','int *p = new int(5); delete p;', '平台差异：Linux 应用层常用；MCU 上优先用静态变量，见“慎用区”。'],
 ['heap','new[]','一次借一排连续的位置。','T* p = new T[n];','在堆上创建 n 个元素的数组。','返回：首元素指针；n 可以是运行期才知道的变量。','new[] 必须配 delete[]，写成 delete p 只析构第一个元素，是未定义行为；new int[5] 里的值不确定，要清零写 new int[5]()。','int *a = new int[10]();  // 全 0', '平台差异：MCU 上大数组一次 new 很容易失败，先算好大小静态分配。'],
@@ -1557,7 +1555,7 @@ if (fabs(d - 1.5) < 1e-6) {      // 浮点数不能写 ==，要判断差值足�
 },
 
 /* ---------- 对照学习站 Day 1–4 补的卡 ---------- */
-'cpp:sizeof': {
+'cstr:sizeof': {
   s: 'size-of ｜ /ˈsaɪz ɒv/ ｜ 赛兹-奥夫',
   o: '**size**（大小）+ **of**（的），合起来就是“……的大小”。',
   e: `#include <cstdio>
@@ -1571,7 +1569,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:explicit': {
+'tool:explicit': {
   s: 'ex-pli-cit ｜ /ɪkˈsplɪsɪt/ ｜ 伊克斯-普利-西特',
   o: '拉丁语 **explicare**（展开、说明白）→ explicit 就是“写明白、不含糊”，所以不许编译器偷偷转。',
   e: `#include <cstdio>
@@ -1589,7 +1587,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:static 成员变量': {
+'tool:static 成员变量': {
   s: 'sta-tic ｜ /ˈstætɪk/ ｜ 斯呆-提克',
   o: '希腊语 **statikos**（站住不动）→ static 就是“固定在一个地方”，类里所有对象共用。',
   e: `#include <cstdio>
@@ -1605,7 +1603,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:static 成员函数': {
+'tool:static 成员函数': {
   s: 'sta-tic ｜ /ˈstætɪk/ ｜ 斯呆-提克',
   o: '同 static：固定属于类本身，不属于某个对象。',
   e: `#include <cstdio>
@@ -1622,7 +1620,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:const 成员函数': {
+'tool:const 成员函数': {
   s: 'con-st ｜ /ˈkɒnst/ ｜ 康斯特',
   o: '**const**ant（不变的）的缩写，贴在函数后面表示“这个函数不改对象”。',
   e: `#include <cstdio>
@@ -1640,7 +1638,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:mutable': {
+'cmem:mutable': {
   s: 'mu-ta-ble ｜ /ˈmjuːtəbl/ ｜ 缪-特波',
   o: '拉丁语 **mutare**（改变）→ mutable 就是“可以变的”。',
   e: `#include <cstdio>
@@ -1660,7 +1658,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:operator=': {
+'heap:operator=': {
   s: 'op-er-a-tor as-sign ｜ /ˈɒpəreɪtə əˈsaɪn/ ｜ 奥普瑞特-阿萨因',
   o: '**operator**（运算符）+ **=**（赋值号），合起来就是“重载赋值号”。',
   e: `#include <cstdio>
@@ -1680,7 +1678,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:this': {
+'cmem:this': {
   s: 'this ｜ /ðɪs/ ｜ 迪斯',
   o: '英文 **this**（这个），指“当前这个对象”。',
   e: `#include <cstdio>
@@ -1697,7 +1695,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:friend': {
+'cmem:friend': {
   s: 'friend ｜ /frend/ ｜ 弗兰德',
   o: '英文 **friend**（朋友），朋友可以进你的房间拿东西。',
   e: `#include <cstdio>
@@ -1714,7 +1712,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:构造函数': {
+'heap:构造函数': {
   s: 'con-struc-tor ｜ /kənˈstrʌktə/ ｜ 肯-斯特拉克特',
   o: '**construct**（建造）+ **-or**（做……的人/物），就是“造对象时干活的”。',
   e: `#include <cstdio>
@@ -1731,7 +1729,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:拷贝构造函数': {
+'heap:拷贝构造函数': {
   s: 'copy con-struc-tor ｜ /ˈkɒpi kənˈstrʌktə/ ｜ 考皮-肯斯特拉克特',
   o: '**copy**（复制）+ **constructor**（构造函数）。',
   e: `#include <cstdio>
@@ -1753,7 +1751,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:析构函数': {
+'heap:析构函数': {
   s: 'de-struc-tor ｜ /dɪˈstrʌktə/ ｜ 迪-斯特拉克特',
   o: '**de-**（去掉）+ **construct**（建造）→ destructor，拆对象时干活的。',
   e: `#include <cstdio>
@@ -1770,7 +1768,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:初始化列表': {
+'heap:初始化列表': {
   s: 'ini-tial-iz-er list ｜ /ɪˈnɪʃəlaɪzə lɪst/ ｜ 伊尼舍莱泽-李斯特',
   o: '**initialize**（初始化）+ **list**（列表）。',
   e: `#include <cstdio>
@@ -1792,7 +1790,7 @@ int main(){
     return 0;
 }`
 },
-'cpp:= default / = delete': {
+'heap:= default / = delete': {
   s: 'de-fault / de-lete ｜ /dɪˈfɔːlt/ /dɪˈliːt/ ｜ 迪佛特 / 迪利特',
   o: '**default**（默认）+ **delete**（删除），一个“要默认”，一个“删掉不许用”。',
   e: `#include <cstdio>
@@ -1810,7 +1808,7 @@ int main(){
     return 0;
 }`
 },
-'kw:const': {
+'tool:const': {
   s: 'con-st ｜ /ˈkɒnst/ ｜ 康斯特',
   o: '**const**ant（不变的）的缩写。',
   e: `#include <cstdio>
@@ -1825,7 +1823,7 @@ int main(){
     return 0;
 }`
 },
-'kw:static（局部 / 文件）': {
+'cmem:static（局部 / 文件）': {
   s: 'sta-tic ｜ /ˈstætɪk/ ｜ 斯呆-提克',
   o: '希腊语 **statikos**（站着不动），强调“固定、只此一份”。',
   e: `#include <cstdio>
@@ -1839,7 +1837,7 @@ int main(){
     return 0;
 }`
 },
-'kw:namespace / ::': {
+'io:namespace / ::': {
   s: 'name-space ｜ /ˈneɪmspeɪs/ ｜ 内姆-斯佩斯；scope ｜ /skəʊp/ ｜ 斯考普',
   o: '**name**（名字）+ **space**（空间），放名字的空间；**::** 叫作用域解析运算符。',
   e: `#include <cstdio>
@@ -1850,7 +1848,7 @@ int main(){
     return 0;
 }`
 },
-'kw:位运算符': {
+'math:位运算符': {
   s: 'bit-wise op-er-a-tors ｜ /bɪt waɪz ˈɒpəreɪtəz/ ｜ 比特-怀兹',
   o: '**bit**（二进制位）+ **wise**（按……方式），按位逐个操作。',
   e: `#include <cstdio>
@@ -1864,7 +1862,7 @@ int main(){
     return 0;
 }`
 },
-'kw:bool': {
+'fmt:bool': {
   s: 'bool ｜ /buːl/ ｜ 布尔',
   o: '来自数学家 **George Boole**（布尔），布尔代数只有真/假。',
   e: `#include <cstdio>
@@ -1875,7 +1873,7 @@ int main(){
     return 0;
 }`
 },
-'kw:struct / class': {
+'cmem:struct / class': {
   s: 'struct / class ｜ /strʌkt/ /klɑːs/ ｜ 斯特拉克特 / 克拉斯',
   o: '**struct**ure（结构）和 **class**（类别），一个强调“结构”，一个强调“一类东西”。',
   e: `#include <cstdio>
@@ -1893,7 +1891,7 @@ int main(){
     return 0;
 }`
 },
-'kw:默认参数': {
+'tool:默认参数': {
   s: 'de-fault ar-gu-ment ｜ /dɪˈfɔːlt ˈɑːɡjumənt/ ｜ 迪佛特-阿规门特',
   o: '**default**（默认）+ **argument**（参数）。',
   e: `#include <cstdio>
@@ -1906,7 +1904,7 @@ int main(){
     return 0;
 }`
 },
-'kw:函数重载': {
+'tool:函数重载': {
   s: 'o-ver-load ｜ /ˌəʊvəˈləʊd/ ｜ 欧弗-娄德',
   o: '**over**（超过、叠加）+ **load**（装载），同一个名字叠了多个版本。',
   e: `#include <cstdio>
@@ -1918,7 +1916,7 @@ int main(){
     return 0;
 }`
 },
-'kw:T& 引用': {
+'vector:T& 引用': {
   s: 'ref-er-ence ｜ /ˈrefrəns/ ｜ 瑞弗伦斯',
   o: '**refer**（指向、提及）+ **-ence**，指向同一个东西。',
   e: `#include <cstdio>
@@ -1932,7 +1930,7 @@ int main(){
     return 0;
 }`
 },
-'kw:const T&': {
+'string:const T&': {
   s: 'con-st ref-er-ence ｜ /kɒnst ˈrefrəns/ ｜ 康斯特-瑞弗伦斯',
   o: '**const**（只读）+ **reference**（引用）。',
   e: `#include <cstdio>
@@ -1947,7 +1945,7 @@ int main(){
     return 0;
 }`
 },
-'kw:nullptr': {
+'cmem:nullptr': {
   s: 'null-p-t-r ｜ /ˈnʌl piː tiː ɑː/ ｜ 纳尔-屁-提-阿',
   o: '**null**（空）+ **ptr**（pointer 指针的缩写）。',
   e: `#include <cstdio>
@@ -1960,7 +1958,7 @@ int main(){
     return 0;
 }`
 },
-'kw:返回引用': {
+'cmem:返回引用': {
   s: 're-turn ref-er-ence ｜ /rɪˈtɜːn ˈrefrəns/ ｜ 瑞特恩-瑞弗伦斯',
   o: '**return**（返回）+ **reference**（引用）。',
   e: `#include <cstdio>
@@ -1972,7 +1970,7 @@ int main(){
     return 0;
 }`
 },
-'kw:数组退化': {
+'cmem:数组退化': {
   s: 'ar-ray de-cay ｜ /əˈreɪ dɪˈkeɪ/ ｜ 阿瑞-迪凯',
   o: '**array**（数组）+ **decay**（衰减），数组“退化”成指针。',
   e: `#include <cstdio>
@@ -2069,33 +2067,33 @@ var SHORT = {
   'math:fabs': '浮点绝对值',
   'math:sqrt': '平方根',
   'math:pow': '求次方',
-  'cpp:sizeof': '占几个字节',
-  'cpp:explicit': '禁止偷偷转换',
-  'cpp:static 成员变量': '全类共用一份',
-  'cpp:static 成员函数': '不用对象就能调',
-  'cpp:const 成员函数': '只读不改',
-  'cpp:mutable': '只读也能改',
-  'cpp:operator=': '对象间赋值',
-  'cpp:this': '当前对象的指针',
-  'cpp:friend': '私有成员的例外',
-  'cpp:构造函数': '出生时自动跑',
-  'cpp:拷贝构造函数': '用旧对象造新',
-  'cpp:析构函数': '销毁前自动清理',
-  'cpp:初始化列表': '成员出生带初值',
-  'cpp:= default / = delete': '要默认或禁用',
-  'kw:const': '只读封条',
-  'kw:static（局部 / 文件）': '只初始化一次',
-  'kw:namespace / ::': '名字的归属盒子',
-  'kw:位运算符': '直接操作二进制位',
-  'kw:bool': '真或假',
-  'kw:struct / class': '打包数据与操作',
-  'kw:默认参数': '不写就用默认值',
-  'kw:函数重载': '同名不同参数',
-  'kw:T& 引用': '变量的别名',
-  'kw:const T&': '只读还不拷贝',
-  'kw:nullptr': '空指针',
-  'kw:返回引用': '返回别名不是拷贝',
-  'kw:数组退化': '数组变指针',
+  'cstr:sizeof': '占几个字节',
+  'tool:explicit': '禁止偷偷转换',
+  'tool:static 成员变量': '全类共用一份',
+  'tool:static 成员函数': '不用对象就能调',
+  'tool:const 成员函数': '只读不改',
+  'cmem:mutable': '只读也能改',
+  'heap:operator=': '对象间赋值',
+  'cmem:this': '当前对象的指针',
+  'cmem:friend': '私有成员的例外',
+  'heap:构造函数': '出生时自动跑',
+  'heap:拷贝构造函数': '用旧对象造新',
+  'heap:析构函数': '销毁前自动清理',
+  'heap:初始化列表': '成员出生带初值',
+  'heap:= default / = delete': '要默认或禁用',
+  'tool:const': '只读封条',
+  'cmem:static（局部 / 文件）': '只初始化一次',
+  'io:namespace / ::': '名字的归属盒子',
+  'math:位运算符': '直接操作二进制位',
+  'fmt:bool': '真或假',
+  'cmem:struct / class': '打包数据与操作',
+  'tool:默认参数': '不写就用默认值',
+  'tool:函数重载': '同名不同参数',
+  'vector:T& 引用': '变量的别名',
+  'string:const T&': '只读还不拷贝',
+  'cmem:nullptr': '空指针',
+  'cmem:返回引用': '返回别名不是拷贝',
+  'cmem:数组退化': '数组变指针',
   'care:malloc': '借一块堆内存',
   'care:calloc': '借清零的内存',
   'care:realloc': '换更大的一块',
@@ -2335,39 +2333,47 @@ var LATER = [
 var G = {};
 GROUPS.forEach(function(g){ G[g.id] = g; });
 
+/* 不占必背额度的卡：内容保留，只在“了解即可”区展示，不进新卡/复习队列 */
+var LATER_IDS = {
+  'io:std::cin':1, 'io:std::cout':1, 'io:std::getline':1, 'io:std::cin.ignore()':1,
+  'tool:std::make_unique':1, 'tool:std::stoi':1, 'tool:std::to_string':1,
+  'tool:std::sort':1, 'tool:std::find':1, 'tool:std::reverse':1,
+  'cstr:strerror':1
+};
+
 /* 函数卡 → 学习站 Day 1–4 知识卡锚点（#dXcYY 由 cpp-study 的 parseHash 直接打开） */
 var REL = {
   'io:std::cout': 'd1c04',
   'tool:std::swap': 'd1c02',
   'tool:std::make_unique': 'd2c07',
   'heap:new': 'd2c07', 'heap:new[]': 'd2c07', 'heap:delete': 'd2c07', 'heap:delete[]': 'd2c07',
-  'cpp:sizeof': 'd4c37',
-  'cpp:explicit': 'd3c29',
-  'cpp:static 成员变量': 'd4c31',
-  'cpp:static 成员函数': 'd4c33',
-  'cpp:const 成员函数': 'd4c40',
-  'cpp:mutable': 'd4c40',
-  'cpp:operator=': 'd3c26',
-  'cpp:this': 'd4c38',
-  'cpp:friend': 'd4c42',
-  'cpp:构造函数': 'd3c22',
-  'cpp:拷贝构造函数': 'd3c25',
-  'cpp:析构函数': 'd3c27',
-  'cpp:初始化列表': 'd3c28',
-  'cpp:= default / = delete': 'd3c30',
-  'kw:const': 'd2c13',
-  'kw:static（局部 / 文件）': 'd2c17',
-  'kw:namespace / ::': 'd1c05',
-  'kw:位运算符': 'd2c18',
-  'kw:bool': 'd2c12',
-  'kw:struct / class': 'd3c21',
-  'kw:默认参数': 'd2c14',
-  'kw:函数重载': 'd2c15',
-  'kw:T& 引用': 'd1c01',
-  'kw:const T&': 'd1c03',
-  'kw:nullptr': 'd2c08',
-  'kw:返回引用': 'd1c06',
-  'kw:数组退化': 'd2c09'
+  'cstr:sizeof': 'd4c37',
+  'tool:explicit': 'd3c29',
+  'tool:static 成员变量': 'd4c31',
+  'tool:static 成员函数': 'd4c33',
+  'tool:const 成员函数': 'd4c40',
+  'cmem:mutable': 'd4c40',
+  'heap:operator=': 'd3c26',
+  'cmem:this': 'd4c38',
+  'cmem:friend': 'd4c42',
+  'heap:构造函数': 'd3c22',
+  'heap:拷贝构造函数': 'd3c25',
+  'heap:析构函数': 'd3c27',
+  'heap:初始化列表': 'd3c28',
+  'heap:= default / = delete': 'd3c30',
+  'tool:const': 'd2c13',
+  'cmem:static（局部 / 文件）': 'd2c17',
+  'io:namespace / ::': 'd1c05',
+  'math:位运算符': 'd2c18',
+  'fmt:bool': 'd2c12',
+  'cmem:struct / class': 'd3c21',
+  'tool:默认参数': 'd2c14',
+  'tool:函数重载': 'd2c15',
+  'vector:T& 引用': 'd1c01',
+  'string:const T&': 'd1c03',
+  'cmem:nullptr': 'd2c08',
+  'cmem:返回引用': 'd1c06',
+  'cmem:数组退化': 'd2c09'
 };
 function relLabel(id){
   var m = /^d([1-4])c(\d+)$/.exec(id || '');
@@ -2384,6 +2390,7 @@ var CARDS = D.map(function(r, i){
     t: SHORT[id] || '',
     note:r[8] || '',
     rel: REL[id] || '',
+    later: !!LATER_IDS[id],
     order:i, id:id
   };
 });
@@ -2430,16 +2437,18 @@ function quotaHw(){ return advanced() ? 6 : 4; }
 
 function learnedOn(d){
   return CARDS.filter(function(c){
+    if(c.later) return false;
     var r = S.learned[c.id];
     return r && r.first === d;
   });
 }
 function poolNew(){
-  return CARDS.filter(function(c){ return !S.learned[c.id]; });
+  return CARDS.filter(function(c){ return !c.later && !S.learned[c.id]; });
 }
 function dueCards(){
   var t = todayStr();
   return CARDS.filter(function(c){
+    if(c.later) return false;
     var r = S.learned[c.id];
     return r && r.s < 6 && r.due && r.due <= t;
   }).sort(function(a,b){
@@ -2538,12 +2547,13 @@ function renderToday(){
 
 /* ---------- 进度面板 ---------- */
 function renderPanel(){
-  var learned = CARDS.filter(function(c){ return S.learned[c.id]; });
+  var active = CARDS.filter(function(c){ return !c.later; });
+  var learned = active.filter(function(c){ return S.learned[c.id]; });
   var mastered = learned.filter(function(c){ return S.learned[c.id].s >= 6; }).length;
   var t = todayStr();
   var left = Math.max(0, quotaNew() - learnedOn(t).length);
 
-  document.getElementById('statLearned').textContent = learned.length + ' / ' + CARDS.length;
+  document.getElementById('statLearned').textContent = learned.length + ' / ' + active.length;
   document.getElementById('statNewLeft').textContent = left + ' 张';
   document.getElementById('statStreak').textContent = streak() + ' 天';
   document.getElementById('statMastered').textContent = mastered + ' 张';
@@ -2563,7 +2573,7 @@ function renderPanel(){
 
   var html = '';
   GROUPS.forEach(function(g){
-    var list = CARDS.filter(function(c){ return c.g === g.id; });
+    var list = CARDS.filter(function(c){ return !c.later && c.g === g.id; });
     var doneN = list.filter(function(c){ return S.learned[c.id]; }).length;
     var rows = list.map(function(c){
       var r = S.learned[c.id];
@@ -2586,6 +2596,14 @@ function renderPanel(){
     }).join('');
     html += '<details class="grp"><summary>' + g.name + ' <span>' + doneN + ' / ' + list.length + ' 已学</span></summary>' + rows + '</details>';
   });
+  var laterCards = CARDS.filter(function(c){ return c.later; });
+  if(laterCards.length){
+    var lrows = laterCards.map(function(c){
+      return '<div class="prow"><span class="pn">' + esc(c.name) + '</span>' +
+             '<span class="pstat" style="width:auto">了解即可 · 不占额度</span></div>';
+    }).join('');
+    html += '<details class="grp"><summary>了解即可（不占额度） <span>' + laterCards.length + ' 张</span></summary>' + lrows + '</details>';
+  }
   document.getElementById('panelList').innerHTML = html;
 }
 
@@ -2605,10 +2623,18 @@ function renderCare(){
   }).join('');
 }
 function renderLater(){
-  document.getElementById('laterList').innerHTML = LATER.map(function(x){
+  var rows = LATER.map(function(x){
     return '<div class="prow" style="padding:9px 2px"><span class="pn" style="font-family:inherit;font-size:13px;color:var(--ink);flex:none;width:118px">' +
       esc(x.n) + '</span><span style="flex:1;font-size:12.5px;color:var(--muted);white-space:normal">' + esc(x.t) + '</span></div>';
   }).join('');
+  // 从必背里撤下来的卡：内容完整保留，折叠在“了解即可”区，不占额度
+  var moved = CARDS.filter(function(c){ return c.later; }).map(function(c){
+    return '<details class="care" data-card-id="' + esc(c.id) + '"><summary><b>' + esc(c.name) + '</b>' +
+      '<span class="cgo">看细节 ▾</span>' +
+      '<span class="csub"><i>' + esc(ipaOf(c.say)) + '</i><em>了解即可 · ' + esc(c.t) + '</em></span></summary>' +
+      '<div class="carebody">' + backHTML(c) + '</div></details>';
+  }).join('');
+  document.getElementById('laterList').innerHTML = rows + moved;
 }
 
 /* ---------- 手写区 ---------- */
@@ -2795,6 +2821,22 @@ function protoResult(user, c){
     '<div class="brow" style="margin-top:10px"><div class="k">标准原型</div><pre>' + esc(c.p) + '</pre></div>';
 }
 
+/* 卡片背面 HTML：学习浮层和“了解即可”区共用，保证两边结构完全一致 */
+function backHTML(card){
+  return '<p class="plainline">' + esc(card.plain) + '</p>' +
+    '<div class="brow"><div class="k">原型（要几个参数、什么类型、返回什么）</div><pre class="code">' + hl(card.p) + '</pre></div>' +
+    (card.say ? '<div class="brow say"><div class="k">怎么念<button class="spk sm" type="button" aria-label="朗读这个函数名">' + SPK_SVG + '</button></div><p class="small">' + esc(card.say) + '</p></div>' : '') +
+    (card.from ? '<div class="brow from"><div class="k">名字怎么来的</div><p class="small">' + md(card.from) + '</p></div>' : '') +
+    '<div class="brow"><div class="k">干嘛用的</div><p>' + esc(card.use) + '</p></div>' +
+    '<div class="brow"><div class="k">参数 / 返回值</div><p class="small">' + esc(card.args) + '</p></div>' +
+    '<div class="brow trap"><div class="k">最容易踩的坑</div><p>' + esc(card.trap) + '</p></div>' +
+    '<div class="brow"><div class="k">一行示例</div><pre class="code">' + hl(card.ex) + '</pre></div>' +
+    (card.note ? '<div class="bnote">' + esc(card.note) + '</div>' : '') +
+    (card.rel
+      ? '<a class="rellink" href="https://zijiashanggan.github.io/cpp-study/index.html#' + card.rel + '" target="_blank" rel="noopener">哪天讲过这个？<b>' + relLabel(card.rel) + '</b><span class="go">打开知识卡 →</span></a>'
+      : '<div class="rellink none">哪天讲过这个？学习站 Day 1–4 暂时没细讲这个，先按必背记。</div>');
+}
+
 /* ---------- 学习浮层 ---------- */
 var ses = null;
 var flashEl = document.getElementById('flash');
@@ -2925,6 +2967,8 @@ document.addEventListener('click', function(e){
   if(!b) return;
   e.stopPropagation();                          // 别让它同时触发翻面
   e.preventDefault();
+  var host = b.closest('[data-card-id]');
+  if(host && BY_ID[host.getAttribute('data-card-id')]) SPKCARD = BY_ID[host.getAttribute('data-card-id')];
   speakCard(SPKCARD);
 }, true);
 if('speechSynthesis' in window){
@@ -2956,19 +3000,7 @@ function renderStudy(){
   document.getElementById('fMean').textContent = card.t || '';
   SPKCARD = card;
 
-  document.getElementById('bBody').innerHTML =
-    '<p class="plainline">' + esc(card.plain) + '</p>' +
-    '<div class="brow"><div class="k">原型（要几个参数、什么类型、返回什么）</div><pre class="code">' + hl(card.p) + '</pre></div>' +
-    (card.say ? '<div class="brow say"><div class="k">怎么念<button class="spk sm" type="button" aria-label="朗读这个函数名">' + SPK_SVG + '</button></div><p class="small">' + esc(card.say) + '</p></div>' : '') +
-    (card.from ? '<div class="brow from"><div class="k">名字怎么来的</div><p class="small">' + md(card.from) + '</p></div>' : '') +
-    '<div class="brow"><div class="k">干嘛用的</div><p>' + esc(card.use) + '</p></div>' +
-    '<div class="brow"><div class="k">参数 / 返回值</div><p class="small">' + esc(card.args) + '</p></div>' +
-    '<div class="brow trap"><div class="k">最容易踩的坑</div><p>' + esc(card.trap) + '</p></div>' +
-    '<div class="brow"><div class="k">一行示例</div><pre class="code">' + hl(card.ex) + '</pre></div>' +
-    (card.note ? '<div class="bnote">' + esc(card.note) + '</div>' : '') +
-    (card.rel
-      ? '<a class="rellink" href="https://zijiashanggan.github.io/cpp-study/index.html#' + card.rel + '" target="_blank" rel="noopener">哪天讲过这个？<b>' + relLabel(card.rel) + '</b><span class="go">打开知识卡 →</span></a>'
-      : '<div class="rellink none">哪天讲过这个？学习站 Day 1–4 暂时没细讲这个，先按必背记。</div>');
+  document.getElementById('bBody').innerHTML = backHTML(card);
   paintSpk();                                   // 背面的小喇叭刚生成，补上灰态
 
   var f = document.getElementById('flash');
@@ -3560,9 +3592,11 @@ function renderAll(){
   renderCare();
   renderLater();
   renderHw();
-  document.getElementById('badgeMust').textContent = CARDS.length;
+  var mustN = CARDS.filter(function(c){ return !c.later; }).length;
+  var movedN = CARDS.filter(function(c){ return c.later; }).length;
+  document.getElementById('badgeMust').textContent = mustN;
   document.getElementById('badgeCare').textContent = CARE.length;
-  document.getElementById('badgeLater').textContent = LATER.length;
+  document.getElementById('badgeLater').textContent = LATER.length + movedN;
   document.getElementById('badgeTotal').textContent = CARDS.length + CARE.length + LATER.length;
   updateHwStats();
 }
