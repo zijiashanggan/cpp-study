@@ -13,7 +13,7 @@ window.DAYS.day1 = {
       "only": "",
       "guess": "先猜：<code>int&amp; r = a; r = 20;</code> 之后，a 和 r 各是多少？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;             // 直接写 cout，不用加 std::\n\nint main() {                     // 程序入口\n    int a = 10;                  // 一口箱子，装 10\n    int& r = a;              // 同一口箱子的第二张纸条\n    r = 99;                      // 往纸条里写，就是往 a 里写\n    cout << a << \"\\n\";       // 99\n\n    int b = 20;                  // 另一口箱子，装 20\n    r = b;                   // 把 20 倒进 r 管的箱子，不是换绑\n    cout << a << \" \" << b << \"\\n\";   // 20 20\n\n    // int& bad;             // 编译报错：'bad' declared as reference but not initialized\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;             // 直接写 cout，不用加 std::\n\nint main() {                     // 程序入口\n    int a = 10;                  // 一口箱子，装 10\n    int& r = a;              // 同一口箱子的第二张纸条\n    r = 99;                      // 往纸条里写，就是往 a 里写\n    cout << a << \"\\n\";       // 99\n\n    int b = 20;                  // 另一口箱子，装 20\n    r = b;                   // 把 20 倒进 r 管的箱子，不是换绑\n    cout << a << \" \" << b << \"\\n\";   // 20 20\n\n    // int& bad;   // 报错：'bad' declared as reference but not initialized\n}",
       "output": "99\n20 20",
       "errors": [],
       "pitfalls": [
@@ -70,7 +70,7 @@ window.DAYS.day1 = {
       "only": "",
       "guess": "先猜：<code>const int&amp; r = 10;</code> 能编译吗？r 是几？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\n#include <string>\nusing namespace std;             // string 也来自 std\n\nvoid show(const string& s) {   // 递原件 + 贴封条\n    // s += \"!\";  // 编译报错：passing 'const std::string' as 'this' argument discards qualifiers\n    cout << s << \"\\n\";           // 只读不改，也不复制\n}\n\nint main() {                     // 程序入口\n    string name = \"Tom\";         // 一口 string 箱子\n    show(name);          // Tom（递的是原件）\n    const int& r = 10;   // 临时箱子也能贴封条\n    cout << r << \"\\n\";   // 10\n    // int& bad = 10;    // 编译报错：binding reference of type 'int&' to 'const int' discards qualifiers\n}",
+      "codeFull": "#include <iostream>\n#include <string>\nusing namespace std;             // string 也来自 std\n\nvoid show(const string& s) {   // 递原件 + 贴封条\n    // s += \"!\";   // 报错：const string 不能改（discards qualifiers）\n    cout << s << \"\\n\";           // 只读不改，也不复制\n}\n\nint main() {                     // 程序入口\n    string name = \"Tom\";         // 一口 string 箱子\n    show(name);          // Tom（递的是原件）\n    const int& r = 10;   // 临时箱子也能贴封条\n    cout << r << \"\\n\";   // 10\n    // int& bad = 10;  // 报错：'const int' 绑到 'int&' 会丢 qualifiers\n}",
       "output": "Tom\n10",
       "errors": [],
       "pitfalls": [
@@ -99,7 +99,7 @@ window.DAYS.day1 = {
       "only": "",
       "guess": "先猜：程序运行时你输入 5 再回车，屏幕上第一行是什么？",
       "codeMin": "",
-      "codeFull": "#include <iostream>\nusing namespace std;      // 不写 std:: 也能用 cin、cout\n\nint main() {              // 程序入口\n    int a = 0;            // 先准备一口箱子\n    cout << \"请输入：\";       // 输出：请输入：\n    cin >> a;                 // 先输入 5，再按回车\n    cout << a << '\\n';        // 输出：5（只换行）\n    cout << a << endl;        // 输出：5（换行 + 立刻冲水）\n    // cout << a;             // 编译报错：'cout' was not declared in this scope（忘写 std::）\n}",
+      "codeFull": "#include <iostream>\nusing namespace std;      // 不写 std:: 也能用 cin、cout\n\nint main() {              // 程序入口\n    int a = 0;            // 先准备一口箱子\n    cout << \"请输入：\";       // 输出：请输入：\n    cin >> a;                 // 先输入 5，再按回车\n    cout << a << '\\n';        // 输出：5（只换行）\n    cout << a << endl;        // 输出：5（换行 + 立刻冲水）\n    // cout << a;   // 报错：'cout' was not declared（忘写 std::）\n}",
       "output": "请输入：5\n5",
       "errors": [],
       "pitfalls": [

@@ -209,12 +209,46 @@
       .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
   }
 
-  /* 代码块：超过 6 行默认折叠，只露前 6 行；按钮文案写明总行数和剩余行数 */
-  var FOLD = 6;
+  /* 一行拆三段：代码 / 对齐空格 / 注释。宽屏三段并排，窄屏隐藏空格段并让注释换行 */
+  function splitComment(line) {
+    var inS = false, q = '';
+    for (var i = 0; i < line.length; i++) {
+      var ch = line.charAt(i);
+      if (inS) {
+        if (ch === '\\') { i++; continue; }
+        if (ch === q) inS = false;
+        continue;
+      }
+      if (ch === '"' || ch === "'") { inS = true; q = ch; continue; }
+      if (ch === '/' && line.charAt(i + 1) === '/') {
+        var head = line.slice(0, i), cmt = line.slice(i);
+        var m = /\s+$/.exec(head);
+        var sep = m ? m[0] : '';
+        return [head.slice(0, head.length - sep.length), sep, cmt];
+      }
+    }
+    return [line, '', ''];
+  }
+
+  function codeBody(raw, fold) {
+    var hl = A.hl || function (s) { return esc(s); };
+    return raw.split('\n').map(function (ln, i) {
+      var p = splitComment(ln);
+      var only = !p[0].trim() && p[2];
+      return '<span class="cline' + (only ? ' cmt-only' : '') + (i >= fold ? ' cut' : '') + '">' +
+        '<span class="ccode">' + hl(p[0]) + '</span>' +
+        '<span class="csep">' + p[1] + '</span>' +
+        '<span class="ccom">' + hl(p[2]) + '</span>' +
+        '</span>';
+    }).join('');
+  }
+
+  /* 代码块：超过 FOLD 行默认折叠；按钮文案按实际行数算 */
+  var FOLD = 4;
   function codeHtml(code) {
     var raw = String(code == null ? '' : code).replace(/\n+$/, '');
     var n = raw ? raw.split('\n').length : 0;
-    var body = A.hl ? A.hl(raw) : esc(raw);
+    var body = codeBody(raw, FOLD);
     if (n <= FOLD) return '<pre class="code"><code>' + body + '</code></pre>';
     var more = '展开全文 · 共 ' + n + ' 行（还有 ' + (n - FOLD) + ' 行）';
     return '<div class="codewrap short" data-more="' + esc(more) + '">' +

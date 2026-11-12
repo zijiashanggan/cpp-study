@@ -844,7 +844,8 @@
 [hidden] { display: none !important; }
 .day-part[hidden] { display: none !important; }
 
-.stage { position: relative; min-width: 0; padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
+/* 只给整页舞台留出固定翻页条的高度；p.stage 是代码上方的标签，不能吃这个 padding */
+main.stage { position: relative; min-width: 0; padding-bottom: calc(120px + env(safe-area-inset-bottom)); }
 
 /* ---- 卡片舞台 ---- */
 .deck { position: relative; }
@@ -884,13 +885,14 @@
 }
 .deck-card .card { margin-bottom: 0; }
 
-/* ---- 代码块 6 行折叠（逐行注释后行数变多，折叠行数相应下调） ---- */
+/* ---- 代码块 4 行折叠（逐行注释后行数变多，折叠行数相应下调） ---- */
 .codewrap { position: relative; }
 .codewrap.short pre.code {
-  max-height: calc(6 * 1.85em + 26px);
   overflow: hidden;
   margin: 12px 0 0;
 }
+/* 折叠按代码行截断：窄屏注释换行后不会被从半行处切断 */
+.codewrap.short pre.code .cline.cut { display: none; }
 .codewrap.short::after {
   content: "";
   position: absolute; left: 1px; right: 1px; bottom: 42px;
@@ -1063,7 +1065,16 @@ body.lock { overflow: hidden; }
 .toc-empty { font-size: 11.5px; color: #7f8ea0; padding: 6px 10px; }
 
 @media (max-width: 600px) {
-  .codewrap.short pre.code { max-height: calc(6 * 1.8em + 22px); }
+  /* 窄屏：注释不横滑，掉到下一行并对齐缩进；代码行本身仍可在块内横滚 */
+  pre.code .cline { flex-wrap: wrap; }
+  pre.code .cline .csep { display: none; }
+  pre.code .cline .ccom {
+    flex: 1 0 100%;
+    padding-left: 1.6em;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  pre.code .cline.cmt-only .ccom { flex: 0 1 auto; padding-left: 0; }
 }
 
 @media (max-width: 1023px) {
@@ -1078,7 +1089,7 @@ body.lock { overflow: hidden; }
   }
   .pbtn { flex: 1; min-height: 46px; box-shadow: none; }
   .toast { bottom: 92px; }
-  .stage { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
+  main.stage { padding-bottom: calc(96px + env(safe-area-inset-bottom)); }
 }
 
 @media (min-width: 1024px) {
@@ -1102,7 +1113,7 @@ body.lock { overflow: hidden; }
   }
   .ovbtn { display: none; }
   .deck-head { margin-top: 4px; }
-  .stage { padding-bottom: 110px; }
+  main.stage { padding-bottom: 110px; }
   .drawer, .drawer-mask { display: none; }
 }
 
@@ -1524,6 +1535,12 @@ pre.code .s { color: #c3ef93; }
 pre.code .c { color: #86cf7d; }
 pre.code .fn { color: #f2d06b; }
 pre.code .num { color: #ffc189; }
+
+/* 每行 = 代码段 + 注释段：宽屏并排（保留原来的行尾注释对齐），窄屏注释换行缩进 */
+pre.code code { display: block; }
+pre.code .cline { display: flex; align-items: baseline; }
+pre.code .ccode, pre.code .csep, pre.code .ccom { white-space: pre; flex: none; }
+pre.code .cline.cmt-only .ccode { display: none; }
 .errs {
   color: #6B2A24;
   background: #FDF3F2;
@@ -1927,7 +1944,8 @@ footer {
     column-gap: 28px;
     grid-template-areas: "hero rail" "deck rail" "below rail";
   }
-  .rail { position: sticky; top: 76px; }
+  /* align-self:start 不能省：网格默认拉伸会让 rail 变成整列高，sticky 就永远不生效 */
+  .rail { position: sticky; top: 76px; align-self: start; }
 }
 @media (max-width: 1023px) {
   .pager {
