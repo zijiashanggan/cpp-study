@@ -333,6 +333,7 @@ function pick(t, p, k) {
     ? (k === 0 ? '对' : '错')
     : (LETTERS[k] + '. ' + stripHtml(p.options[k].text));
   t.R.ans[p.key] = { ok: ok, user: k, userText: userText, raw: '' };
+  if (window.WrongBook) WrongBook.record(p.key, ok);   /* 答错进错题本，连对两次出队 */
   render(t);
 }
 
@@ -347,6 +348,7 @@ function submitFill(t, p, val) {
     return p.type === 'code' ? normCode(a) === normCode(val) : norm(a) === v;
   });
   t.R.ans[p.key] = { ok: ok, user: val, userText: val, raw: val };
+  if (window.WrongBook) WrongBook.record(p.key, ok);
   render(t);
 }
 

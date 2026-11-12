@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<title>错题本 · cpp·study</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23130B43'/%3E%3Ctext x='16' y='22' font-size='15' text-anchor='middle' fill='%23ffffff' font-family='monospace'%3EC%2B%2B%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  body.wrong-page { background: #F4F6FD; }
+  .wbwrap { max-width: 1000px; margin: 0 auto; padding: 22px 20px 90px; }
+  .wbhead { margin: 6px 0 18px; }
+  .wbhead h1 { margin: 0 0 6px; font-size: 27px; color: var(--ink); letter-spacing: -.2px; }
+  .wbsub { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.8; max-width: 760px; }
+  .wbtools { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; }
+  .wbtotal {
+    font-size: 13px; font-weight: 600; color: var(--purple-ink);
+    background: #EFEAFF; border: 1px solid #DCD2FF; border-radius: 999px;
+    padding: 5px 12px;
+  }
+  .wbtools .btn-main, .wbtools .btn-ghost { padding: 8px 15px; font-size: 13.5px; text-decoration: none; display: inline-flex; align-items: center; }
+
+  .wbfilter { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 14px; }
+  .wchip {
+    font-family: inherit; font-size: 12.5px; cursor: pointer;
+    padding: 6px 12px; border-radius: 999px;
+    border: 1px solid #DDE1F0; background: #fff; color: var(--ink-2);
+  }
+  .wchip:hover { border-color: #C3CBE2; }
+  .wchip.on { background: var(--purple); border-color: var(--purple); color: #fff; font-weight: 600; }
+
+  .wbday { background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-sm); margin-bottom: 16px; overflow: hidden; }
+  .wbdayhead { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 13px 16px; background: #FAFBFF; border-bottom: 1px solid var(--line-2); }
+  .wbdayhead h2 { margin: 0; font-size: 15.5px; color: var(--ink); }
+  .wbdayhead .wbnum { font-size: 12px; color: var(--muted); }
+  .wbdayhead button { margin-left: auto; }
+  .wbkp { padding: 12px 16px 4px; border-top: 1px dashed #EDF0F8; }
+  .wbkp:first-of-type { border-top: 0; }
+  .wbkpname { margin: 0 0 8px; font-size: 12.5px; font-weight: 600; color: var(--purple-ink2, #4B3F8C); }
+  .wbkpname span { font-weight: 400; color: var(--muted); margin-left: 6px; }
+  .wbitem { border: 1px solid #EDF0F8; border-radius: 10px; padding: 10px 12px; margin-bottom: 9px; background: #FCFDFF; }
+  .wbitemtop { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .wbitemtop .badge { flex: none; }
+  .wbcard { font-size: 12px; color: #3B4A8C; text-decoration: none; border-bottom: 1px dotted #B9C3E6; }
+  .wbcard:hover { color: var(--purple-ink); }
+  .wbstate { margin-left: auto; font-size: 11.5px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  .wbq { margin: 7px 0 8px; font-size: 13.5px; color: #2B2350; line-height: 1.7; word-break: break-word; }
+  .wbitem .btn-ghost { padding: 5px 11px; font-size: 12px; }
+  .wbempty { background: #fff; border: 1px dashed #D7DDF0; border-radius: 14px; padding: 34px 20px; text-align: center; color: var(--muted); font-size: 14px; }
+  .wbempty b { color: var(--ink-2); display: block; font-size: 16px; margin-bottom: 6px; }
+
+  /* 练习模式 */
+  #wbPractice .wb-pbar { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-bottom: 14px; }
+  #wbPractice .wb-pbar .wp { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+  #wbPractice .wb-pbar .btn-ghost { padding: 7px 13px; font-size: 13px; }
+  .wbqnote { font-size: 12.5px; color: var(--muted); margin: -4px 0 12px; }
+  .wbdone { background: #fff; border: 1px solid var(--line); border-radius: 14px; padding: 18px; box-shadow: var(--shadow-sm); }
+  .wbdone h3 { margin: 0 0 8px; font-size: 17px; color: var(--ink); }
+  .wbdone p { margin: 6px 0; font-size: 13.5px; color: var(--ink-2); }
+  .wbdone .btn-row { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+
+  @media (max-width: 600px) {
+    .wbwrap { padding: 18px 14px 80px; }
+    .wbhead h1 { font-size: 23px; }
+    .wbdayhead button { margin-left: 0; }
+    .wbstate { margin-left: 0; width: 100%; }
+    .wbitem { padding: 9px 10px; }
+  }
+</style>
+</head>
+<body class="wrong-page">
+<header class="topnav" id="topnav">
+  <a class="brand" href="index.html"><span class="brand-mark">C++</span><span class="brand-name">cpp·study</span></a>
+  <nav class="tn-links">
+    <a href="index.html">学习</a>
+    <a href="index.html#practice1">练习</a>
+    <a href="index.html#task1">动手</a>
+    <a href="map.html">概念地图</a>
+    <a href="lab.html">代码练习</a>
+    <a class="on" href="wrong.html" aria-current="page">错题本</a>
+  </nav>
+  <div class="tn-right">
+    <span class="tn-prog" id="wbTop">待清 0 道</span>
+  </div>
+</header>
+
+<main class="wbwrap">
+  <div class="wbhead" id="wbHead">
+    <h1>错题本</h1>
+    <p class="wbsub">答错的题会自动进这里。同一道题<b>连续答对两次</b>才出队，中途再错就从头数。数据只存在这台设备的浏览器里（和卡片进度分开存），换设备不会同步。</p>
+    <div class="wbtools">
+      <span class="wbtotal" id="wbCount">0 道待清</span>
+      <button class="btn-main" id="wbPracticeAll" type="button">只练错题（全部）</button>
+      <a class="btn-ghost" href="index.html">回学习页做题</a>
+    </div>
+  </div>
+
+  <div id="wbList"></div>
+  <div id="wbPractice" hidden></div>
+</main>
+
+<script src="assets/wrong-book.js"></script>
+<script src="data/day01.js"></script>
+<script src="data/day02.js"></script>
+<script src="data/day03.js"></script>
+<script src="data/day04.js"></script>
+<script src="data/bank/day01.js"></script>
+<script src="data/bank/day02.js"></script>
+<script src="data/bank/day03.js"></script>
+<script src="data/bank/day04.js"></script>
+<script src="assets/wrong.js"></script>
+</body>
+</html>
