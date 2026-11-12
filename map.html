@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>概念地图 · C++ 三天</title>
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  /* ================= 概念地图（独立入口，不影响学习页） ================= */
+  :root {
+    --d1-bg: #EAF7F1; --d1-bd: #BEE0D0; --d1-ink: #2C6E52;
+    --d2-bg: #EAF1FE; --d2-bd: #C3D7F7; --d2-ink: #2E57E8;
+    --d3-bg: #F3EDFF; --d3-bd: #D6C6F6; --d3-ink: #6B3FD4;
+  }
+  body.map-page { background: #F8FAFE; }
+  .tn-links a.on { background: var(--lav); border-color: #C9D8FB; color: var(--purple-ink); font-weight: 600; }
+  /* 站点的 body::before 是覆盖全页的渐变层，非定位内容会被它压暗，这里必须抬层 */
+  .mapwrap { max-width: 1220px; margin: 0 auto; padding: 26px 20px 60px; position: relative; z-index: 1; }
+  .maphead { padding: 6px 4px 18px; }
+  .maphead h1 { font-size: 30px; margin: 0 0 8px; letter-spacing: .3px; color: var(--ink); }
+  .mapsub { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.7; }
+  .maplegend { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 14px; }
+  .lg { display: inline-flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink-2);
+        padding: 5px 11px; border-radius: 999px; background: #fff; border: 1px solid var(--line);
+        flex: none; white-space: nowrap; }
+  .lg i { width: 10px; height: 10px; border-radius: 3px; display: inline-block; }
+  .lg.d1 i { background: var(--d1-bg); border: 1px solid var(--d1-bd); }
+  .lg.d2 i { background: var(--d2-bg); border: 1px solid var(--d2-bd); }
+  .lg.d3 i { background: var(--d3-bg); border: 1px solid var(--d3-bd); }
+  .lg.line i { width: 22px; height: 0; border-radius: 0; border-top: 2px dashed #9AA3C0; }
+
+  .mapstage { position: relative; margin: 8px auto 0; }
+  .mapscroll { overflow-x: auto; overflow-y: hidden; padding-bottom: 8px; }
+  .mapstage > svg { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 1; }
+  .mapstage .band {
+    position: absolute; left: 0; right: 0; z-index: 0;
+    border-radius: 16px; background: #fff; border: 1px solid #E9EDF8;
+  }
+  .bandname {
+    position: absolute; left: 18px; font-size: 12.5px; font-weight: 600; letter-spacing: .4px;
+    color: #6B7391; z-index: 2;
+  }
+  .node {
+    position: absolute; width: 168px; box-sizing: border-box; z-index: 3;
+    padding: 9px 11px 10px; border-radius: 12px;
+    background: #fff; border: 1px solid var(--line);
+    box-shadow: 0 1px 2px rgba(19,11,67,.05);
+    cursor: pointer; text-align: left;
+    font-family: inherit; color: var(--ink);
+    transition: transform .12s, box-shadow .15s, border-color .15s;
+  }
+  .node:hover { transform: translateY(-2px); box-shadow: 0 6px 16px rgba(19,11,67,.10); }
+  .node .nrow { display: flex; align-items: center; gap: 6px; }
+  .node .nnum { font-size: 11.5px; font-weight: 700; color: #fff; border-radius: 6px; padding: 1px 6px; }
+  .node .nst { margin-left: auto; font-size: 11px; font-weight: 700; color: #6B7391; letter-spacing: .2px; }
+  .node .nt { display: block; margin-top: 6px; font-size: 13px; line-height: 1.35; font-weight: 600; }
+  .node .nx { display: block; margin-top: 5px; font-size: 11px; color: #6B7391; }
+  .node.d1 { background: var(--d1-bg); border-color: var(--d1-bd); }
+  .node.d1 .nnum { background: var(--d1-ink); }
+  .node.d2 { background: var(--d2-bg); border-color: var(--d2-bd); }
+  .node.d2 .nnum { background: var(--d2-ink); }
+  .node.d3 { background: var(--d3-bg); border-color: var(--d3-bd); }
+  .node.d3 .nnum { background: var(--d3-ink); }
+  .node .nst.ok { color: #1F7A4D; }
+
+  /* 手机：按 Day 分组的树状列表 */
+  .maplist { display: none; }
+  .mgroup { margin: 18px 0 0; }
+  .mgh { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 700; color: var(--ink-2); margin: 0 0 8px 2px; }
+  .mgh i { width: 8px; height: 8px; border-radius: 3px; display: inline-block; }
+  .mrow {
+    display: flex; align-items: center; gap: 9px; width: 100%; box-sizing: border-box;
+    background: #fff; border: 1px solid var(--line); border-radius: 11px;
+    padding: 10px 12px; margin: 0 0 8px; font-family: inherit; text-align: left;
+    color: var(--ink); font-size: 13.5px; cursor: pointer;
+  }
+  .mrow .mid { font-size: 11.5px; font-weight: 700; color: #fff; border-radius: 5px; padding: 1px 5px; flex: none; }
+  .mrow .mtt { flex: 1; min-width: 0; }
+  .mrow .mtt em { display: block; font-style: normal; font-size: 11px; color: #6B7391; margin-top: 2px; }
+  .mrow .mst { font-size: 11.5px; font-weight: 700; color: #6B7391; flex: none; }
+  .mrow .mst.ok { color: #1F7A4D; }
+  .mrow.d1 .mid { background: var(--d1-ink); }
+  .mrow.d2 .mid { background: var(--d2-ink); }
+  .mrow.d3 .mid { background: var(--d3-ink); }
+
+  @media (max-width: 900px) {
+    .mapstage { display: none; }
+    .maplist { display: block; }
+    .mapwrap { padding: 20px 16px 80px; }
+    .maphead h1 { font-size: 24px; }
+  }
+</style>
+</head>
+<body class="map-page">
+<header class="topnav" id="topnav">
+  <a class="brand" href="index.html"><span class="brand-mark">C++</span><span class="brand-name">cpp·study</span></a>
+  <nav class="tn-links">
+    <a href="index.html">学习</a>
+    <a href="index.html#practice1">练习</a>
+    <a href="index.html#task1">动手</a>
+    <a class="on" href="map.html" aria-current="page">概念地图</a>
+  </nav>
+  <div class="tn-right">
+    <span class="tn-prog" id="mProg">已过 0/30</span>
+  </div>
+</header>
+
+<main class="mapwrap">
+  <div class="maphead">
+    <h1>你的 C++ 之旅</h1>
+    <p class="mapsub">30 张卡按先后依赖排开。虚线只表示「先学左边，再学右边」这一条主线，不代表先后顺序限制；点任意一张都能直接进去。</p>
+    <div class="maplegend">
+      <span class="lg d1"><i></i>Day 1 · 引用与传参</span>
+      <span class="lg d2"><i></i>Day 2 · 指针与内存</span>
+      <span class="lg d3"><i></i>Day 3 · 类与对象</span>
+      <span class="lg line"><i></i>前置关系</span>
+    </div>
+  </div>
+
+  <div class="mapscroll">
+    <div class="mapstage" id="mapStage">
+      <svg id="mapLines" aria-hidden="true"></svg>
+    </div>
+  </div>
+
+  <div class="maplist" id="mapList" aria-label="按天分组的概念列表"></div>
+</main>
+
+<script src="assets/map.js"></script>
+</body>
+</html>
