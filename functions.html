@@ -507,6 +507,33 @@
   .ui-fsbtn{border:0;border-radius:0;background:transparent;padding:7px 10px}
   .ui-fsbtn.on{background:var(--lav);color:var(--purple-ink);font-weight:600}
 
+  /* ============================================================
+     与学习站对齐：字号/行高/底色以 cpp-study 的计算样式为基准
+     只改排版和底色，不动卡片内容、语音、AI、跳转
+     ============================================================ */
+  :root{--body-text:#2B2350;--small-line:25.35px}
+  html[data-eye="1"]{--body-text:#463A17}
+  body{line-height:28px}
+  h1{font-size:21px;line-height:28.35px}
+  header{background:var(--surface);border-bottom:1px solid var(--line);padding:20px 0 12px}
+  .sec h2{font-size:20px;line-height:35px}
+  .fname,.fname.sm{font-size:16.5px;line-height:28.875px}
+  #fIpa{font-size:13px;line-height:var(--small-line);color:var(--muted)}
+  #fMean{font-size:14.5px;line-height:25.375px;color:var(--body-text)}
+  .plainline{font-size:14.5px;line-height:25.375px;color:var(--body-text)}
+  .brow p{font-size:14.5px;line-height:25.375px;color:var(--body-text)}
+  .brow p.small{font-size:13px;line-height:var(--small-line)}
+  .brow .k{font-size:13px;line-height:var(--small-line)}
+  .hint{font-size:13px;line-height:var(--small-line)}
+  .code{font-size:13.5px;line-height:24.3px}
+  .carebody{font-size:14.5px;line-height:25.375px;color:var(--body-text)}
+  .carebody p.sayl{font-size:14.5px;line-height:25.375px}
+  .note{font-size:13px;line-height:var(--small-line)}
+  .bnote{font-size:13px;line-height:var(--small-line)}
+  .face{background:var(--surface)}
+  .hwask{font-size:14.5px;line-height:25.375px}
+  .hwask code,.note code{font-size:13.34px;line-height:23.345px}
+
   /* 卡片底部的“哪天讲过这个” */
   .rellink{
     display:block;margin-top:14px;padding:10px 12px;border-radius:10px;line-height:1.65;
@@ -3602,43 +3629,6 @@ function renderAll(){
 }
 
 renderAll();
-
-/* 深链：?f=名字（可选 &g=分组）—— 从知识卡跳来时直接落到那张卡 */
-(function(){
-  var m = /[?&]f=([^&#]+)/.exec(location.search + location.hash);
-  if(!m) return;
-  var want = "";
-  try { want = decodeURIComponent(m[1]); } catch(e){ want = m[1]; }
-  var gm = /[?&]g=([^&#]+)/.exec(location.search + location.hash);
-  var gWant = "";
-  if(gm){ try { gWant = decodeURIComponent(gm[1]); } catch(e){ gWant = gm[1]; } }
-  var pool = CARDS.concat(typeof CARE !== "undefined" ? CARE : [], typeof LATER !== "undefined" ? LATER : []);
-  var hit = null;
-  for(var i=0;i<pool.length && !hit;i++){
-    var c = pool[i];
-    if(!c || c.name !== want) continue;
-    if(gWant && c.g !== gWant) continue;
-    hit = c;
-  }
-  if(!hit){ toast("函数卡里没找到「" + want + "」"); return; }
-  ses = { mode:"single", queue:[hit], i:0, flip:false };
-  studyEl.classList.remove("hidden");
-  document.body.style.overflow = "hidden";
-  document.getElementById("finish").classList.add("hidden");
-  document.getElementById("flash").style.display = "";
-  document.getElementById("grades").classList.add("hidden");
-  document.getElementById("gradeHint").classList.remove("hidden");
-  renderStudy();
-  document.getElementById("studyMode").innerHTML = "从知识卡跳来 · <b>" + G[hit.g].name + "</b>";
-  document.getElementById("fTag").textContent = "从知识卡跳来 · " + (hit.later ? "了解即可" : "必背");
-  document.getElementById("gradeHint").textContent = "点卡片翻面看讲解；看完点右上角 × 关闭";
-  /* 单卡查看不打分，避免误点改掉函数卡进度 */
-  document.getElementById("grades").addEventListener("click", function(e){
-    e.stopPropagation();
-    e.preventDefault();
-  }, true);
-})();
-
 })();
 </script>
 </body>
