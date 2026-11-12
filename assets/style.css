@@ -99,8 +99,8 @@
   .concl b { color: #5eead4; font-weight: 600; }
 
   pre.code {
-    background: #0a0e13;
-    border: 1px solid #212934;
+    background: #F7F9FC;
+    border: 1px solid #DDE3F0;
     border-radius: 10px;
     padding: 12px 14px;
     overflow-x: auto;
@@ -111,21 +111,22 @@
   }
   pre.code code {
     font-family: ui-monospace, SFMono-Regular, "Cascadia Code", Consolas, "Courier New", monospace;
-    color: #dbe5f1;
+    color: #1F2937;
     white-space: pre;
     font-variant-ligatures: none;
     font-feature-settings: "liga" 0, "calt" 0;
   }
-  .k { color: #d9b4fb; }
-  .t { color: #9fdcfd; }
-  .s { color: #c3ef93; }
+  /* 浅色代码块 token：全部按 #F7F9FC 实测对比度（见下方浅色皮肤段） */
+  .k { color: #5B21B6; }
+  .t { color: #0B5394; }
+  .s { color: #A31515; }
   /* 注释：去掉 italic（中文没有真斜体，浏览器合成斜体会发虚），
-     绿色取自 VS / Keil 的注释色再提亮：#86cf7d，在 #0a0e13 上实测 10.35:1 */
-  .c { color: #86cf7d; font-style: normal; letter-spacing: .15px; }
+     墨绿 #145C34 在 #F7F9FC 上实测 7.63:1（门槛 7） */
+  .c { color: #145C34; font-style: normal; letter-spacing: .15px; }
   /* 函数名：名字后面紧跟 ( 才标这个类 */
-  .fn { color: #f2d06b; }
+  .fn { color: #6B4A00; }
   /* 数字 token 用 .num：.n 是卡片编号徽章（24×24），两者不能共用类名 */
-  .num { color: #ffc189; }
+  .num { color: #00695C; }
 
   ul.pts { margin: 10px 0 0; padding-left: 18px; font-size: 14px; color: #b9c4d1; }
   ul.pts li { margin: 5px 0; }
@@ -897,7 +898,7 @@ main.stage { position: relative; min-width: 0; padding-bottom: calc(120px + env(
   content: "";
   position: absolute; left: 1px; right: 1px; bottom: 42px;
   height: 48px;
-  background: linear-gradient(180deg, rgba(10,14,19,0), rgba(10,14,19,.96));
+  background: linear-gradient(180deg, rgba(247,249,252,0), rgba(247,249,252,.96));
   pointer-events: none;
   border-radius: 0 0 10px 10px;
 }
@@ -1123,7 +1124,8 @@ body.lock { overflow: hidden; }
    顶条 / 主文字 #130B43　主按钮 #604FCD　亮紫 #7029F5
    导航 #FFFFFF　页面底色 #F8FAFE　顶部渐变 #E2ECFF
    胶囊与 tab 底色 #E1EBFF　侧栏卡 #F8F5FF
-   代码块维持深色 #0a0e13（注释对比度 8.41:1 不变）
+   代码块改为浅灰底 #F7F9FC + 深色正文（与浅色页面一套色），
+   注释墨绿 #145C34 实测 7.63:1，正文 #1F2937 实测 13.92:1
    ============================================================ */
 :root {
   --ink: #130B43;          /* 主文字，白底 17.4:1 */
@@ -1519,22 +1521,23 @@ ul.pts code, p code, .q-text code, .why code, .wa code, .sum-note code, .card co
 .terms code {
   color: #26418E; background: var(--lav-2); border: 1px solid #E1DCFF;
 }
-/* 上面的行内 code 规则不能污染深色代码块：这里还原 */
+/* 上面的行内 code 规则不能污染代码块：这里还原 */
 pre.code, pre.code code {
-  background: #0a0e13;
+  background: #F7F9FC;
   border: 0;
-  color: #dbe5f1;
+  color: #1F2937;
 }
 pre.code {
-  border: 1px solid #1b2330;
+  border: 1px solid #DDE3F0;
   border-radius: 10px;
 }
-pre.code .k { color: #d9b4fb; }
-pre.code .t { color: #9fdcfd; }
-pre.code .s { color: #c3ef93; }
-pre.code .c { color: #86cf7d; }
-pre.code .fn { color: #f2d06b; }
-pre.code .num { color: #ffc189; }
+/* token 全部按 #F7F9FC 实测：k 8.52 / t 7.43 / s 7.44 / c 7.63 / fn 7.64 / num 6.27，正文 13.92 */
+pre.code .k { color: #5B21B6; }
+pre.code .t { color: #0B5394; }
+pre.code .s { color: #A31515; }
+pre.code .c { color: #145C34; }
+pre.code .fn { color: #6B4A00; }
+pre.code .num { color: #00695C; }
 
 /* 每行 = 代码段 + 注释段：宽屏并排（保留原来的行尾注释对齐），窄屏注释换行缩进 */
 pre.code code { display: block; }
@@ -1594,10 +1597,10 @@ pre.code .cline.cmt-only .ccode { display: none; }
   color: #5A4212;
 }
 
-/* ---------- 代码块：保持深色，注释 8.41:1 不变 ---------- */
+/* ---------- 代码块：浅灰底 + 深色正文，注释墨绿 7.63:1 ---------- */
 pre.code {
-  background: #0a0e13;
-  border: 1px solid #1b2330;
+  background: #F7F9FC;
+  border: 1px solid #DDE3F0;
   border-radius: 10px;
 }
 .codewrap.short pre.code { border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; }
