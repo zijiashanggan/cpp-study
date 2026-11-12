@@ -94,7 +94,9 @@
 
     var html = '';
     html += '<h2 class="ptitle">' + esc(t.title) + '</h2>';
-    html += '<div class="pmeta"><span class="pill2">' + esc(t.day) + '</span><span class="pill2">' + t.cases.length + ' 个测试用例</span></div>';
+    html += '<div class="pmeta"><span class="pill2">' + esc(t.day) + '</span>' +
+      '<span class="pill2 lv' + (t.level === '进阶' ? ' lv2' : '') + '">' + esc(t.level || '入门') + '</span>' +
+      '<span class="pill2">' + t.cases.length + ' 个测试用例</span></div>';
     html += cardsBlock(t);
     html += '<p class="pbrief">' + t.brief + '</p>';
     html += '<div class="pio">' + t.io + '</div>';

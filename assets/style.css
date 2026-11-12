@@ -2206,3 +2206,9 @@ html[data-fs="lg"] .rvpanel { zoom: 1.1; }
   .rvtop h1 { font-size: 20px; }
   .rvfoot .btn-main { width: 100%; }
 }
+
+/* 题目难度标签 */
+.pill2.lv { background: #EAF6EC; border-color: #BFDCC4; color: #14532D; }
+.pill2.lv2 { background: #FFF3E2; border-color: #E8CDA4; color: #6B4A12; }
+html[data-eye="1"] .pill2.lv { background: #EDF6E4; border-color: #C6D8B2; color: #2F4A1E; }
+html[data-eye="1"] .pill2.lv2 { background: #FAEFD9; border-color: #E3D0AE; color: #5C430F; }
