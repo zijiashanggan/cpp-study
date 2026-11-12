@@ -106,6 +106,7 @@ function Compile-Code($comp, [string]$dir, [string]$src) {
       return @{ ok = $false; timeout = $true; output = '编译超时（20 秒），请检查是不是写了超大模板或死循环宏。' }
     }
     $out = (Norm-Path $o.Result) + "`n" + (Norm-Path $e.Result)
+    $out = $out.Replace($src, 'main.cpp').Replace($dir + '\', '')
     return @{ ok = (Test-Path $exe); output = $out.Trim(); exe = $exe }
   }
   # MSVC：先 call vcvars64.bat，再 cl
@@ -132,6 +133,7 @@ function Compile-Code($comp, [string]$dir, [string]$src) {
     return @{ ok = $false; timeout = $true; output = '编译超时（20 秒），请检查代码。' }
   }
   $out = (Norm-Path $o.Result) + "`n" + (Norm-Path $e.Result)
+  $out = $out.Replace($src, 'main.cpp').Replace($dir + '\', '')
   return @{ ok = (Test-Path $exe); output = $out.Trim(); exe = $exe }
 }
 
