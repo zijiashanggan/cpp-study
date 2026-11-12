@@ -13,11 +13,12 @@ using namespace std;
 
 void swapRef(int& a, int& b) {
     // TODO: 交换 a 和 b
+    // 本例：调用时 a = 3、b = 8；交换后应是 a = 8、b = 3
 }
 
 int main() {
     int x, y;
-    cin >> x >> y;
+    cin >> x >> y;          // 示例输入：3 8
     swapRef(x, y);
     cout << x << " " << y << endl;
     return 0;
@@ -59,9 +60,12 @@ void swapVal(int a, int b) {
     int t = a; a = b; b = t;
 }
 
+/* 本例：main 里 x = 3、y = 8（cin 读到 3 8）
+   期望三行：3 8（值传递没换成）→ 8 3（指针版换了）→ 3 8（引用版又换回来） */
+
 // 指针版：递门牌号
 void swapPtr(int* a, int* b) {
-    // TODO: 交换 *a 和 *b
+    // TODO: 交换 *a 和 *b；本例 *a = 3、*b = 8，换完应是 8 和 3
 }
 
 // 引用版：递原件
@@ -128,6 +132,9 @@ int main() {
 using namespace std;
 
 // const 引用：能读、不能改，也不会拷贝一份
+/* 本例：main 里 getline 读到 s = "hello"
+   len(s) 应返回 5，first(s) 应返回 'h'；空串时是 0 和 '-' */
+
 int len(const string& s) {
     // TODO: 返回长度
     return 0;
@@ -140,7 +147,7 @@ char first(const string& s) {
 
 int main() {
     string s;
-    getline(cin, s);
+    getline(cin, s);        // 示例输入：hello
     cout << len(s) << " " << first(s) << endl;
     return 0;
 }`,
@@ -159,7 +166,7 @@ char first(const string& s) {
 
 int main() {
     string s;
-    getline(cin, s);
+    getline(cin, s);        // 示例输入：hello
     cout << len(s) << " " << first(s) << endl;
     return 0;
 }`,
@@ -181,12 +188,13 @@ using namespace std;
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;              // 示例输入：5，接着读 1 2 3 4 5
     int* a = new int[n];   // 按运行时数量租地
     for (int i = 0; i < n; i++) cin >> a[i];
 
     int sum = 0, mx = a[0];
     // TODO: 累加求和，并求最大值
+    // 本例 n = 5、数组 1 2 3 4 5：sum = 15、mx = 5，输出 15 5
 
     cout << sum << " " << mx << endl;
     // TODO: 把地还回去
@@ -227,6 +235,9 @@ int main() {
     starter: `#include <iostream>
 using namespace std;
 
+/* 本例：n = 5，数组是 1 2 3 4 5
+   kind(a) 应返回 "decay"，sum(a, 5) 应得 15 → 输出 decay 15 */
+
 // 数组一进函数就退化成指针
 const char* kind(int a[]) {
     // TODO: sizeof(a) 和 sizeof(int*) 相等就返回 "decay"
@@ -242,7 +253,7 @@ int sum(int a[], int n) {
 int main() {
     int a[100];
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：5，接着读 1 2 3 4 5
     for (int i = 0; i < n; i++) cin >> a[i];
     cout << kind(a) << " " << sum(a, n) << endl;
     return 0;
@@ -264,7 +275,7 @@ int sum(int a[], int n) {
 int main() {
     int a[100];
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：5，接着读 1 2 3 4 5
     for (int i = 0; i < n; i++) cin >> a[i];
     cout << kind(a) << " " << sum(a, n) << endl;
     return 0;
@@ -284,6 +295,9 @@ int main() {
     io: '输入：无。输出：按对象出生 / 退房顺序打印 6 行，编号是构造时传进来的整数。',
     starter: `#include <iostream>
 using namespace std;
+
+/* 本例：main 里依次构造编号 1、2、3 的三个对象
+   期望输出 ctor 1 → ctor 2 → dtor 2 → ctor 3 → dtor 3 → dtor 1 */
 
 class Box {
     int id;
@@ -350,13 +364,15 @@ public:
     Track(const Track& o) : v(o.v) {
         // TODO: 拷贝次数 +1
     }
+    /* 本例 a = 5、b = 9：x 拷给 y、z 拷给 w，一共 2 次拷贝
+       输出「2 5 9」——拷贝次数、y 的值、w 的值 */
     int val() const { return v; }
 };
 int Track::copies = 0;
 
 int main() {
     int a, b;
-    cin >> a >> b;
+    cin >> a >> b;          // 示例输入：5 9
     Track x(a);
     Track y = x;      // 拷贝构造一次
     Track z(b);
@@ -381,7 +397,7 @@ int Track::copies = 0;
 
 int main() {
     int a, b;
-    cin >> a >> b;
+    cin >> a >> b;          // 示例输入：5 9
     Track x(a);
     Track y = x;
     Track z(b);
@@ -412,6 +428,8 @@ public:
     Box(const Box& o) {
         // TODO: 深拷贝：自己 new 一块，再把值搬过来
     }
+    /* 本例 a = 1、b = 9：x 里存的是 1，y 拷一份后改成 9
+       输出「1 9」——x 没被 y 改动 */
     ~Box() { delete p; }
     void set(int v) { *p = v; }
     int get() { return *p; }
@@ -419,7 +437,7 @@ public:
 
 int main() {
     int a, b;
-    cin >> a >> b;
+    cin >> a >> b;          // 示例输入：1 9
     Box x(a);
     Box y = x;      // 拷贝构造
     y.set(b);       // 只改副本
@@ -476,13 +494,15 @@ public:
     ~Counter() {
         // TODO: 活着的 -1
     }
+    /* 本例 n = 3：keep 加 3 个 tmp，一共造 4 个、最后只剩 keep 活着
+       输出「4 1」 */
 };
 int Counter::made = 0;
 int Counter::alive = 0;
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：3
     Counter keep;              // 一个长期活着的
     for (int i = 0; i < n; i++) {
         Counter tmp;           // 每轮造一个，出作用域就析构
@@ -540,6 +560,8 @@ class Config {
 public:
     static Config& inst() {
         // TODO: 用静态局部变量，只造一次
+        // 本例 a = 1、b = 9：p 和 q 必须是同一个对象，b 会盖掉 a
+        // 期望输出 same 9
         static Config* p = nullptr;
         return *p;
     }
@@ -549,7 +571,7 @@ public:
 
 int main() {
     int a, b;
-    cin >> a >> b;
+    cin >> a >> b;          // 示例输入：1 9
     Config& p = Config::inst();
     p.set(a);
     Config& q = Config::inst();
@@ -574,7 +596,7 @@ public:
 
 int main() {
     int a, b;
-    cin >> a >> b;
+    cin >> a >> b;          // 示例输入：1 9
     Config& p = Config::inst();
     p.set(a);
     Config& q = Config::inst();
@@ -605,8 +627,9 @@ struct Node {
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：3
     // TODO: 输出 sizeof(Node) 和 n 个 Node 的总字节
+    // 本例 n = 3：char 1 + int 4 + 补齐 3 = 8 字节，3 个共 24，输出 8 24
     cout << 0 << " " << 0 << endl;
     return 0;
 }`,
@@ -657,6 +680,8 @@ public:
             cap = nc;
         }
         // TODO: 把 v 放进 p[n]，n 加一
+        // 本例依次 push 1 2 3 4 5：容量 1 → 2 → 4 → 8
+        // 输出第一行 8，第二行 1 2 3 4 5
     }
     int size() const { return n; }
     int capacity() const { return cap; }
@@ -665,7 +690,7 @@ public:
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：5，接着读 1 2 3 4 5
     Dyn d;
     for (int i = 0; i < n; i++) {
         int x;
@@ -706,7 +731,7 @@ public:
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：5，接着读 1 2 3 4 5
     Dyn d;
     for (int i = 0; i < n; i++) {
         int x;
@@ -740,6 +765,7 @@ public:
     Box(int x) : v(x) {}
     int& val() {
         // TODO: 返回成员 v 的引用，别返回局部变量
+        // 本例 a = 3、b = 8：x.val() = b 把 8 写进对象，输出 8
         static int tmp = 0;
         return tmp;
     }
@@ -747,7 +773,7 @@ public:
 
 int main() {
     int a, b;
-    cin >> a >> b;
+    cin >> a >> b;          // 示例输入：3 8
     Box x(a);
     x.val() = b;        // 调用在等号左边
     cout << x.val() << endl;
@@ -789,6 +815,9 @@ int main() {
     starter: `#include <iostream>
 using namespace std;
 
+/* 本例 n = 5：会 new 一个装着 5 的指针，输出 5
+   n = 0 时故意不分配，指针为空，应走判空分支输出 0 */
+
 int safeGet(int* p) {
     // TODO: p 为空返回 0，否则返回 *p
     return 0;
@@ -796,7 +825,7 @@ int safeGet(int* p) {
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：5
     int* p = nullptr;
     if (n != 0) p = new int(n);
     cout << safeGet(p) << endl;
@@ -813,7 +842,7 @@ int safeGet(int* p) {
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：5
     int* p = nullptr;
     if (n != 0) p = new int(n);
     cout << safeGet(p) << endl;
@@ -845,11 +874,13 @@ public:
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：5
     {
         Item s(n);                    // 栈：出作用域自动析构
         Item* h = new Item(n + 1);    // 堆：不 delete 就不析构
         // TODO: 手动把 h 退房
+        // 本例 n = 5：栈对象编号 5、堆对象编号 6
+        // 期望顺序 +5 → +6 → -6 → -5（堆的先退，栈的后退）
     }
     return 0;
 }`,
@@ -865,7 +896,7 @@ public:
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：5
     {
         Item s(n);                    // 栈：出作用域自动析构
         Item* h = new Item(n + 1);    // 堆：要自己管
@@ -889,6 +920,9 @@ int main() {
     starter: `#include <iostream>
 using namespace std;
 
+/* 本例 a = 5、b = 3、c = 4：
+   area(5) 走一个参数的版本得 25，area(3, 4) 走两个参数的版本得 12 */
+
 // 一个参数：正方形
 int area(int s) {
     // TODO
@@ -903,7 +937,7 @@ int area(int w, int h) {
 
 int main() {
     int a, b, c;
-    cin >> a >> b >> c;
+    cin >> a >> b >> c;     // 示例输入：5 3 4
     cout << area(a) << " " << area(b, c) << endl;
     return 0;
 }`,
@@ -920,7 +954,7 @@ int area(int w, int h) {
 
 int main() {
     int a, b, c;
-    cin >> a >> b >> c;
+    cin >> a >> b >> c;     // 示例输入：5 3 4
     cout << area(a) << " " << area(b, c) << endl;
     return 0;
 }`,
@@ -940,6 +974,9 @@ int main() {
     starter: `#include <iostream>
 using namespace std;
 
+/* 本例 n = 3：power(3) 用默认 exp = 2 得 9
+   power(3, 3) 显式传 3 得 27 → 输出 9 27 */
+
 int power(int base, int exp = 2) {
     // TODO: 用循环把 base 乘 exp 次
     return 0;
@@ -947,7 +984,7 @@ int power(int base, int exp = 2) {
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：3
     cout << power(n) << " " << power(n, 3) << endl;
     return 0;
 }`,
@@ -962,7 +999,7 @@ int power(int base, int exp = 2) {
 
 int main() {
     int n;
-    cin >> n;
+    cin >> n;               // 示例输入：3
     cout << power(n) << " " << power(n, 3) << endl;
     return 0;
 }`,
@@ -988,13 +1025,14 @@ public:
     Rect(int a, int b) : w(a), h(b) {}
     int area() const {      // 这个 const 不能删：常对象只能调它
         // TODO: 返回 w * h
+        // 本例 w = 5、h = 3，面积 15
         return 0;
     }
 };
 
 int main() {
     int w, h;
-    cin >> w >> h;
+    cin >> w >> h;          // 示例输入：5 3
     const Rect r(w, h);
     cout << r.area() << endl;
     return 0;
@@ -1013,7 +1051,7 @@ public:
 
 int main() {
     int w, h;
-    cin >> w >> h;
+    cin >> w >> h;          // 示例输入：5 3
     const Rect r(w, h);
     cout << r.area() << endl;
     return 0;
@@ -1039,6 +1077,7 @@ class Acc {
 public:
     Acc() : v(0) {}
     // TODO: 返回类型要改成引用，才能一路点下去
+    // 本例 1 2 3：acc.add(1).add(2).add(3) 都落在同一个对象上，输出 6
     Acc add(int x) {
         v += x;
         return *this;
@@ -1048,7 +1087,7 @@ public:
 
 int main() {
     int a, b, c;
-    cin >> a >> b >> c;
+    cin >> a >> b >> c;     // 示例输入：1 2 3
     Acc acc;
     acc.add(a).add(b).add(c);
     cout << acc.get() << endl;
@@ -1070,7 +1109,7 @@ public:
 
 int main() {
     int a, b, c;
-    cin >> a >> b >> c;
+    cin >> a >> b >> c;     // 示例输入：1 2 3
     Acc acc;
     acc.add(a).add(b).add(c);
     cout << acc.get() << endl;
@@ -1099,6 +1138,7 @@ public:
     ~Box() { delete p; }
     Box& operator=(const Box& o) {
         // TODO: 自赋值保护 + 深拷贝赋值 + 返回 *this
+        // 本例 a = 4、b = 9：y = x 之后 y 也变成 4，输出 4 4
         return *this;
     }
     void set(int v) { *p = v; }
@@ -1107,7 +1147,7 @@ public:
 
 int main() {
     int a, b;
-    cin >> a >> b;
+    cin >> a >> b;          // 示例输入：4 9
     Box x(a), y(b);
     y = x;          // 拷贝赋值
     cout << x.get() << " " << y.get() << endl;
@@ -1133,7 +1173,7 @@ public:
 
 int main() {
     int a, b;
-    cin >> a >> b;
+    cin >> a >> b;          // 示例输入：4 9
     Box x(a), y(b);
     y = x;
     cout << x.get() << " " << y.get() << endl;

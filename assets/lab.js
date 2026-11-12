@@ -101,11 +101,18 @@
     html += '<p class="pbrief">' + t.brief + '</p>';
     html += '<div class="pio">' + t.io + '</div>';
 
-    html += '<table class="cases"><thead><tr><th style="width:50%">输入（stdin）</th><th style="width:50%">期望输出</th></tr></thead><tbody>';
-    t.cases.forEach(function (c, i) {
-      html += '<tr><td><pre>' + (c.stdin ? esc(c.stdin.replace(/\n$/, '')) : '（无输入）') + '</pre></td><td><pre>' + esc(c.expected) + '</pre></td></tr>';
-    });
-    html += '</tbody></table>';
+    var d0 = t.cases[0] || { stdin: '', expected: '' };
+    var hidden = t.cases.length - 1;
+    html += '<div class="pdemo">' +
+      '<div class="pdemo-h">示例</div>' +
+      '<div class="pdemo-b">' +
+      '<div><p>输入</p><pre>' + (d0.stdin ? esc(d0.stdin.replace(/\n$/, '')) : '（无输入）') + '</pre></div>' +
+      '<div><p>输出</p><pre>' + esc(d0.expected) + '</pre></div>' +
+      '</div>' +
+      '<p class="pdemo-n">' + (hidden > 0
+        ? '另有 ' + hidden + ' 组隐藏用例（含边界）用于判分，点「运行」才会显示结果。'
+        : '本题只有这一组用例，可通过它对照检查。') + '</p>' +
+      '</div>';
 
     html += '<div class="editorwrap"><div class="editorbar"><b>main.cpp</b><span>写完整程序；改了会自动存在本机浏览器里</span><span class="sp">' + (passed ? '✓ 已标记跑通' : '') + '</span></div>' +
       '<textarea class="codeedit" id="labCode" spellcheck="false" autocomplete="off"></textarea></div>';
