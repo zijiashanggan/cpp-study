@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#ffffff">
+<title>代码练习（本机真编译） · cpp·study</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23130B43'/%3E%3Ctext x='16' y='22' font-size='15' text-anchor='middle' fill='%23ffffff' font-family='monospace'%3EC%2B%2B%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/style.css">
+<style>
+  body.lab-page { background: #F4F6FD; }
+  .labwrap { max-width: 1120px; margin: 0 auto; padding: 22px 20px 90px; }
+  .labhead h1 { margin: 6px 0 6px; font-size: 27px; color: var(--ink); letter-spacing: -.3px; }
+  .labhead p { margin: 0; color: var(--muted); font-size: 13.5px; line-height: 1.8; max-width: 820px; }
+  .svcrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 14px 0 4px; }
+  .svc { font-size: 12.5px; padding: 5px 11px; border-radius: 999px; border: 1px solid #DDE1F0; background: #fff; color: var(--muted); }
+  .svc.on { color: #146B3A; border-color: #B7E3C6; background: #EFFAF2; }
+  .svc.off { color: #A11B12; border-color: #EFC0BC; background: #FDF0EF; }
+  .svchint { font-size: 12.5px; color: var(--muted); }
+  .svchint code { background: #F1F3FA; border: 1px solid #E3E7F3; border-radius: 5px; padding: 1px 5px; }
+  .dlbox a { font-size: 12.5px; color: #3B4A8C; }
+
+  .labgrid { display: grid; grid-template-columns: 250px minmax(0, 1fr); gap: 18px; margin-top: 16px; align-items: start; }
+  .labnav { background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-sm); padding: 10px; position: sticky; top: 16px; }
+  .labnav b { display: block; font-size: 12.5px; color: var(--muted); padding: 4px 8px 8px; }
+  .labnav button {
+    display: block; width: 100%; text-align: left; font-family: inherit; cursor: pointer;
+    background: transparent; border: 1px solid transparent; border-radius: 9px;
+    padding: 9px 10px; margin-bottom: 4px; color: var(--ink-2); font-size: 13.5px;
+  }
+  .labnav button:hover { background: #F7F9FE; }
+  .labnav button.on { background: #EFEAFF; border-color: #DCD2FF; color: var(--purple-ink); font-weight: 600; }
+  .labnav button span { display: block; font-size: 11.5px; color: var(--muted); font-weight: 400; margin-top: 2px; }
+  .labnav button.on span { color: #6D5BD0; }
+
+  .panel { background: #fff; border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow-sm); padding: 18px; }
+  .ptitle { margin: 0 0 4px; font-size: 20px; color: var(--ink); }
+  .pmeta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+  .pmeta .pill2 { background: #F1F3FA; border: 1px solid #E3E7F3; border-radius: 999px; padding: 2px 9px; }
+
+  details.labcards { border: 1px solid #E7E1FA; background: #FBFAFF; border-radius: 11px; margin: 4px 0 14px; }
+  details.labcards > summary { cursor: pointer; list-style: none; padding: 10px 13px; font-size: 13px; color: var(--purple-ink); font-weight: 600; }
+  details.labcards > summary::-webkit-details-marker { display: none; }
+  details.labcards > summary::after { content: " ▾"; font-weight: 400; }
+  details.labcards[open] > summary::after { content: " ▴"; }
+  .lcbody { padding: 0 13px 12px; }
+  .lc { border-top: 1px dashed #E3DCF7; padding: 10px 0 4px; }
+  .lc h4 { margin: 0 0 5px; font-size: 13.5px; color: var(--ink); }
+  .lc p { margin: 0 0 7px; font-size: 13px; color: var(--ink-2); line-height: 1.75; }
+  .lc .lc-concl { color: #14532D; background: #EFFAF2; border: 1px solid #B7E3C6; border-radius: 8px; padding: 7px 10px; font-size: 12.5px; }
+
+  .pbrief { font-size: 14px; color: var(--ink-2); line-height: 1.85; margin: 8px 0; }
+  .pio { font-size: 13px; color: var(--muted); background: #F7F9FE; border: 1px solid #E7ECF8; border-radius: 9px; padding: 9px 12px; margin: 8px 0 12px; }
+  .cases { width: 100%; border-collapse: collapse; font-size: 12.5px; margin-bottom: 14px; table-layout: fixed; }
+  .cases th, .cases td { border: 1px solid #E7ECF8; padding: 7px 9px; text-align: left; vertical-align: top; }
+  .cases th { background: #F7F9FE; color: var(--muted); font-weight: 600; }
+  .cases pre { margin: 0; font-family: ui-monospace, Consolas, monospace; font-size: 12px; white-space: pre-wrap; word-break: break-word; color: #2B2350; }
+
+  .editorwrap { border: 1px solid #DDE1F0; border-radius: 12px; overflow: hidden; background: #FCFDFF; }
+  .editorbar { display: flex; align-items: center; gap: 8px; padding: 8px 11px; background: #F4F6FD; border-bottom: 1px solid #E7ECF8; font-size: 12px; color: var(--muted); }
+  .editorbar b { color: var(--ink-2); font-size: 12.5px; }
+  .editorbar .sp { margin-left: auto; }
+  textarea.codeedit {
+    width: 100%; min-height: 330px; resize: vertical; border: 0; outline: none;
+    padding: 12px 13px; font-family: ui-monospace, Consolas, "Courier New", monospace;
+    font-size: 13.5px; line-height: 1.75; color: #1E2340; background: #FCFDFF; tab-size: 4;
+  }
+  .lab-runrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 12px 0; }
+  .lab-runrow .btn-main { padding: 9px 18px; font-size: 14px; }
+  .lab-runrow .btn-ghost { padding: 8px 14px; font-size: 13px; }
+  .lab-runrow .kbd { font-size: 12px; color: var(--muted); }
+
+  .labout { display: none; margin-top: 6px; }
+  .labout.show { display: block; }
+  .locompile { background: #FDF0EF; border: 1px solid #EFC0BC; border-radius: 10px; padding: 11px 13px; margin-bottom: 10px; }
+  .locompile b { color: #A11B12; font-size: 13px; }
+  .locompile pre { margin: 8px 0 0; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; line-height: 1.7; white-space: pre-wrap; word-break: break-word; color: #7A1710; }
+  .locase { border: 1px solid #E7ECF8; border-radius: 10px; padding: 10px 12px; margin-bottom: 9px; background: #FCFDFF; }
+  .locase.pass { border-color: #B7E3C6; background: #F4FCF6; }
+  .locase.fail { border-color: #EFC0BC; background: #FFF7F6; }
+  .locase .lch { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font-size: 13px; }
+  .locase .tag2 { font-size: 11.5px; font-weight: 700; padding: 1px 8px; border-radius: 999px; border: 1px solid; }
+  .locase.pass .tag2 { color: #146B3A; border-color: #B7E3C6; background: #EFFAF2; }
+  .locase.fail .tag2 { color: #A11B12; border-color: #EFC0BC; background: #FDF0EF; }
+  .locase .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 8px; }
+  .locase .cols p { margin: 0 0 3px; font-size: 11.5px; color: var(--muted); }
+  .locase pre { margin: 0; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; line-height: 1.65; white-space: pre-wrap; word-break: break-word; background: #fff; border: 1px solid #E7ECF8; border-radius: 7px; padding: 7px 9px; color: #2B2350; }
+  .losum { font-size: 13.5px; font-weight: 600; margin-bottom: 9px; }
+  .losum.ok { color: #146B3A; }
+  .losum.no { color: #A11B12; }
+
+  .passrow { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 14px; font-size: 13px; color: var(--muted); }
+  .passrow input { width: 16px; height: 16px; }
+  details.answer { border: 1px solid #E7ECF8; border-radius: 11px; margin-top: 12px; background: #FBFCFF; }
+  details.answer > summary { cursor: pointer; list-style: none; padding: 10px 13px; font-size: 13px; color: var(--ink-2); font-weight: 600; }
+  details.answer > summary::-webkit-details-marker { display: none; }
+  details.answer.locked > summary { color: #9AA3BD; }
+  details.answer pre { margin: 0 13px 13px; padding: 11px 13px; background: #0a0e13; color: #dbe5f1; border-radius: 9px; font-family: ui-monospace, Consolas, monospace; font-size: 12.5px; line-height: 1.75; overflow: auto; }
+  details.answer.locked pre { display: none; }
+
+  @media (max-width: 860px) {
+    .labgrid { grid-template-columns: 1fr; }
+    .labnav { position: static; display: flex; flex-wrap: wrap; gap: 6px; }
+    .labnav b { width: 100%; padding-bottom: 2px; }
+    .labnav button { width: auto; flex: 1 1 46%; }
+  }
+  @media (max-width: 600px) {
+    .labwrap { padding: 18px 14px 80px; }
+    .labhead h1 { font-size: 23px; }
+    .svcrow, .lab-runrow, .dlbox { display: none !important; }
+    .panel { padding: 14px; }
+    .locase .cols { grid-template-columns: 1fr; }
+    textarea.codeedit { min-height: 260px; font-size: 13px; }
+  }
+</style>
+</head>
+<body class="lab-page">
+<header class="topnav" id="topnav">
+  <a class="brand" href="index.html"><span class="brand-mark">C++</span><span class="brand-name">cpp·study</span></a>
+  <nav class="tn-links">
+    <a href="index.html">学习</a>
+    <a href="index.html#practice1">练习</a>
+    <a href="index.html#task1">动手</a>
+    <a href="map.html">概念地图</a>
+    <a class="on" href="lab.html" aria-current="page">代码练习</a>
+  </nav>
+  <div class="tn-right">
+    <span class="tn-prog" id="labProg">已跑通 0/4</span>
+  </div>
+</header>
+
+<main class="labwrap">
+  <div class="labhead">
+    <h1>代码练习 · 本机真编译</h1>
+    <p>在网页里写代码，点「运行」，由这台电脑上的 g++ / cl.exe 真编译、真跑测试，逐条告诉你 PASS / FAIL 和期望值、实际值。不用打开 Visual Studio，也不用装 Node 或 Python。</p>
+    <div class="svcrow">
+      <span class="svc" id="svcState">正在检测本地服务…</span>
+      <span class="svchint" id="svcHint">没连上？双击 <code>lab-server\start-lab.bat</code> 启动服务，再回到这里刷新。</span>
+      <span class="dlbox"><a href="lab-server.zip" download>下载启动包</a></span>
+    </div>
+  </div>
+
+  <div class="labgrid">
+    <aside class="labnav" id="labNav" aria-label="练习题列表"></aside>
+    <section class="panel" id="labPanel"></section>
+  </div>
+</main>
+
+<script src="data/day01.js"></script>
+<script src="data/day02.js"></script>
+<script src="data/day03.js"></script>
+<script src="data/day04.js"></script>
+<script src="assets/lab-tasks.js"></script>
+<script src="assets/lab.js"></script>
+</body>
+</html>
