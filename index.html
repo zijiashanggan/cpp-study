@@ -26,6 +26,7 @@
       <a href="map.html">概念地图</a>
       <a href="lab.html">代码练习</a>
       <a href="wrong.html">错题本</a>
+      <a href="#review" id="navReview">复习<i class="rvbadge hide" id="rvNavBadge"></i></a>
     </nav>
     <div class="tn-right">
       <span class="tn-prog" id="tnProg">已过 0/43</span>
@@ -106,6 +107,14 @@
             </div>
             <p class="rail-tip" id="railTip">先读讲解，再自己敲一遍。</p>
             <button class="rail-btn" id="railNext" type="button">继续下一张</button>
+          </div>
+          <div class="rail-card" id="rvCard">
+            <div class="rail-head">
+              <b>知识卡复习</b>
+              <span class="rail-badge" id="rvDue">空</span>
+            </div>
+            <p class="rail-tip" id="rvNext">三关全过的卡会从第二天开始回来。</p>
+            <button class="rail-btn" id="rvStart" type="button">今天没有到期的</button>
           </div>
           <div class="rail-card rail-mini">
             <b>换一天 / 刷题</b>
@@ -285,5 +294,6 @@
 <script src="assets/wrong-book.js"></script>
 <script src="assets/app.js"></script>
 <script src="assets/ui.js"></script>
+<script src="assets/review.js"></script>
 </body>
 </html>

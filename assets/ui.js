@@ -966,5 +966,6 @@
     A.showDay = showDay;
     A.showCard = showCard;
     A.state = ST;
+    A.cardHtml = cardHtml;   /* 复习队列复用同一套卡片渲染 */
   }
 })();

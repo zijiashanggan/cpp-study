@@ -2148,14 +2148,61 @@ html[data-eye="1"] .mrow { background: var(--surface); border-color: #E8DCC2; }
 html[data-fs="sm"] .wrap,
 html[data-fs="sm"] .mapwrap,
 html[data-fs="sm"] .labwrap,
-html[data-fs="sm"] .wbwrap { zoom: .93; }
+html[data-fs="sm"] .wbwrap,
+html[data-fs="sm"] .rvpanel { zoom: .93; }
 html[data-fs="lg"] .wrap,
 html[data-fs="lg"] .mapwrap,
 html[data-fs="lg"] .labwrap,
-html[data-fs="lg"] .wbwrap { zoom: 1.1; }
+html[data-fs="lg"] .wbwrap,
+html[data-fs="lg"] .rvpanel { zoom: 1.1; }
 
 @media (max-width: 600px) {
   .ui-btn { font-size: 11.5px; padding: 6px 8px; }
   .ui-fs b { min-width: 22px; font-size: 11px; }
   .uiprefs { gap: 4px; }
+}
+
+/* ============================================================
+   知识卡复习队列（入口徽标 + 全屏复习面板，复用 .card 渲染）
+   到期判定：本机日历日 00:00，due <= 今天 即到期；间隔 1/2/4/7/15/30 天
+   ============================================================ */
+.rvbadge {
+  display: inline-block; min-width: 17px; height: 17px; line-height: 17px;
+  margin-left: 5px; padding: 0 5px; border-radius: 999px;
+  background: #EFEAFF; border: 1px solid #DCD2FF; color: var(--purple-ink);
+  font-size: 10.5px; font-weight: 700; font-style: normal; text-align: center;
+  vertical-align: 1px;
+}
+.rvbadge.hide { display: none; }
+
+.rvpanel {
+  position: fixed; inset: 0; z-index: 120;
+  background: var(--page); overflow-y: auto; -webkit-overflow-scrolling: touch;
+}
+.rvwrap { max-width: 980px; margin: 0 auto; padding: 26px 20px 90px; }
+.rvtop { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.rvtop h1 { margin: 0; font-size: 24px; letter-spacing: -.2px; color: var(--ink); }
+#rvCount { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.rvtop #rvClose { margin-left: auto; }
+.rvsub { margin: 8px 0 18px; font-size: 13px; color: var(--muted); line-height: 1.8; }
+.rvitem { margin-bottom: 24px; }
+.rvhead { display: flex; align-items: center; gap: 10px; font-size: 12.5px; color: var(--muted); margin-bottom: 8px; }
+.rvstep {
+  background: var(--lav); border: 1px solid #DCD2FF; color: var(--purple-ink);
+  border-radius: 999px; padding: 1px 9px; font-weight: 600;
+}
+.rvitem .card { margin: 0; }
+.rvfoot { display: flex; justify-content: flex-end; margin-top: 10px; }
+.rvfoot .btn-main { padding: 9px 18px; font-size: 13.5px; }
+.rvdone {
+  background: var(--surface); border: 1px solid var(--line); border-radius: 12px;
+  padding: 26px 20px; text-align: center; box-shadow: var(--shadow-sm);
+}
+.rvdone h3 { margin: 0 0 8px; font-size: 17px; color: var(--ink); }
+.rvdone p { margin: 0; font-size: 13.5px; color: var(--ink-2); }
+
+@media (max-width: 600px) {
+  .rvwrap { padding: 18px 14px 80px; }
+  .rvtop h1 { font-size: 20px; }
+  .rvfoot .btn-main { width: 100%; }
 }
