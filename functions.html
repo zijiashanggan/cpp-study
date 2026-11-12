@@ -541,6 +541,7 @@
     font-size:12.5px;text-decoration:none;
   }
   .rellink:hover{text-decoration:none;background:#D8E5FF}
+  .rellink + .rellink{margin-top:8px}
   .rellink b{color:var(--purple-ink)}
   .rellink.none{border-style:dashed;background:var(--tint-2);color:var(--muted)}
   .rellink .go{float:right;white-space:nowrap;margin-left:8px}
@@ -876,6 +877,8 @@ var D = [
 ['tool','std::max','两个数里挑大的那个。','const T& std::max(const T& a, const T& b);','返回较大的一个。','返回：引用（只读）；两个参数类型必须一致。','std::max(1, v.size()) 编不过，int 和 size_t 是不同类型；要写成 std::max<size_t>(1, v.size())，或者先把类型统一。','int m = std::max(3, 7);  // 7'],
 ['tool','std::min','两个数里挑小的那个。','const T& std::min(const T& a, const T& b);','返回较小的一个。','返回：引用（只读）；两个参数类型必须一致。','别把返回值接到普通引用上再改它，它是只读引用；同样的类型不一致问题会报一大段看不懂的模板错误。','int m = std::min(3, 7);  // 3'],
 ['tool','std::make_unique','在堆上造一个对象，并交给一个会自动打扫的管家。','std::unique_ptr<T> std::make_unique(Args&&... args);','创建独占所有权的智能指针（C++14 起才有）。','args：构造 T 用的参数；返回：unique_ptr<T>。','它是 C++14 才有的，Keil AC5、gcc 4.8 默认的 C++11 编不过；unique_ptr 不能复制，只能 std::move 转让。','auto p = std::make_unique<int>(42); printf("%d\\n", *p);', '平台差异：Linux 上推荐用；MCU 老工具链多半用不了。'],
+['tool','面向对象','把“数据”和“操作数据的函数”绑在一起，按现实里的东西来组织代码。','class 类名 { 数据; 函数; };','把一堆散落的变量和函数收成一个“对象”，让代码像在描述现实里的东西。','面向对象三大件：封装、继承、多态；这张卡先讲“数据和操作绑在一起”。','不是所有东西都硬套成类；小工具函数没必要为了“面向对象”塞进类里。','class LED{ public: void on(){ s=1; } int s=0; };','一句话：对象 = 数据 + 能对它做的事。'],
+['tool','封装','把数据藏起来，只留几个公开的函数当门，别人不能直接乱改。','private: 数据;   public: 函数;','保护内部状态，以后改实现时外面不用跟着改。','class 默认 private，struct 默认 public；用 public/private 控制谁能看。','全 private 又不给任何 public 函数，这个类就没法用了；封装不是“全藏起来”，是“留对外的门”。','class A{ int v; public: int get() const { return v; } };','一句话：该藏的藏，该开的门开。'],
 ['tool','std::swap','两个人手里的东西互换一下。','void std::swap(T& a, T& b);','交换两个同类型变量的值。','在 <utility> 里；无返回值。','数组不能直接 swap 内容（交换的是指针，对数组名用不了）；两个 vector 之间 swap 只换内部指针，很快。','int a = 1, b = 2; std::swap(a, b);  // a=2, b=1'],
 ['tool','std::find','在一排东西里找一个，找到就把位置指给你。','InputIt std::find(InputIt first, InputIt last, const T& value);','在区间里从头到尾查找 value。','返回：指向第一个相等元素的迭代器；找不到返回 last。','找不到返回的是 last，不是 NULL；判断要写 it != v.end()，直接 *it 就崩。','auto it = std::find(v.begin(), v.end(), 7); if (it != v.end()) puts("有");'],
 ['tool','std::reverse','把一排东西整体掉个头。','void std::reverse(BidirIt first, BidirIt last);','反转区间 [first, last)。','无返回值，原地修改。','s.rbegin()/rend() 是“反向遍历”，不是反转；真要反转得用 std::reverse(s.begin(), s.end())。','std::string s = "abc"; std::reverse(s.begin(), s.end());  // cba'],
@@ -891,12 +894,14 @@ var D = [
 ['cmem','friend','给信得过的人一把备用钥匙，允许它直接看私有成员。','friend 返回类型 函数名(参数);   或   friend class 类名;','运算符重载、两个类紧密协作时用。','写在类里；友元不是成员，没有 this。','友元会破坏封装，能不用就不用；友元关系不能继承，也不互相传递。','class Box{ int v; friend int peek(const Box&); };'],
 ['heap','构造函数','对象一造出来，自动执行的那段初始化代码。','类名(参数);   // 没有返回值，名字和类名一样','给成员赋初值、申请资源。','可以重载、可以有默认参数；不写编译器会送一个默认构造。','构造函数不能手动调用 a.A()；有指针成员时记得在初始化列表里置空。','class A{ public: A(int x):x(x){} int x; };'],
 ['heap','拷贝构造函数','用一个已经存在的对象，复制出一个新对象。','类名(const 类名& other);','传值、返回对象、显式复制时调用。','参数必须是 const 引用，否则会无限递归。','默认只做浅拷贝，类里有指针时两个对象指同一块内存，析构 double free；要自己写深拷贝。','A(const A& o){ p = new int(*o.p); }'],
+['heap','浅拷贝','只复制指针地址，不复制它指向的那块内存，两个对象共用一份数据。','默认拷贝构造 / 默认 operator= 就是浅拷贝','成员都是普通值时没问题；有指针、有资源时就会出大问题。','浅拷贝复制的是成员的值；指针成员复制的是地址。','两个对象指向同一块堆，析构时 delete 两次 → double free；要自己写深拷贝（新申请一块再复制内容）。','A b = a;  // 指针成员只复制地址','一句话：浅拷贝共用一块内存，析构两次就炸。'],
 ['heap','析构函数','对象快没了的时候，自动执行的清理代码。','~类名();   // 无参数、无返回值、不能重载','释放 new 出来的内存、关文件、解锁。','没有参数；一个类只有一个析构函数。','基类析构要写 virtual，否则通过基类指针 delete 派生对象时派生类析构不跑，资源泄漏。','~A(){ delete[] p; }'],
 ['heap','初始化列表','在构造函数冒号后面，直接把成员的初值点好。','类名(参数) : 成员1(值1), 成员2(值2) {}','初始化 const 成员、引用成员和没有默认构造的成员对象。','初始化顺序按成员声明顺序，不按你写的顺序。','成员初始化顺序看声明不看列表；在函数体里赋值，对 const 和引用成员直接编不过。','A(int x):x(x),r(x){}'],
 ['heap','= default / = delete','告诉编译器“这个默认版本我要”，或者“这个版本不许有”。','类名() = default;   类名(const 类名&) = delete;','保留默认行为，或者禁止拷贝、禁止隐式转换。','只能用在特殊成员函数上；= delete 的版本被调用会编不过。','手写一个构造函数后，默认构造就不再自动生成，要补 = default；= delete 是编译期拦住，不是运行时报错。','A() = default;  A(const A&) = delete;'],
 /* ---------- C++ 关键字与语法（对照学习站 Day 1–4 补卡） ---------- */
 ['tool','const','给变量或参数贴上“只读”封条。','const 类型 名字 = 值;','防止误改、表达接口承诺。','能修饰变量、参数、返回值、成员函数。','const int* p 是不能改指向的内容；int* const p 是不能改指针本身，两个 const 位置含义不同。','const int n = 10;'],
 ['cmem','static（局部 / 文件）','函数里的 static 只初始化一次；文件里的 static 别人看不见。','static 类型 名字;','函数内做“记忆”，全局或函数前限制链接范围。','局部 static 生命周期到程序结束；全局 static 只在本编译单元可见。','局部 static 的初始化在 C++11 起是线程安全的，但读写要自己保护；别把大对象放局部 static 占着不放。','static int count = 0;'],
+['cmem','volatile','告诉编译器“这个值随时会被外面改，每次都去内存里重新读，别缓存”。','volatile 类型 名字;','硬件寄存器、中断里会改的变量，必须每次都重新读。','不保证原子性，也不解决多线程竞争。','volatile 不等于线程安全；它只防编译器优化，不防 CPU 乱序和多核缓存。','volatile int flag = 0;  // 中断里会改它','一句话：volatile 管“别优化”，不管“别打架”。'],
 ['io','namespace / ::','把一堆名字装进一个盒子，用的时候写“盒子::名字”。','namespace 名字 { ... }   名字::成员','避免不同库里的同名函数打架。',':: 是作用域解析运算符；std:: 就是标准库这个盒子。','头文件里别写 using namespace std;，会把一堆名字倒进别人的作用域；:: 前面空着表示全局。','namespace net { int open(); }  net::open();'],
 ['math','位运算符','直接对二进制位做与、或、异或、取反、移位。','&  |  ^  ~  <<  >>','操作寄存器、标志位、协议字段。','位运算只对整数类型有意义；移位位数别超过类型宽度。','& 和 && 不是一回事；1 << 31 对 int 是未定义行为，要用 1u << 31；右移负数结果由实现决定。','flags |= (1u << 3);'],
 ['fmt','bool','只装 true / false 两个值的类型。','bool 名字 = true;','表示判断结果，比 int 的 0/1 更清楚。','常见实现占 1 字节；非 0 转 true，0 转 false。','bool 打印默认是 1/0，不是 true/false；别拿它和 TRUE 宏混用。','bool ok = (n > 0);'],
@@ -2012,6 +2017,76 @@ int main(){
     show(a, 3);                     // 1 2 3
     return 0;
 }`
+},
+'tool:面向对象': {
+  s: 'ob-ject o-ri-en-ted ｜ /ˈɒbdʒekt ˈɔːrientɪd/ ｜ 奥布杰克特-奥连提德',
+  o: '**object**（对象）+ **oriented**（朝向……的），就是“面向对象”。',
+  e: `#include <cstdio>
+class LED {
+public:
+    void on(){ state = 1; }
+    void off(){ state = 0; }
+    int state = 0;
+};
+int main(){
+    LED led;
+    led.on();
+    printf("%d\\n", led.state);   // 1
+    led.off();
+    printf("%d\\n", led.state);   // 0
+    return 0;
+}`
+},
+'tool:封装': {
+  s: 'en-cap-su-la-tion ｜ /ɪnˌkæpsjuˈleɪʃn/ ｜ 因-卡普苏-雷申',
+  o: '**en-**（使……）+ **capsule**（胶囊、外壳）→ 把东西装进壳里，只留开口。',
+  e: `#include <cstdio>
+class Counter {
+public:
+    void add(int n){ if(n > 0) v += n; }   // 门在这里：负数加不进去
+    int get() const { return v; }
+private:
+    int v = 0;                             // 外面碰不到
+};
+int main(){
+    Counter c;
+    c.add(3);
+    c.add(-5);                             // 被门挡住
+    printf("%d\\n", c.get());               // 3
+    return 0;
+}`
+},
+'heap:浅拷贝': {
+  s: 'shal-low copy ｜ /ˈʃæləʊ ˈkɒpi/ ｜ 沙漏-考皮',
+  o: '**shallow**（浅的）+ **copy**（复制），只复制表面一层。',
+  e: `#include <cstdio>
+struct Buf {
+    int *p;
+    Buf(int n) : p(new int(n)) {}
+    ~Buf(){ delete p; }
+};
+int main(){
+    Buf a(7);
+    Buf b = a;                       // 浅拷贝：b.p 和 a.p 指向同一块
+    printf("%d %d\\n", *a.p, *b.p);   // 7 7
+    printf("%d\\n", a.p == b.p);      // 1：地址相同
+    b.p = nullptr;                   // 手动躲开 double free；不写这行，析构就会崩
+    return 0;
+}`
+},
+'cmem:volatile': {
+  s: 'vol-a-tile ｜ /ˈvɒlətaɪl/ ｜ 沃勒泰尔',
+  o: '拉丁语 **volare**（飞）→ volatile 就是“易变的、会飞的”，随时可能变。',
+  e: `#include <cstdio>
+volatile int stop = 0;          // 可能被中断/硬件改
+void tick(){ stop = 1; }
+int main(){
+    while(!stop){               // 每次都从内存重新读
+        tick();
+    }
+    printf("%d\\n", stop);       // 1
+    return 0;
+}`
 }
 
 };
@@ -2121,6 +2196,10 @@ var SHORT = {
   'cmem:nullptr': '空指针',
   'cmem:返回引用': '返回别名不是拷贝',
   'cmem:数组退化': '数组变指针',
+  'tool:面向对象': '数据和操作打包',
+  'tool:封装': '藏数据留接口',
+  'heap:浅拷贝': '只复制指针地址',
+  'cmem:volatile': '每次都重新读',
   'care:malloc': '借一块堆内存',
   'care:calloc': '借清零的内存',
   'care:realloc': '换更大的一块',
@@ -2373,18 +2452,18 @@ var REL = {
   'io:std::cout': 'd1c04',
   'tool:std::swap': 'd1c02',
   'tool:std::make_unique': 'd2c07',
-  'heap:new': 'd2c07', 'heap:new[]': 'd2c07', 'heap:delete': 'd2c07', 'heap:delete[]': 'd2c07',
+  'heap:new': 'd2c07', 'heap:new[]': 'd2c10', 'heap:delete': 'd2c07', 'heap:delete[]': 'd2c07',
   'cstr:sizeof': 'd4c37',
   'tool:explicit': 'd3c29',
-  'tool:static 成员变量': 'd4c31',
-  'tool:static 成员函数': 'd4c33',
-  'tool:const 成员函数': 'd4c40',
+  'tool:static 成员变量': ['d4c31', 'd4c32'],
+  'tool:static 成员函数': ['d4c33', 'd4c34', 'd4c35', 'd4c36'],
+  'tool:const 成员函数': ['d4c40', 'd4c41'],
   'cmem:mutable': 'd4c40',
   'heap:operator=': 'd3c26',
-  'cmem:this': 'd4c38',
+  'cmem:this': ['d4c38', 'd4c39'],
   'cmem:friend': 'd4c42',
   'heap:构造函数': 'd3c22',
-  'heap:拷贝构造函数': 'd3c25',
+  'heap:拷贝构造函数': 'd3c23',
   'heap:析构函数': 'd3c27',
   'heap:初始化列表': 'd3c28',
   'heap:= default / = delete': 'd3c30',
@@ -2393,14 +2472,19 @@ var REL = {
   'io:namespace / ::': 'd1c05',
   'math:位运算符': 'd2c18',
   'fmt:bool': 'd2c12',
-  'cmem:struct / class': 'd3c21',
+  'cmem:struct / class': ['d2c11', 'd3c21'],
   'tool:默认参数': 'd2c14',
   'tool:函数重载': 'd2c15',
   'vector:T& 引用': 'd1c01',
   'string:const T&': 'd1c03',
   'cmem:nullptr': 'd2c08',
   'cmem:返回引用': 'd1c06',
-  'cmem:数组退化': 'd2c09'
+  'cmem:数组退化': 'd2c09',
+  'tool:面向对象': 'd3c19',
+  'tool:封装': 'd3c20',
+  'heap:浅拷贝': ['d3c24', 'd3c25'],
+  'cmem:volatile': 'd2c16',
+  'vector:push_back': 'd4c43'
 };
 function relLabel(id){
   var m = /^d([1-4])c(\d+)$/.exec(id || '');
@@ -2849,6 +2933,14 @@ function protoResult(user, c){
 }
 
 /* 卡片背面 HTML：学习浮层和“了解即可”区共用，保证两边结构完全一致 */
+function relHTML(card){
+  var ids = Array.isArray(card.rel) ? card.rel : (card.rel ? [card.rel] : []);
+  if(!ids.length) return '<div class="rellink none">哪天讲过这个？学习站 Day 1–4 暂时没细讲这个，先按必背记。</div>';
+  return ids.map(function(id, i){
+    return '<a class="rellink" href="https://zijiashanggan.github.io/cpp-study/index.html#' + id + '" target="_blank" rel="noopener">' +
+      (i === 0 ? '哪天讲过这个？' : '相关：') + '<b>' + relLabel(id) + '</b><span class="go">打开知识卡 →</span></a>';
+  }).join('');
+}
 function backHTML(card){
   return '<p class="plainline">' + esc(card.plain) + '</p>' +
     '<div class="brow"><div class="k">原型（要几个参数、什么类型、返回什么）</div><pre class="code">' + hl(card.p) + '</pre></div>' +
@@ -2859,9 +2951,7 @@ function backHTML(card){
     '<div class="brow trap"><div class="k">最容易踩的坑</div><p>' + esc(card.trap) + '</p></div>' +
     '<div class="brow"><div class="k">一行示例</div><pre class="code">' + hl(card.ex) + '</pre></div>' +
     (card.note ? '<div class="bnote">' + esc(card.note) + '</div>' : '') +
-    (card.rel
-      ? '<a class="rellink" href="https://zijiashanggan.github.io/cpp-study/index.html#' + card.rel + '" target="_blank" rel="noopener">哪天讲过这个？<b>' + relLabel(card.rel) + '</b><span class="go">打开知识卡 →</span></a>'
-      : '<div class="rellink none">哪天讲过这个？学习站 Day 1–4 暂时没细讲这个，先按必背记。</div>');
+    relHTML(card);
 }
 
 /* ---------- 学习浮层 ---------- */
