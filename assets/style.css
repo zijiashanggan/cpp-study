@@ -1241,7 +1241,7 @@ body::before {
   padding: 2px 4px; border-radius: 6px;
 }
 .crumbs a:hover { color: var(--purple-ink); background: var(--lav-2); }
-.crumbs i { font-style: normal; color: #9C97B5; }
+.crumbs i { font-style: normal; color: var(--muted); }
 .crumb-cur { color: var(--ink); font-weight: 600; }
 .sub { color: var(--ink-2); font-size: 13.5px; margin: 0; line-height: 1.8; }
 .tag {
