@@ -3,7 +3,21 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
-<meta name="theme-color" content="#0d1117">
+<meta name="theme-color" content="#F8FAFE">
+<script>
+/* 皮肤偏好要在第一帧前生效，避免刷新时闪一下深色。
+   键名用函数卡自己的前缀，绝不碰学习站的 cpp_eye_v1 / cpp_fs_v1。 */
+(function(){
+  try{
+    var d = document.documentElement;
+    var eye = localStorage.getItem('cpp_fc_eye_v1') === 'on' ? '1' : '0';
+    var fs  = localStorage.getItem('cpp_fc_fs_v1') || 'md';
+    if(fs !== 'sm' && fs !== 'md' && fs !== 'lg') fs = 'md';
+    d.setAttribute('data-eye', eye);
+    d.setAttribute('data-fs', fs);
+  }catch(e){}
+})();
+</script>
 <title>C/C++ 必背函数记忆卡 · 嵌入式软件方向</title>
 <style>
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -317,6 +331,192 @@
     .fname.sm{font-size:32px}
     .stats{grid-template-columns:repeat(4,1fr)}
   }
+
+  /* ============================================================
+     浅色皮肤：与学习站同一套调色板（--page / --surface / --ink …）
+     护眼模式用 html[data-eye="1"] 覆盖成暖色纸感。
+     字号三档用 --fsk 缩放，和 cpp-study 的 data-fs 行为一致。
+     ============================================================ */
+  :root{
+    --ink:#130B43; --ink-2:#3B3560; --muted:#4A4560;
+    --line:#E3E7F4; --line-2:#EDEFF8; --surface:#FFFFFF; --page:#F8FAFE;
+    --lav:#E1EBFF; --lav-2:#F1EEFF;
+    --purple:#604FCD; --purple-2:#7029F5; --purple-ink:#4B34C6;
+    --blue:#2E57E8; --ok:#1F7A45; --warn:#7A5200; --err:#B42318;
+    --tint:#F1F5FF; --tint-2:#F7F9FC; --field:#FBFCFF;
+    --code-bg:#F7F9FC; --code-line:#DDE3F0;
+    --tok-k:#5B21B6; --tok-t:#0B5394; --tok-s:#A31515; --tok-c:#145C34; --tok-fn:#6B4A00; --tok-num:#00695C;
+    --fsk:1; --fski:1;
+  }
+  html[data-eye="1"]{
+    --page:#FBF4E2; --surface:#FFFCF3; --line:#E8DCC2; --line-2:#F1E7D2;
+    --ink:#2B2415; --ink-2:#4C4128; --muted:#5C5138; --lav:#F4E8CB; --lav-2:#F8F0DC;
+    --blue:#2743B8; --tint:#FBF2DE; --tint-2:#F9F1DF; --field:#FFFDF6;
+    --code-bg:#F5EDDC; --code-line:#E3D7BF; --tok-c:#0F4E2B;
+  }
+  html[data-fs="sm"]{--fsk:.93;--fski:1.0753}
+  html[data-fs="lg"]{--fsk:1.1;--fski:.9091}
+
+  body{background:var(--page);color:var(--ink)}
+  body::before{background:linear-gradient(180deg,#E2ECFF 0%,#EDF3FE 46%,rgba(248,250,254,0) 100%)}
+  html[data-eye="1"] body::before{background:linear-gradient(180deg,#F7EBD2 0%,#FAF2E0 46%,rgba(251,244,226,0) 100%)}
+  .wrap{zoom:var(--fsk)}
+  a{color:var(--blue)}
+  h1,.cnt,.stat b,.sec h2,.modal-card h3,.brow p b,.carebody b{color:var(--ink)}
+  .sub,.hint,.label,.cnt small,.legend,footer,.study-meta,.fhint,.ainote,.note,.fld label{color:var(--muted)}
+  .sec h2 em,.brow .k,.hwres,.chk .lbl{color:var(--ink-2)}
+  .stage{background:linear-gradient(180deg,#EDF3FF,#F7F9FE);border-color:#CFDCF7;color:var(--ink-2)}
+  .stage b{color:var(--ink)}
+  .stage .sub2{color:var(--muted)}
+  .panel,.modal-card,.aibody{background:var(--surface);border-color:var(--line)}
+  .badge{background:var(--surface);border-color:var(--line);color:var(--ink-2)}
+  .badge.must{color:#0F6E63;border-color:#B7E3DA;background:#EEFAF7}
+  .badge.care{color:#7A5200;border-color:#EBD7A9;background:#FDF7E7}
+  .badge.later{color:var(--muted);background:var(--tint)}
+  .badge.total{color:var(--ink-2);border-color:var(--line)}
+  .chip{background:var(--tint-2);border-color:var(--line);color:var(--ink-2)}
+  .chip.new{color:#0F6E63;border-color:#B7E3DA;background:#EEFAF7}
+  .chip.due{color:#7A5200;border-color:#EBD7A9;background:#FDF7E7}
+  .chip.over{color:var(--err);border-color:#F0C4BF;background:#FDF1EF}
+  .chip.empty{color:var(--muted)}
+  .btn{background:var(--tint-2);border-color:var(--line);color:var(--ink-2)}
+  .btn.primary{background:#EEFAF7;border-color:#A9DED3;color:#0F6E63}
+  .btn.primary:hover{background:#DFF5EF}
+  .btn.ghost{background:var(--lav);border-color:#C3D3F5;color:var(--purple-ink)}
+  .btn.ghost:hover{background:#D8E5FF}
+  .btn.danger{background:#FDF1EF;border-color:#EFBAB4;color:var(--err)}
+  .stat{background:var(--tint-2);border-color:var(--line)}
+  .stat span{color:var(--muted)}
+  details.grp{background:var(--surface);border-color:var(--line)}
+  details.grp summary span{color:var(--muted)}
+  details.grp[open] summary{background:var(--tint-2);border-bottom-color:var(--line)}
+  .prow + .prow{border-top-color:var(--line-2)}
+  .pn{color:var(--ink-2)}
+  .dot{background:#DCE3F2}
+  .dot.done{background:#2E9E5B}
+  .dot.cur{background:#C98A00;box-shadow:0 0 0 2px rgba(201,138,0,.18)}
+  .pstat{color:var(--muted)}
+  .pstat.warn{color:var(--err)}
+  .pstat.ok{color:var(--ok)}
+  details.care,details.later{background:var(--surface);border-color:var(--line)}
+  details.care summary{color:#6B4A00}
+  details.care summary span{color:var(--muted)}
+  details.care summary .csub i{color:var(--ink-2)}
+  details.care summary .csub em{color:var(--muted)}
+  details.care[open] summary{border-bottom-color:var(--line)}
+  .carebody{color:var(--ink-2)}
+  .carebody p.sayl{background:var(--tint-2);border-color:var(--line);color:var(--ink-2)}
+  .carebody p.sayl b{color:#0F6E63}
+  .carebody p.sayl + p.sayl b{color:var(--purple-ink)}
+  .plainline{background:#EEFAF7;border-left-color:#2E9E5B;color:#114A3B}
+  .trapbox{background:#FDF1EF;border-left-color:#D06055}
+  .trapbox b{color:var(--err)}
+  .hwcard{background:var(--surface);border-color:var(--line)}
+  .hwcard.done{border-color:#A9DED3}
+  .hwtype{background:var(--lav);color:var(--purple-ink);border-color:#C3D3F5}
+  .hwtype.call{background:#FDF7E7;color:#7A5200;border-color:#EBD7A9}
+  .hwask{color:var(--ink-2)}
+  .hwask code,.note code{background:var(--tint-2);color:var(--purple-ink);border-color:var(--line)}
+  textarea,.aiq,.fld input,.fld select{
+    background:var(--field);border-color:var(--line);color:var(--ink);
+  }
+  textarea:focus,.aiq:focus,.fld input:focus,.fld select:focus{border-color:#8FB0F2}
+  .hwres pre,.code{background:var(--code-bg);border-color:var(--code-line);color:#1F2937}
+  .chk{border-bottom-color:var(--line-2)}
+  .chk.ok .mark{color:var(--ok)}
+  .chk.ng .mark{color:var(--err)}
+  .chk .val{color:var(--ink-2)}
+  .chk.ng .val{color:#8A1F17}
+  .verdict.ok{background:#EDF6E8;color:#14532D;border-color:#8FBF93}
+  .verdict.ng{background:#FDF7E7;color:#6B4A00;border-color:#EBD7A9}
+  footer{border-top-color:var(--line)}
+  /* 浮层也跟着字号三档缩放：用 zoom + 反算宽高，保证仍然铺满屏幕 */
+  .study{
+    background:var(--page);
+    inset:auto; top:0; left:0;
+    width:calc(100vw * var(--fski));
+    height:calc(var(--vvh,100dvh) * var(--fski));
+    zoom:var(--fsk);
+  }
+  .iconbtn{background:var(--surface);border-color:var(--line);color:var(--ink-2)}
+  .study-meta b{color:#0F6E63}
+  .study-bar{background:var(--line-2)}
+  .study-bar i{background:linear-gradient(90deg,#0F766E,#2E57E8)}
+  .face{background:linear-gradient(180deg,#FFFFFF,#FBFCFE);border-color:var(--line)}
+  .face.front{box-shadow:0 10px 30px rgba(35,48,90,.10),inset 0 1px 0 #fff}
+  .tag{color:#0F6E63;border-color:#B7E3DA;background:#EEFAF7}
+  .fipa{color:var(--ink-2)}
+  .spk{background:var(--tint-2);border-color:var(--line);color:#5B6B85}
+  .spk.on{color:#0F6E63;border-color:#8FCFC2;background:#E8F8F3}
+  #toast{background:#FFFFFF;border-color:var(--line);color:var(--ink-2);box-shadow:0 8px 24px rgba(35,48,90,.14)}
+  .bscroll .plainline{color:#114A3B}
+  .brow p{color:var(--ink-2)}
+  .brow p.small{color:var(--muted)}
+  .brow p b{color:var(--ink)}
+  .brow.trap p{color:#8A1F17}
+  .brow.trap .k{color:var(--err)}
+  .brow.say .k{color:#0F6E63}
+  .brow.say p{color:#114A3B}
+  .brow.from .k{color:var(--purple-ink)}
+  .brow.from p{color:var(--ink-2)}
+  .bnote{background:var(--lav-2);border-color:#D6DAF5;color:var(--purple-ink)}
+  .fmean{color:var(--ink-2)}
+  .grades button{background:var(--tint-2);border-color:var(--line);color:var(--ink-2)}
+  .grades button small{color:var(--muted)}
+  .grades button[data-g="good"]{border-color:#A9DED3;background:#EEFAF7}
+  .grades button[data-g="good"] b{color:#0F6E63}
+  .grades button[data-g="fuzzy"]{border-color:#EBD7A9;background:#FDF7E7}
+  .grades button[data-g="fuzzy"] b{color:#7A5200}
+  .grades button[data-g="forgot"]{border-color:#EFBAB4;background:#FDF1EF}
+  .grades button[data-g="forgot"] b{color:var(--err)}
+  .finish .fbig{color:#0F6E63}
+  .finish p{color:var(--muted)}
+  .modal{background:rgba(19,11,67,.28)}
+  .modal-card p{color:var(--ink-2)}
+  .aichat{border-top-color:var(--line)}
+  .aichat::-webkit-scrollbar-thumb{background:var(--line)}
+  .msg.me{background:#E8F8F3;border-color:#A9DED3;color:#114A3B}
+  .msg.ai{background:var(--tint-2);border-color:var(--line);color:var(--ink-2)}
+  .msg.ai.err{background:#FDF1EF;border-color:#EFBAB4;color:#8A1F17}
+  .msg .who{color:var(--muted)}
+  .msg.pending{color:var(--muted)}
+  .linkbtn{color:var(--blue)}
+  .pbtn{background:var(--tint-2);border-color:var(--line);color:var(--ink-2)}
+  .pbtn.on{color:#0F6E63;border-color:#A9DED3;background:#EEFAF7}
+  .note{background:var(--tint-2);border-color:var(--line)}
+  .note b{color:var(--ink)}
+  .note.warn{color:#6B4A00;border-color:#EBD7A9;background:#FDF7E7}
+  .note pre{background:var(--code-bg);border-color:var(--code-line);color:#1F2937}
+
+  /* 代码 token：与学习站同一套浅色 token；注释两套底色都 ≥7:1 */
+  .code .k{color:var(--tok-k)}
+  .code .t{color:var(--tok-t)}
+  .code .s{color:var(--tok-s)}
+  .code .c{color:var(--tok-c);font-style:normal}
+  .code .fn{color:var(--tok-fn)}
+  .code .num{color:var(--tok-num)}
+
+  /* 页头皮肤控件 */
+  .uiprefs{display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-top:14px}
+  .ui-btn,.ui-fsbtn{
+    font-family:inherit;font-size:12.5px;line-height:1.4;padding:7px 11px;border-radius:9px;
+    border:1px solid var(--line);background:var(--surface);color:var(--ink-2);cursor:pointer;
+  }
+  .ui-btn.on{background:#F2E2BC;border-color:#D8BC7C;color:#5C430F;font-weight:600}
+  .ui-fs{display:inline-flex;border:1px solid var(--line);border-radius:9px;overflow:hidden;background:var(--surface)}
+  .ui-fsbtn{border:0;border-radius:0;background:transparent;padding:7px 10px}
+  .ui-fsbtn.on{background:var(--lav);color:var(--purple-ink);font-weight:600}
+
+  /* 卡片底部的“哪天讲过这个” */
+  .rellink{
+    display:block;margin-top:14px;padding:10px 12px;border-radius:10px;line-height:1.65;
+    border:1px solid #C3D3F5;background:var(--lav);color:var(--purple-ink);
+    font-size:12.5px;text-decoration:none;
+  }
+  .rellink:hover{text-decoration:none;background:#D8E5FF}
+  .rellink b{color:var(--purple-ink)}
+  .rellink.none{border-style:dashed;background:var(--tint-2);color:var(--muted)}
+  .rellink .go{float:right;white-space:nowrap;margin-left:8px}
 </style>
 </head>
 <body>
@@ -329,6 +529,14 @@
       <span class="badge care">慎用 <b id="badgeCare">0</b> 条</span>
       <span class="badge later">了解即可 <b id="badgeLater">0</b> 条</span>
       <span class="badge total">共 <b id="badgeTotal">0</b> 个</span>
+    </div>
+    <div class="uiprefs" id="uiPrefs">
+      <button class="ui-btn" id="uiEye" type="button" aria-pressed="false" title="护眼模式：暖色低刺激背景">护眼</button>
+      <span class="ui-fs" role="group" aria-label="字号">
+        <button class="ui-fsbtn" data-fs="sm" type="button" aria-label="小字号">A-</button>
+        <button class="ui-fsbtn" data-fs="md" type="button">标准</button>
+        <button class="ui-fsbtn" data-fs="lg" type="button" aria-label="大字号">A+</button>
+      </span>
     </div>
   </header>
 
@@ -378,23 +586,23 @@
   <section class="sec">
     <h2>为什么第 1、2、4 天要回来看 <em>遗忘曲线</em></h2>
     <div class="panel">
-      <p class="hint" style="margin:0 0 10px;font-size:13px;color:#c7d2df">
+      <p class="hint" style="margin:0 0 10px;font-size:13px;color:var(--ink-2)">
         今天记住的东西，明天会忘掉一大半；到第 4 天基本就只剩个影子了。所以第 1 天必须回来看——看图里那几条往上跳的线：每次回来看一眼，记忆就被重新拉回高点，而且下一次能撑更久。
       </p>
       <svg viewBox="0 0 520 300" role="img" aria-label="遗忘曲线：1、2、4、7、15、30 天六个复习点" style="width:100%;height:auto;display:block">
         <defs>
           <linearGradient id="gCurve" x1="0" y1="0" x2="1" y2="0">
-            <stop offset="0" stop-color="#5eead4"/><stop offset="1" stop-color="#7aa2f7"/>
+            <stop offset="0" stop-color="#0F766E"/><stop offset="1" stop-color="#2E57E8"/>
           </linearGradient>
         </defs>
-        <g stroke="#1e2a38" stroke-width="1">
+        <g stroke="#DCE3F2" stroke-width="1">
           <line x1="46" y1="24" x2="500" y2="24"/>
           <line x1="46" y1="130" x2="500" y2="130"/>
           <line x1="46" y1="236" x2="500" y2="236"/>
         </g>
-        <text x="4" y="15" fill="#7d8b9c" font-size="12">记得</text>
-        <text x="4" y="233" fill="#7d8b9c" font-size="12">忘光</text>
-        <g stroke="#2b394a" stroke-width="1" stroke-dasharray="3 4">
+        <text x="4" y="15" fill="#4A4560" font-size="12">记得</text>
+        <text x="4" y="233" fill="#4A4560" font-size="12">忘光</text>
+        <g stroke="#C7D1E6" stroke-width="1" stroke-dasharray="3 4">
           <line x1="137.6" y1="34.6" x2="137.6" y2="236"/>
           <line x1="191.2" y1="34.6" x2="191.2" y2="236"/>
           <line x1="258.8" y1="34.6" x2="258.8" y2="236"/>
@@ -403,10 +611,10 @@
           <line x1="500" y1="34.6" x2="500" y2="236"/>
         </g>
         <path d="M 46.0,24.0 L 99.6,80.9 L 137.6,122.5 L 167.1,153.0 L 191.2,175.3 L 211.6,191.6 L 229.3,203.5 L 244.9,212.2 L 258.8,218.6 L 271.4,223.3 L 282.9,226.7 L 293.5,229.2 L 303.3,231.0 L 312.4,232.4 L 320.9,233.3 L 328.9,234.0 L 336.5,234.6 L 343.6,235.0 L 350.4,235.2 L 356.9,235.4 L 363.0,235.6 L 368.9,235.7 L 374.5,235.8 L 379.9,235.8 L 385.1,235.9 L 390.1,235.9 L 394.9,235.9 L 399.5,236.0 L 404.0,236.0 L 408.4,236.0 L 412.6,236.0 L 416.6,236.0 L 420.6,236.0 L 424.4,236.0 L 428.1,236.0 L 431.8,236.0 L 435.3,236.0 L 438.7,236.0 L 442.1,236.0 L 445.3,236.0 L 448.5,236.0 L 451.6,236.0 L 454.7,236.0 L 457.6,236.0 L 460.5,236.0 L 463.4,236.0 L 466.2,236.0 L 468.9,236.0 L 471.6,236.0 L 474.2,236.0 L 476.7,236.0 L 479.3,236.0 L 481.7,236.0 L 484.2,236.0 L 486.5,236.0 L 488.9,236.0 L 491.2,236.0 L 493.4,236.0 L 495.7,236.0 L 497.9,236.0 L 500.0,236.0"
-              fill="none" stroke="#5b6b7d" stroke-width="2" stroke-dasharray="5 5"/>
+              fill="none" stroke="#9AA3B8" stroke-width="2" stroke-dasharray="5 5"/>
         <path d="M 46.0,34.6 L 61.6,47.9 L 75.5,60.3 L 88.1,71.9 L 99.6,82.8 L 110.2,92.9 L 120.0,102.3 L 129.1,111.2 L 137.6,119.4 L 137.6,34.6 L 145.7,47.9 L 153.2,60.3 L 160.4,71.9 L 167.1,82.8 L 173.6,92.9 L 179.7,102.3 L 185.6,111.2 L 191.2,119.4 L 191.2,34.6 L 201.8,47.9 L 211.6,60.3 L 220.7,71.9 L 229.3,82.8 L 237.3,92.9 L 244.9,102.3 L 252.0,111.2 L 258.8,119.4 L 258.8,34.6 L 268.3,47.9 L 277.3,60.3 L 285.6,71.9 L 293.5,82.8 L 300.9,92.9 L 307.9,102.3 L 314.6,111.2 L 320.9,119.4 L 320.9,34.6 L 336.5,47.9 L 350.4,60.3 L 363.0,71.9 L 374.5,82.8 L 385.1,92.9 L 394.9,102.3 L 404.0,111.2 L 412.6,119.4 L 412.6,34.6 L 427.2,47.9 L 440.4,60.3 L 452.4,71.9 L 463.4,82.8 L 473.5,92.9 L 483.0,102.3 L 491.8,111.2 L 500.0,119.4"
               fill="none" stroke="url(#gCurve)" stroke-width="2.5" stroke-linejoin="round"/>
-        <g fill="#5eead4" stroke="#0d1117" stroke-width="2">
+        <g fill="#0F766E" stroke="#FFFFFF" stroke-width="2">
           <circle cx="137.6" cy="34.6" r="4.5"/>
           <circle cx="191.2" cy="34.6" r="4.5"/>
           <circle cx="258.8" cy="34.6" r="4.5"/>
@@ -414,7 +622,7 @@
           <circle cx="412.6" cy="34.6" r="4.5"/>
           <circle cx="500" cy="34.6" r="4.5"/>
         </g>
-        <g fill="#8d9bab" font-size="13" text-anchor="middle">
+        <g fill="#4A4560" font-size="13" text-anchor="middle">
           <text x="46" y="256" text-anchor="start">第0天</text>
           <text x="137.6" y="256">第1天</text>
           <text x="191.2" y="256">第2天</text>
@@ -423,12 +631,12 @@
           <text x="412.6" y="256">第15天</text>
           <text x="500" y="256" text-anchor="end">第30天</text>
         </g>
-        <text x="46" y="282" fill="#5b6b7d" font-size="12">虚线：一直不复习　　</text>
-        <text x="190" y="282" fill="#5eead4" font-size="12">实线：按时回来看</text>
+        <text x="46" y="282" fill="#6B7488" font-size="12">虚线：一直不复习　　</text>
+        <text x="190" y="282" fill="#0F766E" font-size="12">实线：按时回来看</text>
       </svg>
       <div class="legend">
-        <span><i style="background:#5b6b7d"></i>不复习，一路往下掉</span>
-        <span><i style="background:#5eead4"></i>按时复习，记忆被拉回来</span>
+        <span><i style="background:#9AA3B8"></i>不复习，一路往下掉</span>
+        <span><i style="background:#0F766E"></i>按时复习，记忆被拉回来</span>
       </div>
       <p class="hint" style="margin-top:10px">
         记岔了不用怕：点「记得」就往后走一个点；点「模糊」就在这个点明天再看一遍；点「忘了」就从第 1 个点重新排。全部 6 个点都过完，这张卡就算拿下了，不再打扰你。
@@ -593,6 +801,8 @@ var GROUPS = [
   {id:'vector',name:'C++ std::vector', color:'#a9c1f5'},
   {id:'io',    name:'C++ 输入输出',    color:'#c0a4f7'},
   {id:'tool',  name:'C++ 常用工具',    color:'#c0a4f7'},
+  {id:'cpp',   name:'C++ 类与对象',    color:'#c0a4f7'},
+  {id:'kw',    name:'C++ 关键字与语法', color:'#c0a4f7'},
   {id:'heap',  name:'new / delete 配对', color:'#f0c674'},
   {id:'cstr',  name:'C 字符串',        color:'#5eead4'},
   {id:'cmem',  name:'C 内存',          color:'#5eead4'},
@@ -644,6 +854,35 @@ var D = [
 ['tool','std::swap','两个人手里的东西互换一下。','void std::swap(T& a, T& b);','交换两个同类型变量的值。','在 <utility> 里；无返回值。','数组不能直接 swap 内容（交换的是指针，对数组名用不了）；两个 vector 之间 swap 只换内部指针，很快。','int a = 1, b = 2; std::swap(a, b);  // a=2, b=1'],
 ['tool','std::find','在一排东西里找一个，找到就把位置指给你。','InputIt std::find(InputIt first, InputIt last, const T& value);','在区间里从头到尾查找 value。','返回：指向第一个相等元素的迭代器；找不到返回 last。','找不到返回的是 last，不是 NULL；判断要写 it != v.end()，直接 *it 就崩。','auto it = std::find(v.begin(), v.end(), 7); if (it != v.end()) puts("有");'],
 ['tool','std::reverse','把一排东西整体掉个头。','void std::reverse(BidirIt first, BidirIt last);','反转区间 [first, last)。','无返回值，原地修改。','s.rbegin()/rend() 是“反向遍历”，不是反转；真要反转得用 std::reverse(s.begin(), s.end())。','std::string s = "abc"; std::reverse(s.begin(), s.end());  // cba'],
+/* ---------- C++ 类与对象（对照学习站 Day 3–4 补卡） ---------- */
+['cpp','sizeof','问一句“这个东西在内存里占几个字节”。','size_t sizeof(类型或表达式);   // 它是运算符，不是函数','求类型、对象或数组占多少字节。','返回：size_t 字节数；类型要加括号，变量可以不加。','sizeof(指针) 永远是指针大小（64 位是 8），不是它指向的数组长度；数组传进函数后退化成指针，sizeof 就不再是数组总长。','int a[10]; printf("%zu\\n", sizeof(a));  // 40', '平台提示：int 在多数平台是 4 字节，但别把 4 写死。'],
+['cpp','explicit','给构造函数上锁，别让一个数字悄悄变成对象。','explicit 类名(参数);','禁止单参数构造的隐式类型转换。','写在构造函数前；只挡隐式转换，显式构造照常。','加了 explicit 后，把 int 直接传给要对象的函数会编不过；想通过就得写 Meter(5)。','class Meter{ public: explicit Meter(int v):v(v){} int v; };','平台提示：老代码里很多单参构造没加，改之前先看调用处。'],
+['cpp','static 成员变量','这个变量不属于某一个对象，而是整个类共用一份。','class A { static 类型 名字; };   类型 A::名字 = 初值;','所有对象共享同一份数据，比如对象计数。','类内声明，类外定义一次；C++17 可以用 inline 直接在类内给初值。','只在类里写 static 不定义，链接时会报 undefined reference；它不是每个对象各一份。','class A{ public: static int n; };  int A::n = 0;'],
+['cpp','static 成员函数','这个函数不用造对象，直接拿类名就能调。','static 返回类型 类名::函数名(参数);','提供和类相关、但不需要对象数据的工具函数。','没有 this；只能访问静态成员。','静态成员函数里写普通成员变量会编不过；调用写 类名::函数()，不用先造对象。','class M{ public: static int add(int a,int b){ return a+b; } };'],
+['cpp','const 成员函数','在函数后面盖个“我只看看，不改”的章。','返回类型 函数名(参数) const;','承诺不修改对象成员；常对象只能调这种函数。','const 写在参数表后面；const 对象只能调 const 成员函数。','忘了写 const，常对象就调不了；在 const 函数里改成员会编不过，除非那个成员是 mutable。','int size() const { return n; }'],
+['cpp','mutable','给某个成员开个小口，const 函数里也能改它。','mutable 类型 名字;','缓存、调用计数这类“逻辑上不算修改对象”的成员。','写在成员声明前；只对 const 成员函数生效。','别拿它绕开 const 承诺乱改业务数据，滥用会让“只读”变成假话。','mutable int calls;'],
+['cpp','operator=','把一个对象的内容，重新装进另一个已经存在的对象里。','类名& operator=(const 类名& other);','自定义赋值行为，尤其是类里有指针时。','返回 *this 的引用才能连等；参数用 const 引用。','不写就由编译器生成浅拷贝，两个对象指向同一块堆，析构时 double free；有指针要自己写深拷贝。','A& operator=(const A& o){ if(this!=&o){ /* 深拷贝 */ } return *this; }'],
+['cpp','this','在成员函数里，指向“正在干活的那个对象”。','this   // 类型是 类名*，const 函数里是 const 类名*','区分同名形参和成员，或者返回对象自己。','成员函数隐含的参数；静态成员函数没有 this。','静态成员函数里不能用 this；返回 *this 时别返回局部对象的引用。','void set(int x){ this->x = x; }'],
+['cpp','friend','给信得过的人一把备用钥匙，允许它直接看私有成员。','friend 返回类型 函数名(参数);   或   friend class 类名;','运算符重载、两个类紧密协作时用。','写在类里；友元不是成员，没有 this。','友元会破坏封装，能不用就不用；友元关系不能继承，也不互相传递。','class Box{ int v; friend int peek(const Box&); };'],
+['cpp','构造函数','对象一造出来，自动执行的那段初始化代码。','类名(参数);   // 没有返回值，名字和类名一样','给成员赋初值、申请资源。','可以重载、可以有默认参数；不写编译器会送一个默认构造。','构造函数不能手动调用 a.A()；有指针成员时记得在初始化列表里置空。','class A{ public: A(int x):x(x){} int x; };'],
+['cpp','拷贝构造函数','用一个已经存在的对象，复制出一个新对象。','类名(const 类名& other);','传值、返回对象、显式复制时调用。','参数必须是 const 引用，否则会无限递归。','默认只做浅拷贝，类里有指针时两个对象指同一块内存，析构 double free；要自己写深拷贝。','A(const A& o){ p = new int(*o.p); }'],
+['cpp','析构函数','对象快没了的时候，自动执行的清理代码。','~类名();   // 无参数、无返回值、不能重载','释放 new 出来的内存、关文件、解锁。','没有参数；一个类只有一个析构函数。','基类析构要写 virtual，否则通过基类指针 delete 派生对象时派生类析构不跑，资源泄漏。','~A(){ delete[] p; }'],
+['cpp','初始化列表','在构造函数冒号后面，直接把成员的初值点好。','类名(参数) : 成员1(值1), 成员2(值2) {}','初始化 const 成员、引用成员和没有默认构造的成员对象。','初始化顺序按成员声明顺序，不按你写的顺序。','成员初始化顺序看声明不看列表；在函数体里赋值，对 const 和引用成员直接编不过。','A(int x):x(x),r(x){}'],
+['cpp','= default / = delete','告诉编译器“这个默认版本我要”，或者“这个版本不许有”。','类名() = default;   类名(const 类名&) = delete;','保留默认行为，或者禁止拷贝、禁止隐式转换。','只能用在特殊成员函数上；= delete 的版本被调用会编不过。','手写一个构造函数后，默认构造就不再自动生成，要补 = default；= delete 是编译期拦住，不是运行时报错。','A() = default;  A(const A&) = delete;'],
+/* ---------- C++ 关键字与语法（对照学习站 Day 1–4 补卡） ---------- */
+['kw','const','给变量或参数贴上“只读”封条。','const 类型 名字 = 值;','防止误改、表达接口承诺。','能修饰变量、参数、返回值、成员函数。','const int* p 是不能改指向的内容；int* const p 是不能改指针本身，两个 const 位置含义不同。','const int n = 10;'],
+['kw','static（局部 / 文件）','函数里的 static 只初始化一次；文件里的 static 别人看不见。','static 类型 名字;','函数内做“记忆”，全局或函数前限制链接范围。','局部 static 生命周期到程序结束；全局 static 只在本编译单元可见。','局部 static 的初始化在 C++11 起是线程安全的，但读写要自己保护；别把大对象放局部 static 占着不放。','static int count = 0;'],
+['kw','namespace / ::','把一堆名字装进一个盒子，用的时候写“盒子::名字”。','namespace 名字 { ... }   名字::成员','避免不同库里的同名函数打架。',':: 是作用域解析运算符；std:: 就是标准库这个盒子。','头文件里别写 using namespace std;，会把一堆名字倒进别人的作用域；:: 前面空着表示全局。','namespace net { int open(); }  net::open();'],
+['kw','位运算符','直接对二进制位做与、或、异或、取反、移位。','&  |  ^  ~  <<  >>','操作寄存器、标志位、协议字段。','位运算只对整数类型有意义；移位位数别超过类型宽度。','& 和 && 不是一回事；1 << 31 对 int 是未定义行为，要用 1u << 31；右移负数结果由实现决定。','flags |= (1u << 3);'],
+['kw','bool','只装 true / false 两个值的类型。','bool 名字 = true;','表示判断结果，比 int 的 0/1 更清楚。','常见实现占 1 字节；非 0 转 true，0 转 false。','bool 打印默认是 1/0，不是 true/false；别拿它和 TRUE 宏混用。','bool ok = (n > 0);'],
+['kw','struct / class','都是把数据和函数打包在一起；struct 默认公开，class 默认私有。','struct 名字 { ... };   class 名字 { ... };','描述一个对象有哪些数据和操作。','struct 默认 public，class 默认 private；两者都能有构造、析构、成员函数。','忘了写 public:，class 里的成员默认私有，外面访问编不过；struct 里写了 private: 也一样私有。','struct P { int x, y; };'],
+['kw','默认参数','调用时可以不写的参数，提前给个默认值。','void f(int a, int b = 0);','让常用调用更短。','默认值必须从右往左连续给；声明和定义只能写一处。','默认参数在编译期就定死，不会随运行期变化；虚函数的默认参数看静态类型，容易踩坑。','void log(const char* s, int level = 1);'],
+['kw','函数重载','几个函数叫同一个名字，靠参数类型或个数区分。','int f(int);   double f(double);','同一类操作给不同参数类型用。','只看参数列表，不看返回值；类型、个数或顺序不同才算重载。','只改返回值不算重载，编不过；f(1) 可能同时匹配 int 和 double，产生二义性。','int add(int,int);  double add(double,double);'],
+['kw','T& 引用','给一个已有变量起个别名，改别名就是改原变量。','类型& 名字 = 原变量;','函数传参不想拷贝、又想改外面。','必须初始化，之后不能换绑；概念上不占独立存储。','不能有空引用；返回局部变量的引用是悬空引用；r = b 是赋值不是换绑。','int& r = a;'],
+['kw','const T&','把原件借给你看，但不许改，也不用复制一份。','void f(const 类型& x);','传大对象时避免拷贝，同时保证不修改。','const 引用可以接临时量；普通引用不行。','函数里忘了 const 就会编不过；返回 const 引用时别返回局部变量。','void show(const std::string& s);'],
+['kw','nullptr','表示“这个指针不指向任何东西”的空指针。','类型* p = nullptr;','指针初始化、判空。','类型是 std::nullptr_t，能转成任意指针类型。','别再用 NULL 或 0，重载时 f(NULL) 可能选到 int 版本；解引用空指针直接崩。','int* p = nullptr; if(!p) puts("空");'],
+['kw','返回引用','函数返回一个变量的别名，而不是复制一份。','类型& 函数名(...)','返回成员、全局变量或容器元素，支持链式修改。','返回的变量必须比函数活得久。','返回局部变量的引用，函数一结束就悬空；返回临时量的引用同样危险。','int& at(int i){ return a[i]; }'],
+['kw','数组退化','数组传进函数时，只剩下指向首元素的指针，长度没了。','void f(int a[])   // 等价于 void f(int *a)','传数组给函数时，要额外传长度。','sizeof(数组) 在函数里变成 sizeof(指针)。','在函数里 sizeof(a)/sizeof(a[0]) 算不出元素个数；二维数组退化更复杂。','void f(int a[], int n);'],
 /* ---------- new / delete 配对 ---------- */
 ['heap','new','跟系统临时借一块内存，在上面造一个对象。','T* p = new T;','在堆上创建一个对象。','返回：指向新对象的指针；失败抛 std::bad_alloc（老编译器可能返回 NULL）。','借了必须还（delete），漏一次就少一块内存；中断里、频繁调用的函数里别 new，堆会被切得七零八落。','int *p = new int(5); delete p;', '平台差异：Linux 应用层常用；MCU 上优先用静态变量，见“慎用区”。'],
 ['heap','new[]','一次借一排连续的位置。','T* p = new T[n];','在堆上创建 n 个元素的数组。','返回：首元素指针；n 可以是运行期才知道的变量。','new[] 必须配 delete[]，写成 delete p 只析构第一个元素，是未定义行为；new int[5] 里的值不确定，要清零写 new int[5]()。','int *a = new int[10]();  // 全 0', '平台差异：MCU 上大数组一次 new 很容易失败，先算好大小静态分配。'],
@@ -1315,6 +1554,439 @@ if (fabs(d - 1.5) < 1e-6) {      // 浮点数不能写 ==，要判断差值足�
   o: '**pow** —— power（幂、次方）的前三个字母。',
   e: `double v = pow(2, 10);   // 1024，2 的 10 次方
 // 返回的是 double，交给整数会丢精度；能连乘就别用它，慢`
+},
+
+/* ---------- 对照学习站 Day 1–4 补的卡 ---------- */
+'cpp:sizeof': {
+  s: 'size-of ｜ /ˈsaɪz ɒv/ ｜ 赛兹-奥夫',
+  o: '**size**（大小）+ **of**（的），合起来就是“……的大小”。',
+  e: `#include <cstdio>
+struct Node { int id; double v; };   // int 4 + 填充 4 + double 8
+int main(){
+    int a[10];
+    printf("%zu %zu\\n", sizeof(a), sizeof(a[0]));   // 40 4：整个数组 / 一个元素
+    printf("%zu\\n", sizeof(Node));                  // 16：含对齐填充
+    int *p = a;
+    printf("%zu\\n", sizeof(p));                     // 8：只是指针本身
+    return 0;
+}`
+},
+'cpp:explicit': {
+  s: 'ex-pli-cit ｜ /ɪkˈsplɪsɪt/ ｜ 伊克斯-普利-西特',
+  o: '拉丁语 **explicare**（展开、说明白）→ explicit 就是“写明白、不含糊”，所以不许编译器偷偷转。',
+  e: `#include <cstdio>
+class Meter {
+public:
+    explicit Meter(int v) : v(v) {}   // 必须写 Meter(5)，不许直接写 5
+    int v;
+};
+static void show(Meter m){ printf("%d\\n", m.v); }
+int main(){
+    show(Meter(5));                   // 显式构造：可以
+    // show(5);                       // 去掉注释就编不过：explicit 挡住了隐式转换
+    Meter m = Meter(7);
+    printf("%d\\n", m.v);              // 7
+    return 0;
+}`
+},
+'cpp:static 成员变量': {
+  s: 'sta-tic ｜ /ˈstætɪk/ ｜ 斯呆-提克',
+  o: '希腊语 **statikos**（站住不动）→ static 就是“固定在一个地方”，类里所有对象共用。',
+  e: `#include <cstdio>
+class Counter {
+public:
+    Counter(){ ++n; }             // 每造一个对象就加一
+    static int n;                 // 声明：全类共用一块白板
+};
+int Counter::n = 0;               // 定义：必须在这里给初值（只此一份）
+int main(){
+    Counter a, b, c;
+    printf("%d\\n", Counter::n);   // 3
+    return 0;
+}`
+},
+'cpp:static 成员函数': {
+  s: 'sta-tic ｜ /ˈstætɪk/ ｜ 斯呆-提克',
+  o: '同 static：固定属于类本身，不属于某个对象。',
+  e: `#include <cstdio>
+class Math {
+public:
+    static int add(int a, int b){ return a + b; }   // 不需要对象
+    static int n;                                   // 静态成员
+};
+int Math::n = 0;
+int main(){
+    printf("%d\\n", Math::add(2, 3));                // 5
+    Math::n = 9;
+    printf("%d\\n", Math::n);                        // 9
+    return 0;
+}`
+},
+'cpp:const 成员函数': {
+  s: 'con-st ｜ /ˈkɒnst/ ｜ 康斯特',
+  o: '**const**ant（不变的）的缩写，贴在函数后面表示“这个函数不改对象”。',
+  e: `#include <cstdio>
+class Box {
+public:
+    Box(int n) : n(n) {}
+    int size() const { return n; }   // 只读承诺
+    void set(int v){ n = v; }        // 会改，不能是 const
+private:
+    int n;
+};
+int main(){
+    const Box b(3);                  // 常对象
+    printf("%d\\n", b.size());        // 3：只能调 const 成员函数
+    return 0;
+}`
+},
+'cpp:mutable': {
+  s: 'mu-ta-ble ｜ /ˈmjuːtəbl/ ｜ 缪-特波',
+  o: '拉丁语 **mutare**（改变）→ mutable 就是“可以变的”。',
+  e: `#include <cstdio>
+class Cache {
+public:
+    int get() const {
+        ++calls;                     // mutable 成员在 const 函数里也能改
+        return value;
+    }
+    mutable int calls = 0;
+    int value = 42;
+};
+int main(){
+    const Cache c;
+    int v = c.get();                       // 先调一次，calls 变 1
+    printf("%d %d\\n", v, c.calls);         // 42 1
+    return 0;
+}`
+},
+'cpp:operator=': {
+  s: 'op-er-a-tor as-sign ｜ /ˈɒpəreɪtə əˈsaɪn/ ｜ 奥普瑞特-阿萨因',
+  o: '**operator**（运算符）+ **=**（赋值号），合起来就是“重载赋值号”。',
+  e: `#include <cstdio>
+class Num {
+public:
+    Num(int v) : v(v) {}
+    Num& operator=(const Num& o){       // 拷贝赋值
+        if(this != &o) v = o.v;         // 先防自赋值
+        return *this;                   // 返回自己，支持 a=b=c
+    }
+    int v;
+};
+int main(){
+    Num a(1), b(2), c(3);
+    a = b = c;
+    printf("%d %d %d\\n", a.v, b.v, c.v);   // 3 3 3
+    return 0;
+}`
+},
+'cpp:this': {
+  s: 'this ｜ /ðɪs/ ｜ 迪斯',
+  o: '英文 **this**（这个），指“当前这个对象”。',
+  e: `#include <cstdio>
+class Point {
+public:
+    Point(int x, int y) : x(x), y(y) {}
+    Point& setX(int x){ this->x = x; return *this; }  // 同名时用 this 区分
+    int x, y;
+};
+int main(){
+    Point p(1, 2);
+    p.setX(9);
+    printf("%d %d\\n", p.x, p.y);   // 9 2
+    return 0;
+}`
+},
+'cpp:friend': {
+  s: 'friend ｜ /frend/ ｜ 弗兰德',
+  o: '英文 **friend**（朋友），朋友可以进你的房间拿东西。',
+  e: `#include <cstdio>
+class Box {
+    int v;                                  // 私有
+    friend int peek(const Box& b);          // 允许 peek 看私有成员
+public:
+    Box(int v) : v(v) {}
+};
+int peek(const Box& b){ return b.v; }       // 不是成员函数，但能访问 v
+int main(){
+    Box b(7);
+    printf("%d\\n", peek(b));                // 7
+    return 0;
+}`
+},
+'cpp:构造函数': {
+  s: 'con-struc-tor ｜ /kənˈstrʌktə/ ｜ 肯-斯特拉克特',
+  o: '**construct**（建造）+ **-or**（做……的人/物），就是“造对象时干活的”。',
+  e: `#include <cstdio>
+class Lamp {
+public:
+    Lamp(){ puts("灯造好了"); }       // 一造对象就自动跑
+    Lamp(int b) : bright(b) {}        // 也能带参数
+    int bright = 0;
+};
+int main(){
+    Lamp a;
+    Lamp b(80);
+    printf("%d %d\\n", a.bright, b.bright);   // 0 80
+    return 0;
+}`
+},
+'cpp:拷贝构造函数': {
+  s: 'copy con-struc-tor ｜ /ˈkɒpi kənˈstrʌktə/ ｜ 考皮-肯斯特拉克特',
+  o: '**copy**（复制）+ **constructor**（构造函数）。',
+  e: `#include <cstdio>
+class Buffer {
+public:
+    Buffer(int n) : p(new int[n]), n(n) {}
+    Buffer(const Buffer& o) : p(new int[o.n]), n(o.n) {   // 深拷贝
+        for(int i = 0; i < n; ++i) p[i] = o.p[i];
+    }
+    ~Buffer(){ delete[] p; }
+    int *p;
+    int n;
+};
+int main(){
+    Buffer a(3);
+    a.p[0] = 7;
+    Buffer b(a);                    // 拷贝构造：另租一块
+    printf("%d %d\\n", b.p[0], b.n); // 7 3
+    return 0;
+}`
+},
+'cpp:析构函数': {
+  s: 'de-struc-tor ｜ /dɪˈstrʌktə/ ｜ 迪-斯特拉克特',
+  o: '**de-**（去掉）+ **construct**（建造）→ destructor，拆对象时干活的。',
+  e: `#include <cstdio>
+class Buf {
+public:
+    Buf(){ p = new int[4]; }
+    ~Buf(){ delete[] p; puts("内存还回去了"); }   // 对象销毁时自动跑
+private:
+    int *p;
+};
+int main(){
+    { Buf b; }        // 离开大括号，析构自动执行
+    puts("结束");
+    return 0;
+}`
+},
+'cpp:初始化列表': {
+  s: 'ini-tial-iz-er list ｜ /ɪˈnɪʃəlaɪzə lɪst/ ｜ 伊尼舍莱泽-李斯特',
+  o: '**initialize**（初始化）+ **list**（列表）。',
+  e: `#include <cstdio>
+class Pair {
+public:
+    Pair(int a, int b) : x(a), y(b) {}   // 初始化列表
+    int x, y;
+};
+class Ref {
+public:
+    Ref(int& v) : r(v) {}                // 引用成员必须在列表里绑
+    int& r;
+};
+int main(){
+    Pair p(1, 2);
+    int n = 5;
+    Ref r(n);
+    printf("%d %d %d\\n", p.x, p.y, r.r); // 1 2 5
+    return 0;
+}`
+},
+'cpp:= default / = delete': {
+  s: 'de-fault / de-lete ｜ /dɪˈfɔːlt/ /dɪˈliːt/ ｜ 迪佛特 / 迪利特',
+  o: '**default**（默认）+ **delete**（删除），一个“要默认”，一个“删掉不许用”。',
+  e: `#include <cstdio>
+class OnlyOne {
+public:
+    OnlyOne() = default;                     // 保留默认构造
+    OnlyOne(const OnlyOne&) = delete;        // 禁止拷贝
+    OnlyOne& operator=(const OnlyOne&) = delete;
+};
+int main(){
+    OnlyOne a;
+    // OnlyOne b(a);                         // 去掉注释就编不过
+    (void)a;
+    puts("ok");
+    return 0;
+}`
+},
+'kw:const': {
+  s: 'con-st ｜ /ˈkɒnst/ ｜ 康斯特',
+  o: '**const**ant（不变的）的缩写。',
+  e: `#include <cstdio>
+int main(){
+    const int n = 10;
+    // n = 11;                     // 去掉注释就编不过
+    const int *p = &n;             // 不能通过 p 改 n
+    int v = 5;
+    int *const q = &v;             // q 不能改指向，但能改 v
+    *q = 6;
+    printf("%d %d %d\\n", n, *p, v);  // 10 10 6
+    return 0;
+}`
+},
+'kw:static（局部 / 文件）': {
+  s: 'sta-tic ｜ /ˈstætɪk/ ｜ 斯呆-提克',
+  o: '希腊语 **statikos**（站着不动），强调“固定、只此一份”。',
+  e: `#include <cstdio>
+int nextId(){
+    static int id = 0;      // 只初始化一次，函数返回后还留着
+    return ++id;
+}
+int main(){
+    int a = nextId(), b = nextId(), c = nextId();
+    printf("%d %d %d\\n", a, b, c);   // 1 2 3
+    return 0;
+}`
+},
+'kw:namespace / ::': {
+  s: 'name-space ｜ /ˈneɪmspeɪs/ ｜ 内姆-斯佩斯；scope ｜ /skəʊp/ ｜ 斯考普',
+  o: '**name**（名字）+ **space**（空间），放名字的空间；**::** 叫作用域解析运算符。',
+  e: `#include <cstdio>
+namespace net { int open(){ return 1; } }
+namespace file { int open(){ return 2; } }
+int main(){
+    printf("%d %d\\n", net::open(), file::open());   // 1 2
+    return 0;
+}`
+},
+'kw:位运算符': {
+  s: 'bit-wise op-er-a-tors ｜ /bɪt waɪz ˈɒpəreɪtəz/ ｜ 比特-怀兹',
+  o: '**bit**（二进制位）+ **wise**（按……方式），按位逐个操作。',
+  e: `#include <cstdio>
+int main(){
+    unsigned flags = 0;
+    flags |= (1u << 3);          // 置第 3 位
+    printf("%u\\n", flags);       // 8
+    flags &= ~(1u << 3);         // 清第 3 位
+    printf("%u\\n", flags);       // 0
+    printf("%u %u\\n", 6u & 3u, 6u | 3u);   // 2 7
+    return 0;
+}`
+},
+'kw:bool': {
+  s: 'bool ｜ /buːl/ ｜ 布尔',
+  o: '来自数学家 **George Boole**（布尔），布尔代数只有真/假。',
+  e: `#include <cstdio>
+int main(){
+    bool ok = (3 > 2);
+    printf("%d %d\\n", ok, (int)sizeof(bool));   // 1 1
+    puts(ok ? "true" : "false");
+    return 0;
+}`
+},
+'kw:struct / class': {
+  s: 'struct / class ｜ /strʌkt/ /klɑːs/ ｜ 斯特拉克特 / 克拉斯',
+  o: '**struct**ure（结构）和 **class**（类别），一个强调“结构”，一个强调“一类东西”。',
+  e: `#include <cstdio>
+struct Point { int x, y; };          // 默认 public
+class Box {
+    int v;                           // 默认 private
+public:
+    Box(int v) : v(v) {}
+    int get() const { return v; }
+};
+int main(){
+    Point p{1, 2};                   // 直接访问
+    Box b(3);
+    printf("%d %d %d\\n", p.x, p.y, b.get());   // 1 2 3
+    return 0;
+}`
+},
+'kw:默认参数': {
+  s: 'de-fault ar-gu-ment ｜ /dɪˈfɔːlt ˈɑːɡjumənt/ ｜ 迪佛特-阿规门特',
+  o: '**default**（默认）+ **argument**（参数）。',
+  e: `#include <cstdio>
+void logMsg(const char *s, int level = 1){   // level 可省略
+    printf("[%d] %s\\n", level, s);
+}
+int main(){
+    logMsg("start");            // [1] start
+    logMsg("warn", 2);          // [2] warn
+    return 0;
+}`
+},
+'kw:函数重载': {
+  s: 'o-ver-load ｜ /ˌəʊvəˈləʊd/ ｜ 欧弗-娄德',
+  o: '**over**（超过、叠加）+ **load**（装载），同一个名字叠了多个版本。',
+  e: `#include <cstdio>
+int add(int a, int b){ return a + b; }
+double add(double a, double b){ return a + b; }
+int main(){
+    printf("%d\\n", add(1, 2));            // 3
+    printf("%.1f\\n", add(1.5, 2.5));      // 4.0
+    return 0;
+}`
+},
+'kw:T& 引用': {
+  s: 'ref-er-ence ｜ /ˈrefrəns/ ｜ 瑞弗伦斯',
+  o: '**refer**（指向、提及）+ **-ence**，指向同一个东西。',
+  e: `#include <cstdio>
+void bump(int& x){ ++x; }       // 改的是外面那个
+int main(){
+    int a = 10;
+    int& r = a;                 // r 是 a 的别名
+    r = 20;
+    bump(a);
+    printf("%d %d\\n", a, r);    // 21 21
+    return 0;
+}`
+},
+'kw:const T&': {
+  s: 'con-st ref-er-ence ｜ /kɒnst ˈrefrəns/ ｜ 康斯特-瑞弗伦斯',
+  o: '**const**（只读）+ **reference**（引用）。',
+  e: `#include <cstdio>
+#include <string>
+void show(const std::string& s){          // 不拷贝，也不许改
+    printf("%s %zu\\n", s.c_str(), s.size());
+}
+int main(){
+    std::string s = "hello";
+    show(s);                              // hello 5
+    show("tmp");                          // 临时量也能接
+    return 0;
+}`
+},
+'kw:nullptr': {
+  s: 'null-p-t-r ｜ /ˈnʌl piː tiː ɑː/ ｜ 纳尔-屁-提-阿',
+  o: '**null**（空）+ **ptr**（pointer 指针的缩写）。',
+  e: `#include <cstdio>
+int main(){
+    int *p = nullptr;          // 明确表示“不指向任何东西”
+    if(!p) puts("空指针");
+    int n = 5;
+    p = &n;
+    printf("%d\\n", *p);        // 5
+    return 0;
+}`
+},
+'kw:返回引用': {
+  s: 're-turn ref-er-ence ｜ /rɪˈtɜːn ˈrefrəns/ ｜ 瑞特恩-瑞弗伦斯',
+  o: '**return**（返回）+ **reference**（引用）。',
+  e: `#include <cstdio>
+int data[3] = {10, 20, 30};
+int& at(int i){ return data[i]; }     // 返回全局元素的引用
+int main(){
+    at(1) = 99;                       // 直接改到原数组
+    printf("%d\\n", data[1]);          // 99
+    return 0;
+}`
+},
+'kw:数组退化': {
+  s: 'ar-ray de-cay ｜ /əˈreɪ dɪˈkeɪ/ ｜ 阿瑞-迪凯',
+  o: '**array**（数组）+ **decay**（衰减），数组“退化”成指针。',
+  e: `#include <cstdio>
+void show(int a[], int n){              // a 其实是指针，n 要另外传
+    printf("%zu %d\\n", sizeof(a), n);   // 8 3：指针大小 / 元素个数
+    for(int i = 0; i < n; ++i) printf("%d ", a[i]);
+    puts("");
+}
+int main(){
+    int a[3] = {1, 2, 3};
+    printf("%zu\\n", sizeof(a));     // 12：这里还是数组
+    show(a, 3);                     // 1 2 3
+    return 0;
+}`
 }
 
 };
@@ -1397,6 +2069,33 @@ var SHORT = {
   'math:fabs': '浮点绝对值',
   'math:sqrt': '平方根',
   'math:pow': '求次方',
+  'cpp:sizeof': '占几个字节',
+  'cpp:explicit': '禁止偷偷转换',
+  'cpp:static 成员变量': '全类共用一份',
+  'cpp:static 成员函数': '不用对象就能调',
+  'cpp:const 成员函数': '只读不改',
+  'cpp:mutable': 'const 里的例外',
+  'cpp:operator=': '对象间赋值',
+  'cpp:this': '当前对象的指针',
+  'cpp:friend': '私有成员的例外',
+  'cpp:构造函数': '出生时自动跑',
+  'cpp:拷贝构造函数': '用旧对象造新',
+  'cpp:析构函数': '销毁前自动清理',
+  'cpp:初始化列表': '成员出生带初值',
+  'cpp:= default / = delete': '要默认或禁用',
+  'kw:const': '只读封条',
+  'kw:static（局部 / 文件）': '只初始化一次',
+  'kw:namespace / ::': '名字的归属盒子',
+  'kw:位运算符': '直接操作二进制位',
+  'kw:bool': '真或假',
+  'kw:struct / class': '打包数据与操作',
+  'kw:默认参数': '不写就用默认值',
+  'kw:函数重载': '同名不同参数',
+  'kw:T& 引用': '变量的别名',
+  'kw:const T&': '只读还不拷贝',
+  'kw:nullptr': '空指针',
+  'kw:返回引用': '返回别名不是拷贝',
+  'kw:数组退化': '数组变指针',
   'care:malloc': '借一块堆内存',
   'care:calloc': '借清零的内存',
   'care:realloc': '换更大的一块',
@@ -1636,6 +2335,44 @@ var LATER = [
 var G = {};
 GROUPS.forEach(function(g){ G[g.id] = g; });
 
+/* 函数卡 → 学习站 Day 1–4 知识卡锚点（#dXcYY 由 cpp-study 的 parseHash 直接打开） */
+var REL = {
+  'io:std::cout': 'd1c04',
+  'tool:std::swap': 'd1c02',
+  'tool:std::make_unique': 'd2c07',
+  'heap:new': 'd2c07', 'heap:new[]': 'd2c07', 'heap:delete': 'd2c07', 'heap:delete[]': 'd2c07',
+  'cpp:sizeof': 'd4c37',
+  'cpp:explicit': 'd3c29',
+  'cpp:static 成员变量': 'd4c31',
+  'cpp:static 成员函数': 'd4c33',
+  'cpp:const 成员函数': 'd4c40',
+  'cpp:mutable': 'd4c40',
+  'cpp:operator=': 'd3c26',
+  'cpp:this': 'd4c38',
+  'cpp:friend': 'd4c42',
+  'cpp:构造函数': 'd3c22',
+  'cpp:拷贝构造函数': 'd3c25',
+  'cpp:析构函数': 'd3c27',
+  'cpp:初始化列表': 'd3c28',
+  'cpp:= default / = delete': 'd3c30',
+  'kw:const': 'd2c13',
+  'kw:static（局部 / 文件）': 'd2c17',
+  'kw:namespace / ::': 'd1c05',
+  'kw:位运算符': 'd2c18',
+  'kw:bool': 'd2c12',
+  'kw:struct / class': 'd3c21',
+  'kw:默认参数': 'd2c14',
+  'kw:函数重载': 'd2c15',
+  'kw:T& 引用': 'd1c01',
+  'kw:const T&': 'd1c03',
+  'kw:nullptr': 'd2c08',
+  'kw:返回引用': 'd1c06',
+  'kw:数组退化': 'd2c09'
+};
+function relLabel(id){
+  var m = /^d([1-4])c(\d+)$/.exec(id || '');
+  return m ? ('Day ' + m[1] + ' · 第 ' + (+m[2]) + ' 张') : '';
+}
 var CARDS = D.map(function(r, i){
   var id = r[0] + ':' + r[1];
   var m = META[id] || {};
@@ -1646,6 +2383,7 @@ var CARDS = D.map(function(r, i){
     say: m.s || '', from: m.o || '',
     t: SHORT[id] || '',
     note:r[8] || '',
+    rel: REL[id] || '',
     order:i, id:id
   };
 });
@@ -1868,8 +2606,8 @@ function renderCare(){
 }
 function renderLater(){
   document.getElementById('laterList').innerHTML = LATER.map(function(x){
-    return '<div class="prow" style="padding:9px 2px"><span class="pn" style="font-family:inherit;font-size:13px;color:#dfe8f3;flex:none;width:118px">' +
-      esc(x.n) + '</span><span style="flex:1;font-size:12.5px;color:#8d9bab;white-space:normal">' + esc(x.t) + '</span></div>';
+    return '<div class="prow" style="padding:9px 2px"><span class="pn" style="font-family:inherit;font-size:13px;color:var(--ink);flex:none;width:118px">' +
+      esc(x.n) + '</span><span style="flex:1;font-size:12.5px;color:var(--muted);white-space:normal">' + esc(x.t) + '</span></div>';
   }).join('');
 }
 
@@ -2220,14 +2958,17 @@ function renderStudy(){
 
   document.getElementById('bBody').innerHTML =
     '<p class="plainline">' + esc(card.plain) + '</p>' +
-    '<div class="brow"><div class="k">原型（要几个参数、什么类型、返回什么）</div><pre class="code">' + esc(card.p) + '</pre></div>' +
+    '<div class="brow"><div class="k">原型（要几个参数、什么类型、返回什么）</div><pre class="code">' + hl(card.p) + '</pre></div>' +
     (card.say ? '<div class="brow say"><div class="k">怎么念<button class="spk sm" type="button" aria-label="朗读这个函数名">' + SPK_SVG + '</button></div><p class="small">' + esc(card.say) + '</p></div>' : '') +
     (card.from ? '<div class="brow from"><div class="k">名字怎么来的</div><p class="small">' + md(card.from) + '</p></div>' : '') +
     '<div class="brow"><div class="k">干嘛用的</div><p>' + esc(card.use) + '</p></div>' +
     '<div class="brow"><div class="k">参数 / 返回值</div><p class="small">' + esc(card.args) + '</p></div>' +
     '<div class="brow trap"><div class="k">最容易踩的坑</div><p>' + esc(card.trap) + '</p></div>' +
-    '<div class="brow"><div class="k">一行示例</div><pre class="code">' + esc(card.ex) + '</pre></div>' +
-    (card.note ? '<div class="bnote">' + esc(card.note) + '</div>' : '');
+    '<div class="brow"><div class="k">一行示例</div><pre class="code">' + hl(card.ex) + '</pre></div>' +
+    (card.note ? '<div class="bnote">' + esc(card.note) + '</div>' : '') +
+    (card.rel
+      ? '<a class="rellink" href="https://zijiashanggan.github.io/cpp-study/index.html#' + card.rel + '" target="_blank" rel="noopener">哪天讲过这个？<b>' + relLabel(card.rel) + '</b><span class="go">打开知识卡 →</span></a>'
+      : '<div class="rellink none">哪天讲过这个？学习站 Day 1–4 暂时没细讲这个，先按必背记。</div>');
   paintSpk();                                   // 背面的小喇叭刚生成，补上灰态
 
   var f = document.getElementById('flash');
@@ -2712,6 +3453,58 @@ function esc(s){
   return String(s == null ? '' : s)
     .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 }
+/* 轻量 C/C++ 高亮：注释、字符串、预处理、数字、关键字、类型、函数名。
+   先切 token 再转义，避免转义后的实体被正则误伤。 */
+var HL_KW = {alignas:1,alignof:1,auto:1,break:1,case:1,catch:1,class:1,const:1,constexpr:1,continue:1,default:1,delete:1,do:1,else:1,enum:1,explicit:1,extern:1,for:1,friend:1,goto:1,if:1,inline:1,mutable:1,namespace:1,new:1,noexcept:1,nullptr:1,operator:1,private:1,protected:1,public:1,register:1,return:1,sizeof:1,static:1,struct:1,switch:1,template:1,this:1,throw:1,try:1,typedef:1,typename:1,union:1,using:1,virtual:1,volatile:1,while:1,true:1,false:1};
+var HL_TY = {int:1,char:1,short:1,long:1,float:1,double:1,void:1,bool:1,unsigned:1,signed:1,size_t:1,FILE:1,std:1,string:1,vector:1,nullptr_t:1,uint8_t:1,uint16_t:1,uint32_t:1,int8_t:1,int16_t:1,int32_t:1};
+function hl(src){
+  src = String(src == null ? '' : src);
+  var out = '', i = 0, n = src.length;
+  function id1(c){ return /[A-Za-z_]/.test(c); }
+  function id2(c){ return /[A-Za-z0-9_]/.test(c); }
+  while(i < n){
+    var c = src[i], j;
+    if(c === '/' && src[i+1] === '/'){
+      j = src.indexOf('\n', i); if(j < 0) j = n;
+      out += '<span class="c">' + esc(src.slice(i, j)) + '</span>'; i = j; continue;
+    }
+    if(c === '/' && src[i+1] === '*'){
+      j = src.indexOf('*/', i+2); j = j < 0 ? n : j + 2;
+      out += '<span class="c">' + esc(src.slice(i, j)) + '</span>'; i = j; continue;
+    }
+    if(c === '"' || c === "'"){
+      var q = c; j = i + 1;
+      while(j < n){
+        if(src[j] === '\\'){ j += 2; continue; }
+        if(src[j] === q){ j++; break; }
+        j++;
+      }
+      out += '<span class="s">' + esc(src.slice(i, j)) + '</span>'; i = j; continue;
+    }
+    if(c === '#' && (i === 0 || src[i-1] === '\n')){
+      j = src.indexOf('\n', i); if(j < 0) j = n;
+      out += '<span class="k">' + esc(src.slice(i, j)) + '</span>'; i = j; continue;
+    }
+    if(/[0-9]/.test(c)){
+      j = i + 1; while(j < n && /[0-9a-fA-FxX.]/.test(src[j])) j++;
+      out += '<span class="num">' + esc(src.slice(i, j)) + '</span>'; i = j; continue;
+    }
+    if(id1(c)){
+      j = i + 1; while(j < n && id2(src[j])) j++;
+      var w = src.slice(i, j), cls = '';
+      if(HL_KW[w]) cls = 'k';
+      else if(HL_TY[w]) cls = 't';
+      else{
+        var k = j; while(k < n && src[k] === ' ') k++;
+        if(src[k] === '(') cls = 'fn';
+      }
+      out += cls ? '<span class="' + cls + '">' + esc(w) + '</span>' : esc(w);
+      i = j; continue;
+    }
+    out += esc(c); i++;
+  }
+  return out;
+}
 /* 先转义再处理 **加粗**，避免标签被吃掉 */
 function md(s){
   return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>');
@@ -2726,6 +3519,39 @@ function ipaOf(say){
   var ipas = segs.filter(function(t){ return /^\/.+\/$/.test(t); });
   return (head ? head + ' ' : '') + ipas.join(' · ');
 }
+
+/* ---------- 皮肤偏好：护眼 + 字号三档（键名与学习站区分，互不覆盖） ---------- */
+var PREF_EYE = 'cpp_fc_eye_v1', PREF_FS = 'cpp_fc_fs_v1';
+function uiSync(){
+  var d = document.documentElement;
+  var eye = d.getAttribute('data-eye') === '1';
+  var eb = document.getElementById('uiEye');
+  if(eb){
+    eb.classList.toggle('on', eye);
+    eb.setAttribute('aria-pressed', eye ? 'true' : 'false');
+  }
+  var fs = d.getAttribute('data-fs') || 'md';
+  var bs = document.querySelectorAll('.ui-fsbtn');
+  for(var i = 0; i < bs.length; i++) bs[i].classList.toggle('on', bs[i].dataset.fs === fs);
+  var mt = document.querySelector('meta[name="theme-color"]');
+  if(mt) mt.setAttribute('content', eye ? '#FBF4E2' : '#F8FAFE');
+}
+document.getElementById('uiEye').addEventListener('click', function(){
+  var d = document.documentElement;
+  var on = d.getAttribute('data-eye') !== '1';
+  d.setAttribute('data-eye', on ? '1' : '0');
+  try{ localStorage.setItem(PREF_EYE, on ? 'on' : 'off'); }catch(e){}
+  uiSync();
+});
+Array.prototype.forEach.call(document.querySelectorAll('.ui-fsbtn'), function(b){
+  b.addEventListener('click', function(){
+    var fs = b.dataset.fs;
+    document.documentElement.setAttribute('data-fs', fs);
+    try{ localStorage.setItem(PREF_FS, fs); }catch(e){}
+    uiSync();
+  });
+});
+uiSync();
 
 function renderAll(){
   renderStage();
