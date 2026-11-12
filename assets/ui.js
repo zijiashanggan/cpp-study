@@ -834,8 +834,8 @@
   function parseHash(h) {
     h = String(h == null ? location.hash : h).replace('#', '');
     var m;
-    if ((m = /^(day|task|practice)([123])$/.exec(h))) return { type: m[1], day: 'day' + m[2] };
-    if ((m = /^(d[123]c\d+)$/.exec(h))) return { type: 'card', day: dayOfCard(m[1]), card: m[1] };
+    if ((m = /^(day|task|practice)([1-4])$/.exec(h))) return { type: m[1], day: 'day' + m[2] };
+    if ((m = /^(d[1-4]c\d+)$/.exec(h))) return { type: 'card', day: dayOfCard(m[1]), card: m[1] };
     return null;
   }
 
@@ -861,7 +861,7 @@
 
   function boot() {
     /* 顶部按钮：切到那天，开新一轮，滚到练习 */
-    [1, 2, 3].forEach(function (n) {
+    [1, 2, 3, 4].forEach(function (n) {
       var top = document.getElementById('againTop' + n);
       if (top) top.addEventListener('click', function () {
         showDay('day' + n, 0, { scroll: false }).then(function () {

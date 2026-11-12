@@ -31,5 +31,16 @@ window.SYLLABUS = [
     "taskDesc": "今天两个任务是一组对照实验：先故意不写深拷贝，亲眼看到崩溃；再补上深拷贝，看同样的代码为什么就安全了。都在本机跑，不用开发板。",
     "data": "data/day03.js",
     "bank": "data/bank/day03.js"
+  },
+  {
+    "id": "day4",
+    "title": "Day 4 · 静态成员、this 与 const",
+    "nav": "Day 4 · 静态 / this / const",
+    "cards": 13,
+    "desc": "今天把「全类共用一份（static）」和「每个对象自己的 this」分清楚，再用 const、友元把封装补完整，最后写一个真正会扩容的动态数组类。每张卡照样先给真实输出，先猜再看。",
+    "taskTitle": "Day 4 · 今天动手",
+    "taskDesc": "两个任务都在本机跑，不用开发板。任务 1 把静态计数器和单例放在一起看；任务 2 亲手给动态数组补上扩容和深拷贝，再故意删掉深拷贝看会发生什么。",
+    "data": "data/day04.js",
+    "bank": "data/bank/day04.js"
   }
 ];

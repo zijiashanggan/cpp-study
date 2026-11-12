@@ -130,12 +130,19 @@ var TRACKS = {
     dom: { list: 'qlist3', prog: 'stProg3', score: 'stScore3', rate: 'stRate3',
            sum: 'summary3', again: 'againBar3', root: 'practice3' },
     R: { list: [], ans: {}, draft: {}, startedAt: 0 }
+  },
+  d4: {
+    id: 'd4', name: 'Day 4', day: 'day4',
+    spec: { single: 7, fill: 3, judge: 3, code: 3 },
+    dom: { list: 'qlist4', prog: 'stProg4', score: 'stScore4', rate: 'stRate4',
+           sum: 'summary4', again: 'againBar4', root: 'practice4' },
+    R: { list: [], ans: {}, draft: {}, startedAt: 0 }
   }
 };
 
 function dayOf(b) {
-  if (b.day === 'day3') return 'day3';
-  return b.day === 'day2' ? 'day2' : 'day1';
+  if (b.day === 'day2' || b.day === 'day3' || b.day === 'day4') return b.day;
+  return 'day1';
 }
 
 function startRound(t) {

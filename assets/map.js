@@ -33,9 +33,22 @@
     { n: 27, id: 'd3c27', t: '析构函数', day: 3, dep: 7, x: '还涉及：卡 22 构造函数' },
     { n: 28, id: 'd3c28', t: '初始化列表', day: 3, dep: 22 },
     { n: 29, id: 'd3c29', t: 'explicit', day: 3, dep: 22 },
-    { n: 30, id: 'd3c30', t: '三法则', day: 3, dep: 26 }
+    { n: 30, id: 'd3c30', t: '三法则', day: 3, dep: 26 },
+    { n: 31, id: 'd4c31', t: '静态成员变量', day: 4, dep: 22 },
+    { n: 32, id: 'd4c32', t: '静态计数器', day: 4, dep: 31 },
+    { n: 33, id: 'd4c33', t: '静态成员函数', day: 4, dep: 32 },
+    { n: 34, id: 'd4c34', t: '单例 · 饿汉', day: 4, dep: 33 },
+    { n: 35, id: 'd4c35', t: '单例 · 懒汉', day: 4, dep: 34 },
+    { n: 36, id: 'd4c36', t: '单例 · 静态局部', day: 4, dep: 35 },
+    { n: 37, id: 'd4c37', t: '类的存储结构', day: 4, dep: 21 },
+    { n: 38, id: 'd4c38', t: 'this 同名形参', day: 4, dep: 37 },
+    { n: 39, id: 'd4c39', t: 'return *this', day: 4, dep: 38 },
+    { n: 40, id: 'd4c40', t: 'const 成员函数', day: 4, dep: 37 },
+    { n: 41, id: 'd4c41', t: '常对象', day: 4, dep: 40 },
+    { n: 42, id: 'd4c42', t: '友元', day: 4, dep: 40 },
+    { n: 43, id: 'd4c43', t: '动态数组实战', day: 4, dep: 26 }
   ];
-  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象' };
+  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this' };
 
   var BY = {};
   CARDS.forEach(function (c) { BY[c.n] = c; });
@@ -53,25 +66,30 @@
 
   var passedN = 0;
   CARDS.forEach(function (c) { if (passed(c.id)) passedN++; });
-  document.getElementById('mProg').textContent = '已过 ' + passedN + '/30';
+  document.getElementById('mProg').textContent = '已过 ' + passedN + '/' + CARDS.length;
 
   /* ---------- 桌面散点图 ---------- */
   var NW = 168, NH = 72, GAP = 26, PADX = 16, ROW0 = 34, ROWSTEP = 96, BANDGAP = 14;
-  var ROWS = { 1: 1, 2: 2, 3: 2 };
+  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3 };
+  var FIRST = {}, CNT = {};
+  var acc = 0;
+  for (var d0 = 1; d0 <= 4; d0++) {
+    FIRST[d0] = acc;
+    CNT[d0] = CARDS.filter(function (c) { return c.day === d0; }).length;
+    acc += CNT[d0];
+  }
   var BANDTOP = {}, BANDH = {}, H = 0;
-  for (var d0 = 1; d0 <= 3; d0++) {
-    BANDTOP[d0] = H;
-    BANDH[d0] = ROW0 + (ROWS[d0] - 1) * ROWSTEP + NH + 18;
-    H += BANDH[d0] + BANDGAP;
+  for (var d1 = 1; d1 <= 4; d1++) {
+    BANDTOP[d1] = H;
+    BANDH[d1] = ROW0 + (ROWS[d1] - 1) * ROWSTEP + NH + 18;
+    H += BANDH[d1] + BANDGAP;
   }
   H -= BANDGAP;
   var W = 1170;
 
   function posOf(c) {
-    var i = c.n - 1;
-    var dayIdx = c.day - 1;
-    var inDay = i - (dayIdx === 0 ? 0 : dayIdx === 1 ? 6 : 18);
-    var row = Math.floor(inDay / 6), col = inDay % 6;
+    var i = c.n - 1 - FIRST[c.day];
+    var row = Math.floor(i / 6), col = i % 6;
     return {
       x: PADX + col * (NW + GAP),
       y: BANDTOP[c.day] + ROW0 + row * ROWSTEP
@@ -87,7 +105,7 @@
   stage.style.height = H + 'px';
 
   var html = [];
-  for (var d = 1; d <= 3; d++) {
+  for (var d = 1; d <= 4; d++) {
     html.push('<div class="band" style="top:' + BANDTOP[d] + 'px;height:' + BANDH[d] + 'px"></div>');
     html.push('<span class="bandname" style="top:' + (BANDTOP[d] + 10) + 'px">' + DAYNAME[d] + '</span>');
   }
@@ -141,9 +159,9 @@
 
   var list = document.getElementById('mapList');
   var lh = [];
-  for (var dd = 1; dd <= 3; dd++) {
+  for (var dd = 1; dd <= 4; dd++) {
     lh.push('<div class="mgroup"><p class="mgh"><i class="i' + dd + '" style="background:' +
-      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : 'var(--d3-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
+      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : 'var(--d4-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
     CARDS.filter(function (c) { return c.day === dd; }).forEach(function (c) {
       var n = lvCount(c.id), dep = c.dep ? BY[c.dep] : null;
       lh.push('<button class="mrow d' + c.day + '" type="button" data-n="' + c.n + '" ' +
