@@ -722,5 +722,426 @@ int main() {
       { stdin: '5\n1 2 3 4 5\n', expected: '8\n1 2 3 4 5' },
       { stdin: '0\n', expected: '1' }
     ]
+  },
+  {
+    id: 'lab-refreturn',
+    title: '返回引用：把函数调用写在等号左边',
+    day: 'Day 1',
+    level: '进阶',
+    cards: ['d1c06', 'd1c02'],
+    brief: '补完 <code>val()</code>，让它返回成员 <code>v</code> 的引用（<code>int&amp;</code>，不是 <code>int</code>）。只有返回引用，<code>x.val() = b</code> 才会真的写进对象里。',
+    io: '输入：一行两个整数 a b。输出：把 b 写进去之后，对象里的值。',
+    starter: `#include <iostream>
+using namespace std;
+
+class Box {
+    int v;
+public:
+    Box(int x) : v(x) {}
+    int& val() {
+        // TODO: 返回成员 v 的引用，别返回局部变量
+        static int tmp = 0;
+        return tmp;
+    }
+};
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    Box x(a);
+    x.val() = b;        // 调用在等号左边
+    cout << x.val() << endl;
+    return 0;
+}`,
+    answer: `#include <iostream>
+using namespace std;
+
+class Box {
+    int v;
+public:
+    Box(int x) : v(x) {}
+    int& val() {
+        return v;       // 返回的是成员本身，不是副本
+    }
+};
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    Box x(a);
+    x.val() = b;        // 等价于改 x.v
+    cout << x.val() << endl;
+    return 0;
+}`,
+    cases: [
+      { stdin: '3 8\n', expected: '8' },
+      { stdin: '-1 0\n', expected: '0' }
+    ]
+  },
+  {
+    id: 'lab-nullptr',
+    title: 'nullptr：先看有没有门牌号，再进门',
+    day: 'Day 2',
+    level: '入门',
+    cards: ['d2c08'],
+    brief: '补完 <code>safeGet</code>：指针为空时返回 0，不为空才解引用。输入 0 时故意不分配内存，用来验证空指针分支。',
+    io: '输入：一个整数 n。输出：n 不为 0 时输出 n，为 0 时输出 0。',
+    starter: `#include <iostream>
+using namespace std;
+
+int safeGet(int* p) {
+    // TODO: p 为空返回 0，否则返回 *p
+    return 0;
+}
+
+int main() {
+    int n;
+    cin >> n;
+    int* p = nullptr;
+    if (n != 0) p = new int(n);
+    cout << safeGet(p) << endl;
+    delete p;
+    return 0;
+}`,
+    answer: `#include <iostream>
+using namespace std;
+
+int safeGet(int* p) {
+    if (p == nullptr) return 0;   // 先看门牌号在不在
+    return *p;
+}
+
+int main() {
+    int n;
+    cin >> n;
+    int* p = nullptr;
+    if (n != 0) p = new int(n);
+    cout << safeGet(p) << endl;
+    delete p;                    // delete nullptr 是安全的
+    return 0;
+}`,
+    cases: [
+      { stdin: '5\n', expected: '5' },
+      { stdin: '0\n', expected: '0' }
+    ]
+  },
+  {
+    id: 'lab-stackheap',
+    title: '栈与堆：一个自动退房，一个要你亲手退',
+    day: 'Day 2',
+    level: '进阶',
+    cards: ['d2c10', 'd2c07'],
+    brief: '栈上的对象出作用域自动析构；堆上的对象必须自己 <code>delete</code>。补上缺的那句 <code>delete h;</code>，让两边的析构顺序对上。',
+    io: '输入：一个整数 n。输出：构造 / 析构打印的 4 行，编号依次是 n、n+1。',
+    starter: `#include <iostream>
+using namespace std;
+
+class Item {
+    int id;
+public:
+    Item(int i) : id(i) { cout << "+" << id << endl; }
+    ~Item() { cout << "-" << id << endl; }
+};
+
+int main() {
+    int n;
+    cin >> n;
+    {
+        Item s(n);                    // 栈：出作用域自动析构
+        Item* h = new Item(n + 1);    // 堆：不 delete 就不析构
+        // TODO: 手动把 h 退房
+    }
+    return 0;
+}`,
+    answer: `#include <iostream>
+using namespace std;
+
+class Item {
+    int id;
+public:
+    Item(int i) : id(i) { cout << "+" << id << endl; }
+    ~Item() { cout << "-" << id << endl; }
+};
+
+int main() {
+    int n;
+    cin >> n;
+    {
+        Item s(n);                    // 栈：出作用域自动析构
+        Item* h = new Item(n + 1);    // 堆：要自己管
+        delete h;                     // 手动退房，先于栈对象
+    }                                 // 栈对象 s 到这里才析构
+    return 0;
+}`,
+    cases: [
+      { stdin: '5\n', expected: '+5\n+6\n-6\n-5' },
+      { stdin: '0\n', expected: '+0\n+1\n-1\n-0' }
+    ]
+  },
+  {
+    id: 'lab-overload',
+    title: '函数重载：同名不同参数，别看返回值',
+    day: 'Day 2',
+    level: '进阶',
+    cards: ['d2c15'],
+    brief: '同一个 <code>area</code> 写两个版本：一个参数算正方形，两个参数算长方形。补完两个函数体。',
+    io: '输入：一行三个整数 a b c。输出：a 的正方形面积、b×c 的长方形面积，空格隔开。',
+    starter: `#include <iostream>
+using namespace std;
+
+// 一个参数：正方形
+int area(int s) {
+    // TODO
+    return 0;
+}
+
+// 两个参数：长方形
+int area(int w, int h) {
+    // TODO
+    return 0;
+}
+
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    cout << area(a) << " " << area(b, c) << endl;
+    return 0;
+}`,
+    answer: `#include <iostream>
+using namespace std;
+
+int area(int s) {
+    return s * s;
+}
+
+int area(int w, int h) {
+    return w * h;
+}
+
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    cout << area(a) << " " << area(b, c) << endl;
+    return 0;
+}`,
+    cases: [
+      { stdin: '5 3 4\n', expected: '25 12' },
+      { stdin: '0 7 0\n', expected: '0 0' }
+    ]
+  },
+  {
+    id: 'lab-defaultarg',
+    title: '默认参数：不传就用默认值',
+    day: 'Day 2',
+    level: '入门',
+    cards: ['d2c14'],
+    brief: '补完 <code>power</code>，第二个参数默认是 2。调用 <code>power(n)</code> 算平方，<code>power(n, 3)</code> 算立方。',
+    io: '输入：一个整数 n。输出：n 的平方和立方，空格隔开。',
+    starter: `#include <iostream>
+using namespace std;
+
+int power(int base, int exp = 2) {
+    // TODO: 用循环把 base 乘 exp 次
+    return 0;
+}
+
+int main() {
+    int n;
+    cin >> n;
+    cout << power(n) << " " << power(n, 3) << endl;
+    return 0;
+}`,
+    answer: `#include <iostream>
+using namespace std;
+
+int power(int base, int exp = 2) {
+    int r = 1;
+    for (int i = 0; i < exp; i++) r *= base;
+    return r;
+}
+
+int main() {
+    int n;
+    cin >> n;
+    cout << power(n) << " " << power(n, 3) << endl;
+    return 0;
+}`,
+    cases: [
+      { stdin: '3\n', expected: '9 27' },
+      { stdin: '0\n', expected: '0 0' }
+    ]
+  },
+  {
+    id: 'lab-constmethod',
+    title: 'const 成员函数：常对象只认这道门',
+    day: 'Day 4',
+    level: '进阶',
+    cards: ['d4c40', 'd4c41'],
+    brief: '常对象 <code>const Rect r</code> 只能调用 const 成员函数。补完 <code>area() const</code> 的函数体，顺便体会这个 <code>const</code> 不能删。',
+    io: '输入：一行两个整数 w h。输出：面积。',
+    starter: `#include <iostream>
+using namespace std;
+
+class Rect {
+    int w, h;
+public:
+    Rect(int a, int b) : w(a), h(b) {}
+    int area() const {      // 这个 const 不能删：常对象只能调它
+        // TODO: 返回 w * h
+        return 0;
+    }
+};
+
+int main() {
+    int w, h;
+    cin >> w >> h;
+    const Rect r(w, h);
+    cout << r.area() << endl;
+    return 0;
+}`,
+    answer: `#include <iostream>
+using namespace std;
+
+class Rect {
+    int w, h;
+public:
+    Rect(int a, int b) : w(a), h(b) {}
+    int area() const {      // 承诺不改成员，所以常对象也能调
+        return w * h;
+    }
+};
+
+int main() {
+    int w, h;
+    cin >> w >> h;
+    const Rect r(w, h);
+    cout << r.area() << endl;
+    return 0;
+}`,
+    cases: [
+      { stdin: '5 3\n', expected: '15' },
+      { stdin: '0 9\n', expected: '0' }
+    ]
+  },
+  {
+    id: 'lab-thischain',
+    title: 'return *this：一路点下去',
+    day: 'Day 4',
+    level: '进阶',
+    cards: ['d4c39', 'd4c38'],
+    brief: '<code>add</code> 现在返回值而不是引用，链式调用改的是副本。把它改成返回 <code>Acc&amp;</code>，让 <code>acc.add(a).add(b).add(c)</code> 都落在同一个对象上。',
+    io: '输入：一行三个整数。输出：累加结果。',
+    starter: `#include <iostream>
+using namespace std;
+
+class Acc {
+    int v;
+public:
+    Acc() : v(0) {}
+    // TODO: 返回类型要改成引用，才能一路点下去
+    Acc add(int x) {
+        v += x;
+        return *this;
+    }
+    int get() const { return v; }
+};
+
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    Acc acc;
+    acc.add(a).add(b).add(c);
+    cout << acc.get() << endl;
+    return 0;
+}`,
+    answer: `#include <iostream>
+using namespace std;
+
+class Acc {
+    int v;
+public:
+    Acc() : v(0) {}
+    Acc& add(int x) {     // 返回 *this 的引用
+        v += x;
+        return *this;
+    }
+    int get() const { return v; }
+};
+
+int main() {
+    int a, b, c;
+    cin >> a >> b >> c;
+    Acc acc;
+    acc.add(a).add(b).add(c);
+    cout << acc.get() << endl;
+    return 0;
+}`,
+    cases: [
+      { stdin: '1 2 3\n', expected: '6' },
+      { stdin: '0 0 0\n', expected: '0' }
+    ]
+  },
+  {
+    id: 'lab-assign',
+    title: 'operator=：先退旧房，再租新房',
+    day: 'Day 3',
+    level: '进阶',
+    cards: ['d3c26', 'd3c25'],
+    brief: '补完拷贝赋值：把自己原来的内存删掉、按对方的值重新 <code>new</code> 一块，并返回 <code>*this</code>。别忘了自赋值保护。',
+    io: '输入：一行两个整数 a b。输出：赋值之后 x 和 y 的值，空格隔开。',
+    starter: `#include <iostream>
+using namespace std;
+
+class Box {
+    int* p;
+public:
+    Box(int v) { p = new int(v); }
+    ~Box() { delete p; }
+    Box& operator=(const Box& o) {
+        // TODO: 自赋值保护 + 深拷贝赋值 + 返回 *this
+        return *this;
+    }
+    void set(int v) { *p = v; }
+    int get() const { return *p; }
+};
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    Box x(a), y(b);
+    y = x;          // 拷贝赋值
+    cout << x.get() << " " << y.get() << endl;
+    return 0;
+}`,
+    answer: `#include <iostream>
+using namespace std;
+
+class Box {
+    int* p;
+public:
+    Box(int v) { p = new int(v); }
+    ~Box() { delete p; }
+    Box& operator=(const Box& o) {
+        if (this == &o) return *this;   // 自己给自己赋值，直接走
+        delete p;                        // 先退旧房
+        p = new int(*o.p);               // 再按对方的值租新房
+        return *this;                    // 支持 a = b = c
+    }
+    void set(int v) { *p = v; }
+    int get() const { return *p; }
+};
+
+int main() {
+    int a, b;
+    cin >> a >> b;
+    Box x(a), y(b);
+    y = x;
+    cout << x.get() << " " << y.get() << endl;
+    return 0;
+}`,
+    cases: [
+      { stdin: '4 9\n', expected: '4 4' },
+      { stdin: '0 0\n', expected: '0 0' }
+    ]
   }
 ];
