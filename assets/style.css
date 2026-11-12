@@ -1995,6 +1995,13 @@ footer {
 }
 
 
+/* 平板及以下（<=900px）：入口+开关放不下时，导航条内横向滚动，页面不横溢 */
+@media (max-width: 900px) {
+  .tn-links { min-width: 0; overflow-x: auto; scrollbar-width: none; -webkit-overflow-scrolling: touch; }
+  .tn-links::-webkit-scrollbar { display: none; }
+  .tn-links a { white-space: nowrap; }
+}
+
 /* 手机窄屏（<=600px）：顶栏链接改为条内横向滚动，入口变多也不会撑破页面（390/320 都不溢出） */
 @media (max-width: 600px) {
   .tn-inner { padding: 0 12px; gap: 8px; }
@@ -2002,4 +2009,153 @@ footer {
   .tn-links::-webkit-scrollbar { display: none; }
   .tn-links a { padding: 6px 9px; font-size: 13px; white-space: nowrap; }
   .tn-right { gap: 6px; }
+}
+
+/* ============================================================
+   护眼模式 + 字号三档（开关控件由 assets/prefs.js 注入到 .tn-right）
+   护眼取色：页面 #FBF4E2 / 卡片 #FFFCF3 / 代码块 #F5EDDC
+   代码块 token 在 #F5EDDC 实测：正文 12.87 / 注释 8.41 / 关键字 7.71 /
+   类型 6.73 / 字符串 6.74 / 函数名 6.92 / 数字 5.68
+   ============================================================ */
+.uiprefs { display: flex; align-items: center; gap: 6px; flex: none; }
+.ui-btn {
+  font-family: inherit; font-size: 12px; line-height: 1;
+  padding: 7px 10px; border-radius: 999px; cursor: pointer;
+  border: 1px solid #D8DCEA; background: #fff; color: var(--ink-2);
+  transition: background .15s, border-color .15s, color .15s;
+}
+.ui-btn:hover:not(:disabled) { border-color: #B9C3E0; background: #F7F9FE; }
+.ui-btn:disabled { opacity: .42; cursor: default; }
+.ui-eye.on { background: #F3E3BC; border-color: #D8BC7C; color: #5C430F; font-weight: 600; }
+.ui-fs {
+  display: inline-flex; align-items: center; gap: 1px;
+  border: 1px solid #D8DCEA; border-radius: 999px; background: #fff; padding: 2px;
+}
+.ui-fs .ui-btn { border: 0; background: none; padding: 5px 7px; }
+.ui-fs .ui-btn:hover:not(:disabled) { background: #F1F4FC; }
+.ui-fs b {
+  font-size: 11.5px; font-weight: 600; color: var(--muted);
+  min-width: 26px; text-align: center; font-variant-numeric: tabular-nums;
+}
+
+/* ---------- 护眼：整体米黄，白面换成暖白 ---------- */
+html[data-eye="1"] {
+  --page: #FBF4E2;
+  --surface: #FFFCF3;
+  --line: #E8DCC2;
+  --line-2: #F1E7D2;
+  --ink: #2B2415;
+  --ink-2: #4C4128;
+  --muted: #5C5138;
+  --lav: #F4E8CB;
+  --lav-2: #F8F0DC;
+  --blue: #2743B8;
+  --shadow-sm: 0 1px 2px rgba(90, 70, 30, .07);
+}
+html[data-eye="1"] body,
+html[data-eye="1"] body.lab-page,
+html[data-eye="1"] body.wrong-page,
+html[data-eye="1"] body.map-page { background: var(--page); color: var(--ink); }
+html[data-eye="1"] body::before {
+  background: linear-gradient(180deg, #F7EBD2 0%, #FAF2E0 46%, rgba(251, 244, 226, 0) 100%);
+}
+html[data-eye="1"] .topnav { background: #FFFCF3; border-bottom-color: #EADFC7; }
+html[data-eye="1"] .uiprefs .ui-btn,
+html[data-eye="1"] .ui-fs { background: var(--surface); border-color: #E3D7BF; color: #4C4128; }
+html[data-eye="1"] .ui-btn:hover:not(:disabled) { background: #FBF2DF; }
+html[data-eye="1"] .ui-eye.on { background: #F2E2BC; border-color: #D8BC7C; color: #5C430F; }
+
+html[data-eye="1"] .toc,
+html[data-eye="1"] .card,
+html[data-eye="1"] .q,
+html[data-eye="1"] .opt,
+html[data-eye="1"] .terms,
+html[data-eye="1"] .gloss,
+html[data-eye="1"] .expand,
+html[data-eye="1"] .pill,
+html[data-eye="1"] .rail-badge,
+html[data-eye="1"] .rlv,
+html[data-eye="1"] .drawer,
+html[data-eye="1"] .toc-row:hover,
+html[data-eye="1"] .tab:hover { background: var(--surface); }
+html[data-eye="1"] .card { border-color: #EADFC7; }
+html[data-eye="1"] .rail-card { background: #FBF2DE; border-color: #E9DCC0; }
+html[data-eye="1"] .sum-card { background: linear-gradient(180deg, #FBF3DF, #FFFCF3); border-color: #E4D3AC; }
+html[data-eye="1"] .concl { background: #FAF0D4; border-left-color: #B98A2E; color: #463A17; }
+html[data-eye="1"] .analogy { background: #FAF1DC; }
+html[data-eye="1"] .opt:hover:not(:disabled) { background: #FAF2DF; border-color: #D9CBAE; }
+html[data-eye="1"] .opt.correct { background: #EDF6E8; border-color: #8FBF93; color: #14532D; }
+html[data-eye="1"] .opt.wrong { background: #FBEDE6; border-color: #D9A79E; color: #8A1F17; }
+html[data-eye="1"] .fb.ok { background: #EDF6E8; border-color: #8FBF93; }
+html[data-eye="1"] .fb.no { background: #FBEDE6; border-color: #D9A79E; }
+html[data-eye="1"] .fill-row input,
+html[data-eye="1"] .aiq,
+html[data-eye="1"] .export textarea { background: #FFFDF6; border-color: #E3D7BF; color: var(--ink); }
+html[data-eye="1"] .fill-row input.correct { border-color: #4FA477; color: #14532D; }
+html[data-eye="1"] .fill-row input.wrong { border-color: #D98D8D; color: #8A1F17; }
+html[data-eye="1"] .sum-tip { background: #FBF3E3; border-color: #EADFC7; }
+
+/* 代码块：暖底 + 重新配过的 token（全部在 #F5EDDC 上实测） */
+html[data-eye="1"] pre.code,
+html[data-eye="1"] pre.code code { background: #F5EDDC; color: #2B2620; }
+html[data-eye="1"] pre.code { border: 1px solid #E3D7BF; }
+html[data-eye="1"] pre.code .k { color: #5B21B6; }
+html[data-eye="1"] pre.code .t { color: #0B5394; }
+html[data-eye="1"] pre.code .s { color: #A31515; }
+html[data-eye="1"] pre.code .c { color: #0F4E2B; }
+html[data-eye="1"] pre.code .fn { color: #6B4A00; }
+html[data-eye="1"] pre.code .num { color: #00695C; }
+html[data-eye="1"] .codewrap.short::after {
+  background: linear-gradient(180deg, rgba(245, 237, 220, 0), rgba(245, 237, 220, .96));
+}
+
+/* 代码练习页 */
+html[data-eye="1"] .svc,
+html[data-eye="1"] .labnav,
+html[data-eye="1"] .panel,
+html[data-eye="1"] .editorwrap,
+html[data-eye="1"] textarea.codeedit,
+html[data-eye="1"] .locase,
+html[data-eye="1"] .locase pre,
+html[data-eye="1"] details.answer,
+html[data-eye="1"] details.answer pre { background: var(--surface); border-color: #E8DCC2; color: var(--ink); }
+html[data-eye="1"] details.answer pre { background: #F5EDDC; color: #2B2620; border-color: #E3D7BF; }
+html[data-eye="1"] .editorbar,
+html[data-eye="1"] .pio,
+html[data-eye="1"] .cases th { background: #FBF2DE; border-color: #E8DCC2; }
+html[data-eye="1"] .labcards { background: #FDF6E6; border-color: #E8DCC2; }
+html[data-eye="1"] .labnav button:hover { background: #FAF2DF; }
+html[data-eye="1"] .labnav button.on { background: var(--lav); border-color: #E4D3AC; color: var(--purple-ink); }
+html[data-eye="1"] .svchint code { background: #F7EEDC; border-color: #E8DCC2; }
+html[data-eye="1"] .locase.pass { background: #F2F8EA; border-color: #BFD8AE; }
+html[data-eye="1"] .locase.fail { background: #FCF0E9; border-color: #DFB6A8; }
+
+/* 错题本 */
+html[data-eye="1"] .wbday,
+html[data-eye="1"] .wbitem,
+html[data-eye="1"] .wchip,
+html[data-eye="1"] .wbdone,
+html[data-eye="1"] .wbempty { background: var(--surface); border-color: #E8DCC2; }
+html[data-eye="1"] .wbdayhead { background: #FBF2DE; border-bottom-color: #EADFC7; }
+
+/* 概念地图：节点保留按天配色，白色容器转暖 */
+html[data-eye="1"] .lg,
+html[data-eye="1"] .mapstage .band,
+html[data-eye="1"] .node,
+html[data-eye="1"] .mrow { background: var(--surface); border-color: #E8DCC2; }
+
+/* ---------- 字号三档：只缩放内容区，顶栏保持原大小 ---------- */
+html[data-fs="sm"] .wrap,
+html[data-fs="sm"] .mapwrap,
+html[data-fs="sm"] .labwrap,
+html[data-fs="sm"] .wbwrap { zoom: .93; }
+html[data-fs="lg"] .wrap,
+html[data-fs="lg"] .mapwrap,
+html[data-fs="lg"] .labwrap,
+html[data-fs="lg"] .wbwrap { zoom: 1.1; }
+
+@media (max-width: 600px) {
+  .ui-btn { font-size: 11.5px; padding: 6px 8px; }
+  .ui-fs b { min-width: 22px; font-size: 11px; }
+  .uiprefs { gap: 4px; }
 }
