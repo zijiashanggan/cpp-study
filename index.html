@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="color-scheme" content="light">
 <meta name="theme-color" content="#ffffff">
-<title>C++ 四天重点 + 练习</title>
+<title>C++ 五天重点 + 练习</title>
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%23130B43'/%3E%3Ctext x='16' y='22' font-size='15' text-anchor='middle' fill='%23ffffff' font-family='monospace'%3EC%2B%2B%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="assets/style.css">
 <script src="assets/prefs.js"></script>
@@ -15,7 +15,7 @@
 
 <header class="topnav" id="topnav">
   <div class="tn-inner">
-    <a class="brand" href="#day1" aria-label="C++ 四天 · 回到 Day 1">
+    <a class="brand" href="#day1" aria-label="C++ 五天 · 回到 Day 1">
       <span class="brand-mark" aria-hidden="true">C++</span>
       <span class="brand-name">cpp<span>·</span>study</span>
     </a>
@@ -29,7 +29,7 @@
       <a href="#review" id="navReview">复习<i class="rvbadge hide" id="rvNavBadge"></i></a>
     </nav>
     <div class="tn-right">
-      <span class="tn-prog" id="tnProg">已过 0/43</span>
+      <span class="tn-prog" id="tnProg">已过 0/62</span>
       <button class="tn-ic" id="tnBell" type="button" aria-label="通知">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M18 8a6 6 0 1 0-12 0c0 7-3 8-3 8h18s-3-1-3-8"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>
       </button>
@@ -73,9 +73,9 @@
               <button class="tab" id="tabPractice" role="tab" aria-selected="false" type="button">练习</button>
             </div>
             <nav class="nav" aria-label="页面锚点">
-              <a href="#day1">Day 1</a><a href="#day2">Day 2</a><a href="#day3">Day 3</a><a href="#day4">Day 4</a>
-              <a href="#practice1">Day 1 练习</a><a href="#practice2">Day 2 练习</a><a href="#practice3">Day 3 练习</a><a href="#practice4">Day 4 练习</a>
-              <a href="#task1">Day 1 动手</a><a href="#task2">Day 2 动手</a><a href="#task3">Day 3 动手</a><a href="#task4">Day 4 动手</a>
+              <a href="#day1">Day 1</a><a href="#day2">Day 2</a><a href="#day3">Day 3</a><a href="#day4">Day 4</a><a href="#day5">Day 5</a>
+              <a href="#practice1">Day 1 练习</a><a href="#practice2">Day 2 练习</a><a href="#practice3">Day 3 练习</a><a href="#practice4">Day 4 练习</a><a href="#practice5">Day 5 练习</a>
+              <a href="#task1">Day 1 动手</a><a href="#task2">Day 2 动手</a><a href="#task3">Day 3 动手</a><a href="#task4">Day 4 动手</a><a href="#task5">Day 5 动手</a>
             </nav>
           </div>
         </section>
@@ -98,7 +98,7 @@
               <b>今天进度</b>
               <span class="rail-badge" id="railDay">Day 1</span>
             </div>
-            <p class="rail-num">第 <b id="railIdx">1</b><span>/<span id="railTotal">43</span> 张</span></p>
+            <p class="rail-num">第 <b id="railIdx">1</b><span>/<span id="railTotal">62</span> 张</span></p>
             <div class="rail-track" aria-hidden="true"><i id="railBar"></i></div>
             <div class="rail-lvs" id="railLvs">
               <span class="rlv" data-lv="read"><i></i>读讲解</span>
@@ -118,17 +118,18 @@
           </div>
           <div class="rail-card rail-mini">
             <b>换一天 / 刷题</b>
-            <p>四天各自独立计分，切换只影响当前这一屏。</p>
+            <p>五天各自独立计分，切换只影响当前这一屏。</p>
             <div class="rail-brush">
               <button class="again" id="againTop1" type="button">Day 1 刷题</button>
               <button class="again" id="againTop2" type="button">Day 2 刷题</button>
               <button class="again" id="againTop3" type="button">Day 3 刷题</button>
               <button class="again" id="againTop4" type="button">Day 4 刷题</button>
+              <button class="again" id="againTop5" type="button">Day 5 刷题</button>
             </div>
           </div>
           <details class="rail-card about">
             <summary>这份页面在讲什么</summary>
-            <p class="sub">给刚学完 C、正在转 C++ 的嵌入式初学者：先吃透引用和内存，再把类、构造、析构这条线串起来，最后补上 static、this、const 和封装。所有示例都能在电脑上直接编译运行，不需要开发板；等以后有板子，再回来看标了「以后有板子再看」的部分。</p>
+            <p class="sub">给刚学完 C、正在转 C++ 的嵌入式初学者：先吃透引用和内存，再把类、构造、析构这条线串起来，补上 static、this、const 和封装，最后过运算符重载与继承。所有示例都能在电脑上直接编译运行，不需要开发板；等以后有板子，再回来看标了「以后有板子再看」的部分。</p>
             <p class="only">本页只保留当前阶段必学内容，其余等学完对象生命周期再补。</p>
             <div class="tags">
               <span class="tag">C 已学完</span>
@@ -137,11 +138,13 @@
               <span class="tag">Day 2</span>
               <span class="tag">Day 3</span>
               <span class="tag">Day 4</span>
+              <span class="tag">Day 5</span>
               <span class="tag">Day 1 题库 56 道</span>
               <span class="tag">Day 2 题库 38 道</span>
               <span class="tag">Day 3 题库 41 道</span>
               <span class="tag">Day 4 题库 41 道</span>
-              <span class="tag">四套练习各自独立</span>
+              <span class="tag">Day 5 题库 46 道</span>
+              <span class="tag">五套练习各自独立</span>
               <span class="tag">动手任务无需开发板</span>
             </div>
           </details>
@@ -163,6 +166,10 @@
           <div class="day-part" data-day="day4" hidden>
             <section class="tasks" id="task4"></section>
             <div class="gloss-wrap" id="gloss4"></div>
+          </div>
+          <div class="day-part" data-day="day5" hidden>
+            <section class="tasks" id="task5"></section>
+            <div class="gloss-wrap" id="gloss5"></div>
           </div>
 
           <div class="day-part" data-day="day1">
@@ -225,6 +232,21 @@
             <div id="summary4"></div>
           </div>
 
+          <div class="day-part" data-day="day5" hidden>
+            <div class="sec-title pr-title" id="practice5">Day 5 练习<span class="pr-tag">只抽 Day 5 的题 · 独立计分</span></div>
+            <p class="sec-desc">从 Day 5 的 <b>46</b> 道题里随机抽 <b>7 单选 + 3 填空 + 3 判断 + 3 代码</b>，打乱顺序、轮内不重复。这一套的进度、得分、错题、报告只算 Day 5，和 Day 1–4 互不影响。</p>
+
+            <div class="stats">
+              <div class="stat"><div class="lab">本轮进度</div><div class="val" id="stProg5">0 / 16</div></div>
+              <div class="stat"><div class="lab">得分</div><div class="val blue" id="stScore5">0</div></div>
+              <div class="stat"><div class="lab">正确率</div><div class="val" id="stRate5">—</div></div>
+              <button class="again" id="againBar5">再来一轮</button>
+            </div>
+
+            <div id="qlist5"></div>
+            <div id="summary5"></div>
+          </div>
+
           <section class="check">
             <h3>怎么判断自己真的会了</h3>
             <ol>
@@ -235,7 +257,7 @@
             <p class="check-tip">提醒一句：网页刷题只能暴露盲点，不能替代动手。刷十轮，不如自己从零敲一遍。</p>
           </section>
 
-          <footer>做完这一页，Day 4 就可以进「继承与多态」了。</footer>
+          <footer>做完这一页，Day 5 的两条线（运算符重载、继承）就齐了，下一步进「多态」。</footer>
         </div>
       </div>
     </main>

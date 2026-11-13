@@ -1,4 +1,4 @@
-/* 概念地图：43 张卡按主依赖连线；桌面散点图 + 手机按天树状列表。
+/* 概念地图：62 张卡按主依赖连线；桌面散点图 + 手机按天树状列表。
    点节点先出说明（桌面浮层 / 手机底部抽屉），浮层里点「进入卡片」才跳转。 */
 (function () {
   'use strict';
@@ -47,9 +47,28 @@
     { n: 40, id: 'd4c40', t: 'const 成员函数', day: 4, dep: 37, d: '在成员函数参数表后加 const，表示这个函数不修改对象状态。常对象只能调用这类函数，它是「只读承诺」的语法体现。' },
     { n: 41, id: 'd4c41', t: '常对象', day: 4, dep: 40, d: '用 const 修饰的对象只能调用 const 成员函数，成员能读不能改，mutable 成员是唯一例外。它把 const 成员函数的约束落实到具体对象上。' },
     { n: 42, id: 'd4c42', t: '友元', day: 4, dep: 40, d: 'friend 声明的函数或类可以访问私有成员，相当于发一把备用钥匙。它绕过封装但不是成员、没有 this，也不被继承。' },
-    { n: 43, id: 'd4c43', t: '动态数组实战', day: 4, dep: 26, d: '把指针、个数、容量封装进类，满了就申请更大的内存、搬过去、释放旧的；拷贝时重新租地做深拷贝。它把 new / delete、构造析构、拷贝赋值、扩容串成一个能用的容器。' }
+    { n: 43, id: 'd4c43', t: '动态数组实战', day: 4, dep: 26, d: '把指针、个数、容量封装进类，满了就申请更大的内存、搬过去、释放旧的；拷贝时重新租地做深拷贝。它把 new / delete、构造析构、拷贝赋值、扩容串成一个能用的容器。' },
+    { n: 44, id: 'd5c44', t: '运算符重载', day: 5, dep: 0, d: '运算符重载就是给 +、<< 这些符号绑一个函数：成员函数少写一个参数，全局函数写全两个。它不改变优先级和参数个数，只是让对象用起来像内置类型。' },
+    { n: 45, id: 'd5c45', t: '<< 与 >>', day: 5, dep: 44, d: '<< 的左操作数是流对象，所以只能写成全局函数，并在类里声明成友元；返回 ostream& 才能连续输出。>> 同理，第二个参数必须是非 const 引用，才能把读到的值写回对象。' },
+    { n: 46, id: 'd5c46', t: '重载红线', day: 5, dep: 44, d: '不能新增运算符、不能改优先级和参数个数、不能改内置类型；:: . ?: sizeof 不可重载。&& 和 || 更不要重载——重载后所有实参都要先求值，短路直接失效。' },
+    { n: 47, id: 'd5c47', t: '前置/后置 ++', day: 5, dep: 44, d: '前置 ++c 返回加完的自己（引用），后置 c++ 靠一个不用的 int 占位参数区分，返回旧值的副本。能写前置就别写后置，后置多一次拷贝。' },
+    { n: 48, id: 'd5c48', t: 'operator+', day: 5, dep: 44, d: '相加产生第三个新对象，所以返回类型写值不写引用，参数用 const T& 保证不改右操作数。返回引用会指向函数里的临时对象，函数一结束就悬空。' },
+    { n: 49, id: 'd5c49', t: 'operator=', day: 5, dep: 26, d: '赋值只在两个已存在的对象之间调用，要挡自赋值、先释放旧资源再深拷贝，并返回 *this 的引用才能连续赋值。它和拷贝构造的区别是「覆盖」与「出生」。' },
+    { n: 50, id: 'd5c50', t: '== 与 !=', day: 5, dep: 44, d: '比较哪些字段由你定，返回 bool、参数 const T&、函数尾加 const。!= 直接拿 == 取反，规则只维护一处；C 字符串比内容要用 strcmp，不能直接 ==。' },
+    { n: 51, id: 'd5c51', t: 'operator() 仿函数', day: 5, dep: 44, d: '重载 () 之后对象能像函数一样被调用，还能带着成员状态，这类对象叫仿函数。标准库的排序、for_each 都吃这种「能调的对象」。' },
+    { n: 52, id: 'd5c52', t: '智能指针原理', day: 5, dep: 48, d: '把裸指针包进类、析构里 delete，再重载 * 和 ->，用起来还像指针——这就是智能指针。-> 必须返回真正的指针，因为编译器会自动再接一次 ->。' },
+    { n: 53, id: 'd5c53', t: '重载硬规定', day: 5, dep: 44, d: '= [] () -> 必须是成员函数；<< >> 必须是全局函数加友元； + - == < 两种写法都行但要统一。这些不是风格，是语法写死的。' },
+    { n: 54, id: 'd5c54', t: 'MyString ①', day: 5, dep: 25, d: '成员里有 new 出来的 char*，就必须自己写析构、拷贝构造和拷贝赋值（三法则）。默认拷贝只抄地址，两个对象共用一块内存，析构时会释放两次。' },
+    { n: 55, id: 'd5c55', t: 'MyString ②', day: 5, dep: 54, d: '把 + 返回新对象、[] 返回 char&、= 先释放后深拷、== 用 strcmp 这几件接上，类才真的像字符串。[] 返回 char 只能读不能改。' },
+    { n: 56, id: 'd5c56', t: '继承基础', day: 5, dep: 21, d: '子类自动拥有父类的成员和函数，只补自己新增的部分；父类构造要写在初始化列表里。只有「是一个」的关系才用继承，「有一个」应该用成员对象。' },
+    { n: 57, id: 'd5c57', t: '继承访问控制', day: 5, dep: 56, d: 'public 继承不改父类成员的权限：public 照旧、protected 子类可用、private 谁都不能直接碰。protected / private 继承会把权限往下压，工程里很少用。' },
+    { n: 58, id: 'd5c58', t: '构造析构顺序', day: 5, dep: 56, d: '构造顺序是父类 → 成员对象 → 子类构造体，析构完全相反。用父类指针 delete 子类对象时，父类析构必须是 virtual，否则子类资源漏掉。' },
+    { n: 59, id: 'd5c59', t: '同名成员', day: 5, dep: 56, d: '同名成员默认就近用子类那份，要父类的就加 类名::。函数同名更狠：子类一重定义，父类那组同名重载会被整体遮蔽。' },
+    { n: 60, id: 'd5c60', t: '不继承的三样', day: 5, dep: 56, d: '构造函数、析构函数、operator= 都不会继承，编译器给子类各生成一份；静态成员则相反，父子共享同一块内存，在谁那里改都是改同一份。' },
+    { n: 61, id: 'd5c61', t: '多继承', day: 5, dep: 56, d: '一个子类可以继承多个父类，但两个父类有同名成员时 x.a 会有歧义，必须写 x.A::a。构造顺序按继承列表来，工程里应尽量少用多继承。' },
+    { n: 62, id: 'd5c62', t: '菱形与虚继承', day: 5, dep: 61, d: '马和驴都继承动物、骡又继承马和驴时，动物会被继承两份。让中间层 virtual 继承，公共祖先只留一份；代价是对象里多一个 vbptr 指向虚基类表。' }
   ];
-  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this' };
+  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this', 5: 'Day 5 · 重载与继承' };
 
   var BY = {};
   CARDS.forEach(function (c) { BY[c.n] = c; });
@@ -71,16 +90,16 @@
 
   /* ---------- 桌面散点图 ---------- */
   var NW = 168, NH = 72, GAP = 26, PADX = 16, ROW0 = 34, ROWSTEP = 96, BANDGAP = 14;
-  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3 };
+  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4 };
   var FIRST = {}, CNT = {};
   var acc = 0;
-  for (var d0 = 1; d0 <= 4; d0++) {
+  for (var d0 = 1; d0 <= 5; d0++) {
     FIRST[d0] = acc;
     CNT[d0] = CARDS.filter(function (c) { return c.day === d0; }).length;
     acc += CNT[d0];
   }
   var BANDTOP = {}, BANDH = {}, H = 0;
-  for (var d1 = 1; d1 <= 4; d1++) {
+  for (var d1 = 1; d1 <= 5; d1++) {
     BANDTOP[d1] = H;
     BANDH[d1] = ROW0 + (ROWS[d1] - 1) * ROWSTEP + NH + 18;
     H += BANDH[d1] + BANDGAP;
@@ -102,7 +121,7 @@
   stage.style.height = H + 'px';
 
   var html = [];
-  for (var d = 1; d <= 4; d++) {
+  for (var d = 1; d <= 5; d++) {
     html.push('<div class="band" style="top:' + BANDTOP[d] + 'px;height:' + BANDH[d] + 'px"></div>');
     html.push('<span class="bandname" style="top:' + (BANDTOP[d] + 10) + 'px">' + DAYNAME[d] + '</span>');
   }
@@ -256,9 +275,9 @@
 
   var list = document.getElementById('mapList');
   var lh = [];
-  for (var dd = 1; dd <= 4; dd++) {
+  for (var dd = 1; dd <= 5; dd++) {
     lh.push('<div class="mgroup"><p class="mgh"><i class="i' + dd + '" style="background:' +
-      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : 'var(--d4-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
+      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : dd === 4 ? 'var(--d4-ink)' : 'var(--d5-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
     CARDS.filter(function (c) { return c.day === dd; }).forEach(function (c) {
       var n = lvCount(c.id), dep = c.dep ? BY[c.dep] : null;
       lh.push('<button class="mrow d' + c.day + '" type="button" data-n="' + c.n + '" ' +

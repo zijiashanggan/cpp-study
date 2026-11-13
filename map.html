@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>概念地图 · C++ 四天</title>
+<title>概念地图 · C++ 五天</title>
 <link rel="stylesheet" href="assets/style.css">
 <script src="assets/prefs.js"></script>
 <style>
@@ -13,6 +13,7 @@
     --d2-bg: #EAF1FE; --d2-bd: #C3D7F7; --d2-ink: #2E57E8;
     --d3-bg: #F3EDFF; --d3-bd: #D6C6F6; --d3-ink: #6B3FD4;
     --d4-bg: #FFF4E8; --d4-bd: #F3D5B0; --d4-ink: #A65E12;
+    --d5-bg: #FFEFF5; --d5-bd: #F5C7DB; --d5-ink: #A8336B;
   }
   body.map-page { background: #F8FAFE; }
   .tn-links a.on { background: var(--lav); border-color: #C9D8FB; color: var(--purple-ink); font-weight: 600; }
@@ -30,6 +31,7 @@
   .lg.d2 i { background: var(--d2-bg); border: 1px solid var(--d2-bd); }
   .lg.d3 i { background: var(--d3-bg); border: 1px solid var(--d3-bd); }
   .lg.d4 i { background: var(--d4-bg); border: 1px solid var(--d4-bd); }
+  .lg.d5 i { background: var(--d5-bg); border: 1px solid var(--d5-bd); }
   .lg.line i { width: 22px; height: 0; border-radius: 0; border-top: 2px dashed #9AA3C0; }
 
   .mapstage { position: relative; margin: 8px auto 0; }
@@ -66,6 +68,8 @@
   .node.d3 .nnum { background: var(--d3-ink); }
   .node.d4 { background: var(--d4-bg); border-color: var(--d4-bd); }
   .node.d4 .nnum { background: var(--d4-ink); }
+  .node.d5 { background: var(--d5-bg); border-color: var(--d5-bd); }
+  .node.d5 .nnum { background: var(--d5-ink); }
   .node .nst.ok { color: #1F7A4D; }
 
   /* 手机：按 Day 分组的树状列表 */
@@ -88,6 +92,7 @@
   .mrow.d2 .mid { background: var(--d2-ink); }
   .mrow.d3 .mid { background: var(--d3-ink); }
   .mrow.d4 .mid { background: var(--d4-ink); }
+  .mrow.d5 .mid { background: var(--d5-ink); }
 
   /* 说明浮层（桌面，悬停或点击节点先看讲解） */
   .tipcard {
@@ -104,6 +109,7 @@
   .tipnum.d2 { background: var(--d2-ink); }
   .tipnum.d3 { background: var(--d3-ink); }
   .tipnum.d4 { background: var(--d4-ink); }
+  .tipnum.d5 { background: var(--d5-ink); }
   .tipt { font-size: 1.04em; font-weight: 700; }
   .tipdesc { margin: 0 0 8px; font-size: .95em; color: var(--ink-2); }
   .tipmeta { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .82em; color: var(--muted); margin-bottom: 11px; }
@@ -148,7 +154,7 @@
     <a href="wrong.html">错题本</a>
   </nav>
   <div class="tn-right">
-    <span class="tn-prog" id="mProg">已过 0/43</span>
+    <span class="tn-prog" id="mProg">已过 0/62</span>
   </div>
   </div>
 </header>
@@ -156,12 +162,13 @@
 <main class="mapwrap">
   <div class="maphead">
     <h1>你的 C++ 之旅</h1>
-    <p class="mapsub">43 张卡按先后依赖排开。虚线只表示「先学左边，再学右边」这一条主线，不代表先后顺序限制；点任意一张都能直接进去。</p>
+    <p class="mapsub">62 张卡按先后依赖排开。虚线只表示「先学左边，再学右边」这一条主线，不代表先后顺序限制；点任意一张先看说明，浮层里再进卡片。</p>
     <div class="maplegend">
       <span class="lg d1"><i></i>Day 1 · 引用与传参</span>
       <span class="lg d2"><i></i>Day 2 · 指针与内存</span>
       <span class="lg d3"><i></i>Day 3 · 类与对象</span>
       <span class="lg d4"><i></i>Day 4 · 静态与 this</span>
+      <span class="lg d5"><i></i>Day 5 · 重载与继承</span>
       <span class="lg line"><i></i>前置关系</span>
     </div>
   </div>

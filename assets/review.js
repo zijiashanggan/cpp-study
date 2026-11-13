@@ -8,7 +8,7 @@
   var KEY = 'cpp_review_v1';
   var LV_KEY = 'cpp_card_levels_v2';
   var INT = [1, 2, 4, 7, 15, 30];
-  var DAYNAME = { day1: 'Day 1', day2: 'Day 2', day3: 'Day 3', day4: 'Day 4' };
+  var DAYNAME = { day1: 'Day 1', day2: 'Day 2', day3: 'Day 3', day4: 'Day 4', day5: 'Day 5' };
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
   function todayStr() {
@@ -37,7 +37,7 @@
     var lv = read(LV_KEY, {}), db = read(KEY, {}), changed = false, t = todayStr();
     Object.keys(lv).forEach(function (id) {
       var o = lv[id] || {}, n = 0;
-      [1, 2, 3].forEach(function (k) { if (o[k]) n++; });
+      ['read', 'do', 'quiz'].forEach(function (k) { if (o[k]) n++; });
       if (n === 3 && !db[id]) {
         db[id] = { n: 0, due: addDays(INT[0]), since: t, last: '' };
         changed = true;

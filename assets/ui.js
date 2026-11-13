@@ -838,8 +838,8 @@
   function parseHash(h) {
     h = String(h == null ? location.hash : h).replace('#', '');
     var m;
-    if ((m = /^(day|task|practice)([1-4])$/.exec(h))) return { type: m[1], day: 'day' + m[2] };
-    if ((m = /^(d[1-4]c\d+)$/.exec(h))) return { type: 'card', day: dayOfCard(m[1]), card: m[1] };
+    if ((m = /^(day|task|practice)([1-5])$/.exec(h))) return { type: m[1], day: 'day' + m[2] };
+    if ((m = /^(d[1-5]c\d+)$/.exec(h))) return { type: 'card', day: dayOfCard(m[1]), card: m[1] };
     return null;
   }
 

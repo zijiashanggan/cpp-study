@@ -8,9 +8,10 @@
     day1: 'Day 1 · 引用与传参',
     day2: 'Day 2 · 指针与内存',
     day3: 'Day 3 · 类与对象',
-    day4: 'Day 4 · 静态与 this'
+    day4: 'Day 4 · 静态与 this',
+    day5: 'Day 5 · 重载与继承'
   };
-  var DAYORDER = ['day1', 'day2', 'day3', 'day4'];
+  var DAYORDER = ['day1', 'day2', 'day3', 'day4', 'day5'];
   var QB = {};      /* 题 id → {type, day, base} */
   var META = {};    /* 题 id → {day, num, title, tag, cardId} */
 
