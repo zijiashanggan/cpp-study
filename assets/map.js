@@ -1,4 +1,4 @@
-/* 概念地图：62 张卡按主依赖连线；桌面散点图 + 手机按天树状列表。
+/* 概念地图：80 张卡按主依赖连线；桌面散点图 + 手机按天树状列表。
    点节点先出说明（桌面浮层 / 手机底部抽屉），浮层里点「进入卡片」才跳转。 */
 (function () {
   'use strict';
@@ -66,9 +66,27 @@
     { n: 59, id: 'd5c59', t: '同名成员', day: 5, dep: 56, d: '同名成员默认就近用子类那份，要父类的就加 类名::。函数同名更狠：子类一重定义，父类那组同名重载会被整体遮蔽。' },
     { n: 60, id: 'd5c60', t: '不继承的三样', day: 5, dep: 56, d: '构造函数、析构函数、operator= 都不会继承，编译器给子类各生成一份；静态成员则相反，父子共享同一块内存，在谁那里改都是改同一份。' },
     { n: 61, id: 'd5c61', t: '多继承', day: 5, dep: 56, d: '一个子类可以继承多个父类，但两个父类有同名成员时 x.a 会有歧义，必须写 x.A::a。构造顺序按继承列表来，工程里应尽量少用多继承。' },
-    { n: 62, id: 'd5c62', t: '菱形与虚继承', day: 5, dep: 61, d: '马和驴都继承动物、骡又继承马和驴时，动物会被继承两份。让中间层 virtual 继承，公共祖先只留一份；代价是对象里多一个 vbptr 指向虚基类表。' }
+    { n: 62, id: 'd5c62', t: '菱形与虚继承', day: 5, dep: 61, d: '马和驴都继承动物、骡又继承马和驴时，动物会被继承两份。让中间层 virtual 继承，公共祖先只留一份；代价是对象里多一个 vbptr 指向虚基类表。' },
+    { n: 63, id: 'd6c63', t: '多态', day: 6, dep: 56, d: '同一个调用在不同对象上做出不同行为。重载、运算符重载是编译时多态（早绑定），虚函数是运行时多态（晚绑定），区别只在函数地址什么时候定下来。' },
+    { n: 64, id: 'd6c64', t: '向上转换', day: 6, dep: 63, d: '父类指针或引用可以指向子类对象，但普通函数按指针的静态类型早绑定，所以 p->drive() 调到的还是父类版本。它解释了为什么需要 virtual。' },
+    { n: 65, id: 'd6c65', t: '虚函数', day: 6, dep: 64, d: '在基类函数前加 virtual，派生类重写后，通过父类指针调用就会按对象真实类型走。派生类不用再写 virtual，签名必须和基类完全一致。' },
+    { n: 66, id: 'd6c66', t: 'vptr / vtable', day: 6, dep: 65, d: '每个含虚函数的类有一张虚函数表，每个对象里放一个 vptr 指向它；调用虚函数就是取 vptr、查表、跳转。64 位下这个指针让对象多 8 字节。' },
+    { n: 67, id: 'd6c67', t: '重载重定义重写', day: 6, dep: 65, d: '重载看同一作用域、参数不同；重定义（隐藏）是有继承、同名非虚函数，一写就遮住父类全部同名版本；重写要父类 virtual + 签名一致，才会动态绑定。' },
+    { n: 68, id: 'd6c68', t: '纯虚与抽象类', day: 6, dep: 65, d: '写成 = 0 的函数是纯虚函数，含纯虚函数的类成为抽象类，不能实例化；子类必须实现全部纯虚函数，否则自己也是抽象类。' },
+    { n: 69, id: 'd6c69', t: '接口类', day: 6, dep: 68, d: '全是纯虚函数、没有数据成员的类就是接口。多继承多个接口不会带来数据重复或二义性，是 C++ 里最安全的多继承用法。' },
+    { n: 70, id: 'd6c70', t: '模板方法', day: 6, dep: 68, d: '父类把不变的流程写在普通函数里，把可变的步骤留成纯虚函数，子类只填步骤、改不了顺序。这是设计模式里最常用的继承用法之一。' },
+    { n: 71, id: 'd6c71', t: '虚析构', day: 6, dep: 65, d: '用父类指针 delete 子类对象时，父类析构必须是 virtual，否则只析构父类那部分，子类资源泄漏，而且编译器不会报错。' },
+    { n: 72, id: 'd6c72', t: '纯虚析构', day: 6, dep: 68, d: '把析构写成 = 0 能让基类变成抽象类，但必须在类外提供函数体，否则子类销毁时链接不到，报 undefined reference。' },
+    { n: 73, id: 'd6c73', t: '为什么用异常', day: 6, dep: 0, d: '返回值可能被调用方忽略，异常不会：没人接就 terminate。它还能把出错原因和参数一起带上去，并跨多层直接跳到能处理的地方。' },
+    { n: 74, id: 'd6c74', t: 'throw / try / catch', day: 6, dep: 73, d: '可能出错的代码放 try，出错处 throw，处理写 catch；抛出后 try 里剩余语句全部跳过，catch 处理完程序继续往下走。' },
+    { n: 75, id: 'd6c75', t: '严格类型匹配', day: 6, dep: 74, d: '异常捕获不做 char→int 这类隐式转换，catch 从上到下选第一个类型匹配的，所以具体类型写前面、catch(...) 放最后。' },
+    { n: 76, id: 'd6c76', t: '栈解旋', day: 6, dep: 74, d: '从 try 到 throw 之间构造的局部对象会按逆序自动析构，然后才进 catch。这是 RAII 能在异常路径上不漏资源的基础。' },
+    { n: 77, id: 'd6c77', t: '异常怎么接', day: 6, dep: 74, d: '按值接会多一次拷贝、接派生类还会切片；按指针接要手动 delete；推荐 catch (T& e)，不拷贝、不泄漏，还能配合多态接子类异常。' },
+    { n: 78, id: 'd6c78', t: '异常多态', day: 6, dep: 77, d: '让异常类继承同一个基类，用 catch (Base& e) + 虚函数，就能一个 catch 处理一整族异常。派生类的 catch 必须写在基类前面。' },
+    { n: 79, id: 'd6c79', t: '标准异常库', day: 6, dep: 78, d: 'out_of_range、invalid_argument 等都继承 std::exception，用 catch (exception& e) + e.what() 一处接住，what() 返回 const char*。' },
+    { n: 80, id: 'd6c80', t: '自定义异常', day: 6, dep: 79, d: '自己的异常类继承 exception，用 string 存说明，按原签名重写 const char* what() const noexcept；这样别人用 catch (exception&) 也能接住。' }
   ];
-  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this', 5: 'Day 5 · 重载与继承' };
+  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this', 5: 'Day 5 · 重载与继承', 6: 'Day 6 · 多态与异常' };
 
   var BY = {};
   CARDS.forEach(function (c) { BY[c.n] = c; });
@@ -90,16 +108,16 @@
 
   /* ---------- 桌面散点图 ---------- */
   var NW = 168, NH = 72, GAP = 26, PADX = 16, ROW0 = 34, ROWSTEP = 96, BANDGAP = 14;
-  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4 };
+  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 3 };
   var FIRST = {}, CNT = {};
   var acc = 0;
-  for (var d0 = 1; d0 <= 5; d0++) {
+  for (var d0 = 1; d0 <= 6; d0++) {
     FIRST[d0] = acc;
     CNT[d0] = CARDS.filter(function (c) { return c.day === d0; }).length;
     acc += CNT[d0];
   }
   var BANDTOP = {}, BANDH = {}, H = 0;
-  for (var d1 = 1; d1 <= 5; d1++) {
+  for (var d1 = 1; d1 <= 6; d1++) {
     BANDTOP[d1] = H;
     BANDH[d1] = ROW0 + (ROWS[d1] - 1) * ROWSTEP + NH + 18;
     H += BANDH[d1] + BANDGAP;
@@ -121,7 +139,7 @@
   stage.style.height = H + 'px';
 
   var html = [];
-  for (var d = 1; d <= 5; d++) {
+  for (var d = 1; d <= 6; d++) {
     html.push('<div class="band" style="top:' + BANDTOP[d] + 'px;height:' + BANDH[d] + 'px"></div>');
     html.push('<span class="bandname" style="top:' + (BANDTOP[d] + 10) + 'px">' + DAYNAME[d] + '</span>');
   }
@@ -275,9 +293,9 @@
 
   var list = document.getElementById('mapList');
   var lh = [];
-  for (var dd = 1; dd <= 5; dd++) {
+  for (var dd = 1; dd <= 6; dd++) {
     lh.push('<div class="mgroup"><p class="mgh"><i class="i' + dd + '" style="background:' +
-      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : dd === 4 ? 'var(--d4-ink)' : 'var(--d5-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
+      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : dd === 4 ? 'var(--d4-ink)' : dd === 5 ? 'var(--d5-ink)' : 'var(--d6-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
     CARDS.filter(function (c) { return c.day === dd; }).forEach(function (c) {
       var n = lvCount(c.id), dep = c.dep ? BY[c.dep] : null;
       lh.push('<button class="mrow d' + c.day + '" type="button" data-n="' + c.n + '" ' +

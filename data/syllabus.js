@@ -53,5 +53,16 @@ window.SYLLABUS = [
     "taskDesc": "两个任务都在本机跑。任务 1 把一套运算符接到同一个类上；任务 2 打印构造析构顺序，再用 sizeof 验证虚继承多出了什么。",
     "data": "data/day05.js",
     "bank": "data/bank/day05.js"
+  },
+  {
+    "id": "day6",
+    "title": "Day 6 · 多态与异常",
+    "nav": "Day 6 · 多态 / 异常",
+    "cards": 18,
+    "desc": "今天的重心在多态：virtual 让父类指针按真实类型调用，接着是 vptr / vtable、重载重定义重写、抽象类、虚析构。后半段进异常，从 throw / try / catch 到严格类型匹配、栈解旋、引用接异常和自定义异常类。每张卡的输出都是真跑出来的。",
+    "taskTitle": "Day 6 · 今天动手",
+    "taskDesc": "两个任务都在本机跑。任务 1 把「纯虚函数 + 虚函数 + 虚析构」串成一个能多态调用的形状类；任务 2 走一遍「栈解旋 + 自定义异常 + 基类引用接住」。",
+    "data": "data/day06.js",
+    "bank": "data/bank/day06.js"
   }
 ];
