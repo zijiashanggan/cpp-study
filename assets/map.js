@@ -1,4 +1,4 @@
-/* 概念地图：80 张卡按主依赖连线；桌面散点图 + 手机按天树状列表。
+/* 概念地图：100 张卡按主依赖连线；桌面散点图 + 手机按天树状列表。
    点节点先出说明（桌面浮层 / 手机底部抽屉），浮层里点「进入卡片」才跳转。 */
 (function () {
   'use strict';
@@ -84,9 +84,29 @@
     { n: 77, id: 'd6c77', t: '异常怎么接', day: 6, dep: 74, d: '按值接会多一次拷贝、接派生类还会切片；按指针接要手动 delete；推荐 catch (T& e)，不拷贝、不泄漏，还能配合多态接子类异常。' },
     { n: 78, id: 'd6c78', t: '异常多态', day: 6, dep: 77, d: '让异常类继承同一个基类，用 catch (Base& e) + 虚函数，就能一个 catch 处理一整族异常。派生类的 catch 必须写在基类前面。' },
     { n: 79, id: 'd6c79', t: '标准异常库', day: 6, dep: 78, d: 'out_of_range、invalid_argument 等都继承 std::exception，用 catch (exception& e) + e.what() 一处接住，what() 返回 const char*。' },
-    { n: 80, id: 'd6c80', t: '自定义异常', day: 6, dep: 79, d: '自己的异常类继承 exception，用 string 存说明，按原签名重写 const char* what() const noexcept；这样别人用 catch (exception&) 也能接住。' }
+    { n: 80, id: 'd6c80', t: '自定义异常', day: 6, dep: 79, d: '自己的异常类继承 exception，用 string 存说明，按原签名重写 const char* what() const noexcept；这样别人用 catch (exception&) 也能接住。' },
+    { n: 81, id: 'd7c81', t: '模板是什么', day: 7, dep: 0, d: '把类型参数化：同一套逻辑只写一次，编译器按你实际用到的类型各生成一份。它不是运行时万能函数，而是编译期的代码生成。' },
+    { n: 82, id: 'd7c82', t: '函数模板', day: 7, dep: 81, d: 'template <typename T> 后面跟函数，T 是类型占位符。调用时可由实参自动推导，也可以写 add<int>(...) 显式指定；推导和指定两条路都要会。' },
+    { n: 83, id: 'd7c83', t: '两次编译与隐式转换', day: 7, dep: 82, d: '模板先在声明处检查自身，再在调用处按 T 生成具体函数。它不做隐式类型转换，int 和 char 一起传会推导冲突，只能显式指定类型。' },
+    { n: 84, id: 'd7c84', t: '模板与普通函数同名', day: 7, dep: 82, d: '两者都能匹配时普通函数优先；printer<> 强制走模板，printer<int> 指定类型；模板匹配更精确时也会选模板。' },
+    { n: 85, id: 'd7c85', t: '函数模板重载', day: 7, dep: 82, d: '模板也能按参数个数/类型重载，但每个重载函数前面都要重新写一条 template 声明，声明只对紧邻的下一个函数生效。' },
+    { n: 86, id: 'd7c86', t: '模板局限与具体化', day: 7, dep: 82, d: '模板里直接 cout 自定义类、或对结构体做 > 比较都会失败。解决办法：给类型重载运算符，或写 template<> 具体化版本单独处理。' },
+    { n: 87, id: 'd7c87', t: '类模板', day: 7, dep: 81, d: '类模板用 Demo<T1,T2> 描述一族类，创建对象要写完整类名 Demo<int,int>。C++17 起 CTAD 能自动推导，但项目和面试通常仍要求写全。' },
+    { n: 88, id: 'd7c88', t: '类模板类外实现', day: 7, dep: 87, d: '每个类外成员函数前都要写 template<class T1,class T2>，函数名写成 Demo<T1,T2>::f；两样少一个都编译不过。' },
+    { n: 89, id: 'd7c89', t: '类模板作参数', day: 7, dep: 87, d: '函数参数可以写死具体实例 Demo<string,int>&，也可以继续用模板泛型 Demo<T1,T2>；只写 Demo 会报 requires template arguments。' },
+    { n: 90, id: 'd7c90', t: '模板派普通类', day: 7, dep: 87, d: '普通子类继承类模板时，必须在继承列表里写死父类类型，例如 public Parent<int,char>，否则编译器不知道对象要多大。' },
+    { n: 91, id: 'd7c91', t: '模板派模板', day: 7, dep: 90, d: '子类自己也是模板时，把父类需要的类型从子类参数继续传下去，初始化列表里写 Parent<T1,T2>(a,b)。' },
+    { n: 92, id: 'd7c92', t: '头源分离', day: 7, dep: 88, d: '模板在调用处才实例化，编译器必须看到完整定义。只把声明放 .h、定义放 .cpp，会在链接时报 undefined reference；解决是把声明和定义都写进 .hpp。' },
+    { n: 93, id: 'd7c93', t: '类模板友元', day: 7, dep: 87, d: '全局函数做友元要么写成模板友元，要么写死某一组实例类型 Demo<int,int>；只写 friend void f() 对模板类不生效。' },
+    { n: 94, id: 'd7c94', t: '动态数组模板', day: 7, dep: 88, d: '用 T* + capacity + size 写一个通用动态数组：add 满了就翻倍扩容，扩容后 delete[] 旧数组，拷贝构造和赋值要深拷贝。' },
+    { n: 95, id: 'd7c95', t: '为什么用四种转换', day: 7, dep: 0, d: 'C 风格 (int)a 看不出意图，连 const 都能悄悄转掉。四种命名转换各管一类事，让意图可见、让编译器能检查，也方便搜索和审查。' },
+    { n: 96, id: 'd7c96', t: 'static_cast', day: 7, dep: 95, d: '管基本类型转换和父子类指针转换。上行（子→父）安全，下行（父→子）不做运行时检查；不能去 const，也不能转无关类指针。' },
+    { n: 97, id: 'd7c97', t: 'dynamic_cast', day: 7, dep: 96, d: '多态类型的安全下行转换，基类必须有虚函数。指针失败返回 nullptr，引用失败抛 bad_cast；上行时和 static_cast 效果一样。' },
+    { n: 98, id: 'd7c98', t: 'const_cast', day: 7, dep: 95, d: '只对指针/引用加减 const，不能直接转 const 变量。如果对象本身真是常量，通过它改值是未定义行为。' },
+    { n: 99, id: 'd7c99', t: 'reinterpret_cast', day: 7, dep: 95, d: '只按位重新解释，指针和整数、无关指针类型都能转，但平台相关、完全没有类型检查，是最后手段。' },
+    { n: 100, id: 'd7c100', t: '四种转换怎么选', day: 7, dep: 99, d: '数值和上行用 static_cast，多态下行用 dynamic_cast，只改 const 用 const_cast，底层位模式才用 reinterpret_cast；C 风格不再用。' }
   ];
-  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this', 5: 'Day 5 · 重载与继承', 6: 'Day 6 · 多态与异常' };
+  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this', 5: 'Day 5 · 重载与继承', 6: 'Day 6 · 多态与异常', 7: 'Day 7 · 模板与转换' };
 
   var BY = {};
   CARDS.forEach(function (c) { BY[c.n] = c; });
@@ -108,16 +128,16 @@
 
   /* ---------- 桌面散点图 ---------- */
   var NW = 168, NH = 72, GAP = 26, PADX = 16, ROW0 = 34, ROWSTEP = 96, BANDGAP = 14;
-  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 3 };
+  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 3, 7: 4 };
   var FIRST = {}, CNT = {};
   var acc = 0;
-  for (var d0 = 1; d0 <= 6; d0++) {
+  for (var d0 = 1; d0 <= 7; d0++) {
     FIRST[d0] = acc;
     CNT[d0] = CARDS.filter(function (c) { return c.day === d0; }).length;
     acc += CNT[d0];
   }
   var BANDTOP = {}, BANDH = {}, H = 0;
-  for (var d1 = 1; d1 <= 6; d1++) {
+  for (var d1 = 1; d1 <= 7; d1++) {
     BANDTOP[d1] = H;
     BANDH[d1] = ROW0 + (ROWS[d1] - 1) * ROWSTEP + NH + 18;
     H += BANDH[d1] + BANDGAP;
@@ -139,7 +159,7 @@
   stage.style.height = H + 'px';
 
   var html = [];
-  for (var d = 1; d <= 6; d++) {
+  for (var d = 1; d <= 7; d++) {
     html.push('<div class="band" style="top:' + BANDTOP[d] + 'px;height:' + BANDH[d] + 'px"></div>');
     html.push('<span class="bandname" style="top:' + (BANDTOP[d] + 10) + 'px">' + DAYNAME[d] + '</span>');
   }
@@ -293,9 +313,9 @@
 
   var list = document.getElementById('mapList');
   var lh = [];
-  for (var dd = 1; dd <= 6; dd++) {
+  for (var dd = 1; dd <= 7; dd++) {
     lh.push('<div class="mgroup"><p class="mgh"><i class="i' + dd + '" style="background:' +
-      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : dd === 4 ? 'var(--d4-ink)' : dd === 5 ? 'var(--d5-ink)' : 'var(--d6-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
+      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : dd === 4 ? 'var(--d4-ink)' : dd === 5 ? 'var(--d5-ink)' : dd === 6 ? 'var(--d6-ink)' : 'var(--d7-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
     CARDS.filter(function (c) { return c.day === dd; }).forEach(function (c) {
       var n = lvCount(c.id), dep = c.dep ? BY[c.dep] : null;
       lh.push('<button class="mrow d' + c.day + '" type="button" data-n="' + c.n + '" ' +
