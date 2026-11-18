@@ -75,5 +75,16 @@ window.SYLLABUS = [
     "taskDesc": "两个任务：用函数模板写交换和排序；把四种转换各用一次，看清每种转换的边界。",
     "data": "data/day07.js",
     "bank": "data/bank/day07.js"
+  },
+  {
+    "id": "day8",
+    "title": "Day 8 · 常用库 day1",
+    "nav": "Day 8 · STL / 容器",
+    "cards": 22,
+    "desc": "STL 第一天：容器、算法、迭代器三件套，再把 string、vector、deque、stack、queue、list、set、map 依次过一遍。重点是 string、vector、map，示例全部真编译真跑。",
+    "taskTitle": "Day 8 · 今天动手",
+    "taskDesc": "两个作业：用 vector 存选手和 10 个分数，去掉最高最低取平均；用 vector + multimap 完成学生分班。数据写在代码里，复制走就能跑。",
+    "data": "data/day08.js",
+    "bank": "data/bank/day08.js"
   }
 ];

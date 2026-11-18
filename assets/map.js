@@ -1,4 +1,4 @@
-/* 概念地图：100 张卡按主依赖连线；桌面散点图 + 手机按天树状列表。
+/* 概念地图：122 张卡按主依赖连线；桌面散点图 + 手机按天树状列表。
    点节点先出说明（桌面浮层 / 手机底部抽屉），浮层里点「进入卡片」才跳转。 */
 (function () {
   'use strict';
@@ -104,9 +104,31 @@
     { n: 97, id: 'd7c97', t: 'dynamic_cast', day: 7, dep: 96, d: '多态类型的安全下行转换，基类必须有虚函数。指针失败返回 nullptr，引用失败抛 bad_cast；上行时和 static_cast 效果一样。' },
     { n: 98, id: 'd7c98', t: 'const_cast', day: 7, dep: 95, d: '只对指针/引用加减 const，不能直接转 const 变量。如果对象本身真是常量，通过它改值是未定义行为。' },
     { n: 99, id: 'd7c99', t: 'reinterpret_cast', day: 7, dep: 95, d: '只按位重新解释，指针和整数、无关指针类型都能转，但平台相关、完全没有类型检查，是最后手段。' },
-    { n: 100, id: 'd7c100', t: '四种转换怎么选', day: 7, dep: 99, d: '数值和上行用 static_cast，多态下行用 dynamic_cast，只改 const 用 const_cast，底层位模式才用 reinterpret_cast；C 风格不再用。' }
+    { n: 100, id: 'd7c100', t: '四种转换怎么选', day: 7, dep: 99, d: '数值和上行用 static_cast，多态下行用 dynamic_cast，只改 const 用 const_cast，底层位模式才用 reinterpret_cast；C 风格不再用。' },
+    { n: 101, id: 'd8c101', t: 'STL 是什么', day: 8, dep: 100, d: 'STL 是标准库里的容器、算法、迭代器三件套：容器装数据，算法按迭代器区间操作数据，迭代器在中间粘合。它是后面所有容器与算法的总纲。' },
+    { n: 102, id: 'd8c102', t: '组件与算法分类', day: 8, dep: 101, d: '容器分序列式和关联式；算法分质变（会改元素）和非质变（只读）。分清这两组词，才知道 find 和 sort 的差别在哪。' },
+    { n: 103, id: 'd8c103', t: '迭代器五种', day: 8, dep: 102, d: '输入、输出、前向、双向、随机访问五种迭代器能力逐级增强。vector 是随机访问，list 是双向，能力决定哪些算法能用在哪个容器上。' },
+    { n: 104, id: 'd8c104', t: 'string 构造与拼接', day: 8, dep: 101, d: 'string 是自带长度、能自动扩容的字符容器：构造、赋值、+= 拼接、append 都比 C 字符串省心，不用再自己算 \0 和容量。' },
+    { n: 105, id: 'd8c105', t: 'string 查找替换', day: 8, dep: 104, d: 'find 找不到返回 npos（不是 -1），substr 截子串，replace 换内容。判空要用 == string::npos，这是 string 最容易踩的一处。' },
+    { n: 106, id: 'd8c106', t: 'string 与 C 串', day: 8, dep: 104, d: 'string 用 c_str() 交出只读的 const char*，C 字符串可以直接赋给 string。交给老接口用 c_str，接完不要再持有那个指针。' },
+    { n: 107, id: 'd8c107', t: 'vector 基本用法', day: 8, dep: 101, d: 'vector 是会自己扩容的动态数组：push_back 尾插、[] 随机访问、size 取个数、迭代器遍历。日常存一串同类数据首选它。' },
+    { n: 108, id: 'd8c108', t: 'vector 扩容', day: 8, dep: 107, d: 'size 是现有元素数，capacity 是已申请容量；满了再插会按倍数重新申请、搬过去、释放旧的。提前 reserve 能少搬几次。' },
+    { n: 109, id: 'd8c109', t: 'vector 迭代器失效', day: 8, dep: 108, d: '扩容后旧迭代器、指针、引用全部失效；erase 之后被删位置及之后的迭代器失效。循环里删元素必须用 it = v.erase(it)，不能 it++ 再删。' },
+    { n: 110, id: 'd8c110', t: 'vector 增删与收缩', day: 8, dep: 107, d: 'insert / erase 在中间动数据要整体搬移，代价高；swap 一个空 vector 能把 capacity 真正收回去。尾插尾删才是 vector 的强项。' },
+    { n: 111, id: 'd8c111', t: 'vector 排序', day: 8, dep: 107, d: 'sort 默认升序，传 greater<int>() 变降序，传自定义比较函数按自己的规则排。排的是迭代器区间，升序降序只差第三个参数。' },
+    { n: 112, id: 'd8c112', t: 'deque', day: 8, dep: 107, d: 'deque 是双端队列，头尾都能 O(1) 插入删除，也支持 [] 随机访问。需要两头都动就用它，只尾部动 vector 更省。' },
+    { n: 113, id: 'd8c113', t: 'stack', day: 8, dep: 112, d: 'stack 是后进先出的适配器：push 压栈、top 看栈顶、pop 弹出（不返回值）。它默认用 deque 当底层容器，不能遍历。' },
+    { n: 114, id: 'd8c114', t: 'queue', day: 8, dep: 112, d: 'queue 是先进先出：push 进队尾、front 看队头、pop 出队。同样不给迭代器，要遍历就得换 deque。' },
+    { n: 115, id: 'd8c115', t: 'list', day: 8, dep: 107, d: 'list 是双向链表，任意位置插入删除 O(1)，但不支持 [] 随机访问，只能靠迭代器一步步走。频繁中间增删才选它。' },
+    { n: 116, id: 'd8c116', t: 'list 进阶', day: 8, dep: 115, d: 'list 的迭代器是双向的，只能 ++ / --，不能 +n，要用 advance 移动；它自带 sort / reverse 成员函数，因为标准 sort 要求随机访问迭代器。' },
+    { n: 117, id: 'd8c117', t: 'set', day: 8, dep: 111, d: 'set 自动去重并排好序，insert 时就把位置放对，find / count 是 O(log n)。它不给 []，元素也不能直接改，改要删了再插。' },
+    { n: 118, id: 'd8c118', t: 'set 仿函数', day: 8, dep: 117, d: 'set 的第二个模板参数决定排序规则：默认 less<T> 升序，写 greater<T> 变降序，也可以传自定义仿函数。规则变了，去重口径也跟着变。' },
+    { n: 119, id: 'd8c119', t: 'pair', day: 8, dep: 101, d: 'pair 把两个值捆成一个整体，用 first / second 访问，make_pair 最省事。它是 map 里 key-value 的基本单位。' },
+    { n: 120, id: 'd8c120', t: 'map 插入遍历', day: 8, dep: 119, d: 'map 存 key-value，key 自动去重并排序；插入用 insert 或 m[key]，遍历拿到的是 pair。注意 m[key] 找不到会顺手插一个默认值。' },
+    { n: 121, id: 'd8c121', t: 'map 查找删除', day: 8, dep: 120, d: 'find 返回迭代器，找不到返回 end()；count 只能告诉你 0 或 1；erase 可以按 key 或迭代器删。查之前别用 []，否则会污染容器。' },
+    { n: 122, id: 'd8c122', t: '容器怎么选', day: 8, dep: 121, d: '默认 vector；要两头动 deque；要栈/队列用适配器；频繁中间增删 list；要去重排序 set；要按 key 查 map。先按操作特征选，再谈性能。' }
   ];
-  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this', 5: 'Day 5 · 重载与继承', 6: 'Day 6 · 多态与异常', 7: 'Day 7 · 模板与转换' };
+  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this', 5: 'Day 5 · 重载与继承', 6: 'Day 6 · 多态与异常', 7: 'Day 7 · 模板与转换', 8: 'Day 8 · STL 与容器' };
 
   var BY = {};
   CARDS.forEach(function (c) { BY[c.n] = c; });
@@ -128,16 +150,16 @@
 
   /* ---------- 桌面散点图 ---------- */
   var NW = 168, NH = 72, GAP = 26, PADX = 16, ROW0 = 34, ROWSTEP = 96, BANDGAP = 14;
-  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 3, 7: 4 };
+  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 3, 7: 4, 8: 4 };
   var FIRST = {}, CNT = {};
   var acc = 0;
-  for (var d0 = 1; d0 <= 7; d0++) {
+  for (var d0 = 1; d0 <= 8; d0++) {
     FIRST[d0] = acc;
     CNT[d0] = CARDS.filter(function (c) { return c.day === d0; }).length;
     acc += CNT[d0];
   }
   var BANDTOP = {}, BANDH = {}, H = 0;
-  for (var d1 = 1; d1 <= 7; d1++) {
+  for (var d1 = 1; d1 <= 8; d1++) {
     BANDTOP[d1] = H;
     BANDH[d1] = ROW0 + (ROWS[d1] - 1) * ROWSTEP + NH + 18;
     H += BANDH[d1] + BANDGAP;
@@ -159,7 +181,7 @@
   stage.style.height = H + 'px';
 
   var html = [];
-  for (var d = 1; d <= 7; d++) {
+  for (var d = 1; d <= 8; d++) {
     html.push('<div class="band" style="top:' + BANDTOP[d] + 'px;height:' + BANDH[d] + 'px"></div>');
     html.push('<span class="bandname" style="top:' + (BANDTOP[d] + 10) + 'px">' + DAYNAME[d] + '</span>');
   }
@@ -313,9 +335,9 @@
 
   var list = document.getElementById('mapList');
   var lh = [];
-  for (var dd = 1; dd <= 7; dd++) {
+  for (var dd = 1; dd <= 8; dd++) {
     lh.push('<div class="mgroup"><p class="mgh"><i class="i' + dd + '" style="background:' +
-      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : dd === 4 ? 'var(--d4-ink)' : dd === 5 ? 'var(--d5-ink)' : dd === 6 ? 'var(--d6-ink)' : 'var(--d7-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
+      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : dd === 4 ? 'var(--d4-ink)' : dd === 5 ? 'var(--d5-ink)' : dd === 6 ? 'var(--d6-ink)' : dd === 7 ? 'var(--d7-ink)' : 'var(--d8-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
     CARDS.filter(function (c) { return c.day === dd; }).forEach(function (c) {
       var n = lvCount(c.id), dep = c.dep ? BY[c.dep] : null;
       lh.push('<button class="mrow d' + c.day + '" type="button" data-n="' + c.n + '" ' +

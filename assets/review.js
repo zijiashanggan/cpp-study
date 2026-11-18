@@ -8,7 +8,7 @@
   var KEY = 'cpp_review_v1';
   var LV_KEY = 'cpp_card_levels_v2';
   var INT = [1, 2, 4, 7, 15, 30];
-  var DAYNAME = { day1: 'Day 1', day2: 'Day 2', day3: 'Day 3', day4: 'Day 4', day5: 'Day 5', day6: 'Day 6', day7: 'Day 7' };
+  var DAYNAME = { day1: 'Day 1', day2: 'Day 2', day3: 'Day 3', day4: 'Day 4', day5: 'Day 5', day6: 'Day 6', day7: 'Day 7', day8: 'Day 8' };
 
   function pad(n) { return n < 10 ? '0' + n : '' + n; }
   function todayStr() {
