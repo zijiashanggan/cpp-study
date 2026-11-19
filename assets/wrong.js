@@ -12,9 +12,10 @@
     day5: 'Day 5 · 重载与继承',
     day6: 'Day 6 · 多态与异常',
     day7: 'Day 7 · 模板与转换',
-    day8: 'Day 8 · 常用库 day1'
+    day8: 'Day 8 · 常用库 day1',
+    day9: 'Day 9 · 常用库 day2'
   };
-  var DAYORDER = ['day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day7', 'day8'];
+  var DAYORDER = ['day1', 'day2', 'day3', 'day4', 'day5', 'day6', 'day7', 'day8', 'day9'];
   var QB = {};      /* 题 id → {type, day, base} */
   var META = {};    /* 题 id → {day, num, title, tag, cardId} */
 

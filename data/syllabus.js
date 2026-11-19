@@ -86,5 +86,16 @@ window.SYLLABUS = [
     "taskDesc": "两个作业：用 vector 存选手和 10 个分数，去掉最高最低取平均；用 vector + multimap 完成学生分班。数据写在代码里，复制走就能跑。",
     "data": "data/day08.js",
     "bank": "data/bank/day08.js"
+  },
+  {
+    "id": "day9",
+    "title": "Day 9 · 常用库 day2",
+    "nav": "Day 9 · 仿函数 / 算法 / lambda",
+    "cards": 22,
+    "desc": "常用库第二天：仿函数与谓词、内建函数对象、bind / mem_fn / not1 适配器、STL 常用算法，最后用 lambda 把规则就地写出来。示例全部真编译真跑。",
+    "taskTitle": "Day 9 · 今天动手",
+    "taskDesc": "两个任务：用仿函数和谓词做成绩排序、统计及格、找第一个不及格；用 lambda 配 transform / accumulate / set_difference 做综合处理。",
+    "data": "data/day09.js",
+    "bank": "data/bank/day09.js"
   }
 ];

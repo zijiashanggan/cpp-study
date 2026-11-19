@@ -165,11 +165,18 @@ var TRACKS = {
     dom: { list: 'qlist8', prog: 'stProg8', score: 'stScore8', rate: 'stRate8',
            sum: 'summary8', again: 'againBar8', root: 'practice8' },
     R: { list: [], ans: {}, draft: {}, startedAt: 0 }
+  },
+  d9: {
+    id: 'd9', name: 'Day 9', day: 'day9',
+    spec: { single: 7, fill: 3, judge: 3, code: 3 },
+    dom: { list: 'qlist9', prog: 'stProg9', score: 'stScore9', rate: 'stRate9',
+           sum: 'summary9', again: 'againBar9', root: 'practice9' },
+    R: { list: [], ans: {}, draft: {}, startedAt: 0 }
   }
 };
 
 function dayOf(b) {
-  var m = /^day([1-8])$/.exec(b.day || '');
+  var m = /^day([1-9])$/.exec(b.day || '');
   return m ? 'day' + m[1] : 'day1';
 }
 

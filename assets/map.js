@@ -1,4 +1,4 @@
-/* 概念地图：122 张卡按主依赖连线；桌面散点图 + 手机按天树状列表。
+/* 概念地图：144 张卡按主依赖连线；桌面散点图 + 手机按天树状列表。
    点节点先出说明（桌面浮层 / 手机底部抽屉），浮层里点「进入卡片」才跳转。 */
 (function () {
   'use strict';
@@ -126,9 +126,31 @@
     { n: 119, id: 'd8c119', t: 'pair', day: 8, dep: 101, d: 'pair 把两个值捆成一个整体，用 first / second 访问，make_pair 最省事。它是 map 里 key-value 的基本单位。' },
     { n: 120, id: 'd8c120', t: 'map 插入遍历', day: 8, dep: 119, d: 'map 存 key-value，key 自动去重并排序；插入用 insert 或 m[key]，遍历拿到的是 pair。注意 m[key] 找不到会顺手插一个默认值。' },
     { n: 121, id: 'd8c121', t: 'map 查找删除', day: 8, dep: 120, d: 'find 返回迭代器，找不到返回 end()；count 只能告诉你 0 或 1；erase 可以按 key 或迭代器删。查之前别用 []，否则会污染容器。' },
-    { n: 122, id: 'd8c122', t: '容器怎么选', day: 8, dep: 121, d: '默认 vector；要两头动 deque；要栈/队列用适配器；频繁中间增删 list；要去重排序 set；要按 key 查 map。先按操作特征选，再谈性能。' }
+    { n: 122, id: 'd8c122', t: '容器怎么选', day: 8, dep: 121, d: '默认 vector；要两头动 deque；要栈/队列用适配器；频繁中间增删 list；要去重排序 set；要按 key 查 map。先按操作特征选，再谈性能。' },
+    { n: 123, id: 'd9c123', t: '仿函数是什么', day: 9, dep: 102, d: '重载了 operator() 的类，它的对象能像函数一样调用，就叫函数对象或仿函数。它是把「规则」装进对象传给算法的起点。' },
+    { n: 124, id: 'd9c124', t: '仿函数的优势', day: 9, dep: 123, d: '仿函数能带状态、容易被内联、能配模板；普通函数要有状态只能靠 static 或全局变量。STL 因此偏爱仿函数。' },
+    { n: 125, id: 'd9c125', t: '一元谓词', day: 9, dep: 123, d: '收一个参数、返回 bool 的可调用对象，用来给 find_if、count_if 提供判断条件。普通函数传函数名，仿函数要传对象。' },
+    { n: 126, id: 'd9c126', t: '二元谓词', day: 9, dep: 125, d: '收两个参数、返回 bool，给 sort、merge 定「谁排前面」的规则。必须满足严格弱序，相等要返回 false。' },
+    { n: 127, id: 'd9c127', t: '内建函数对象', day: 9, dep: 125, d: '标准库写好的仿函数：算数类 plus/minus、关系类 greater/less、逻辑类 logical_and 等。include <functional> 就能直接用。' },
+    { n: 128, id: 'd9c128', t: 'bind 适配器', day: 9, dep: 125, d: '把可调用对象的一部分参数先固定，剩下的用 placeholders::_1 占位，返回一个新的可调用对象，让接口对上算法要求。' },
+    { n: 129, id: 'd9c129', t: 'bind 接普通函数', day: 9, dep: 128, d: 'bind(函数名, _1, 固定值) 能把二元普通函数变成一元可调用对象。函数重载过时，要先用函数指针指定版本。' },
+    { n: 130, id: 'd9c130', t: '成员函数适配器', day: 9, dep: 128, d: '成员函数多了隐含 this，不能直接传给算法。无参用 mem_fn，有参用 bind，_1 留给对象位置。' },
+    { n: 131, id: 'd9c131', t: 'not1 / not2', day: 9, dep: 128, d: '给谓词加「非」：not1 反一元、not2 反二元。C++17 起 deprecated，新代码直接写 lambda 更清楚。' },
+    { n: 132, id: 'd9c132', t: '算法铁律', day: 9, dep: 101, d: '算法不操作容器，只收一对迭代器区间；改元素要通过 *it。并非所有容器支持所有算法：list 用自己的 sort，set/map 自动有序。' },
+    { n: 133, id: 'd9c133', t: 'for_each', day: 9, dep: 132, d: '逐个遍历元素并执行传入的可调用对象，返回该对象；想拿回累计状态就接返回值，或用 lambda 引用捕获。' },
+    { n: 134, id: 'd9c134', t: 'transform', day: 9, dep: 132, d: '把源区间元素加工后写到目标区间。它不分配内存，目标容器必须先 resize；返回目标区间末尾迭代器。' },
+    { n: 135, id: 'd9c135', t: 'find / find_if', day: 9, dep: 132, d: 'find 按值找、find_if 按谓词找，结果都是迭代器；找不到返回 end()，判断必须和 end() 比，不能和 nullptr 或 -1 比。' },
+    { n: 136, id: 'd9c136', t: 'adjacent_find / binary_search', day: 9, dep: 135, d: 'adjacent_find 找相邻重复，binary_search 在有序区间里判断存在。二分前没排序，结果不可信但不报错。' },
+    { n: 137, id: 'd9c137', t: 'count / count_if', day: 9, dep: 135, d: 'count 数等值出现次数，count_if 数谓词为真的个数。返回 ptrdiff_t，和 size_t 混比要注意符号。' },
+    { n: 138, id: 'd9c138', t: 'merge / reverse', day: 9, dep: 132, d: 'merge 把两段有序区间归并到目标，目标要先 resize；reverse 原地反转，返回 void。merge 不排序，只归并。' },
+    { n: 139, id: 'd9c139', t: 'copy / replace', day: 9, dep: 132, d: 'copy 搬运不复分配，目标要先够空间；replace 按旧值替换，replace_if 按谓词替换，谓词在第三个参数。' },
+    { n: 140, id: 'd9c140', t: 'accumulate / fill', day: 9, dep: 132, d: 'accumulate 在 <numeric>，第三个参数是初始值且决定结果类型；fill 把整个区间覆盖成同一个值。' },
+    { n: 141, id: 'd9c141', t: '集合算法', day: 9, dep: 117, d: 'set_intersection / set_union / set_difference 求交并差，都要求两个区间有序，目标先开够空间，返回目标区间末尾。' },
+    { n: 142, id: 'd9c142', t: 'lambda 基础', day: 9, dep: 123, d: 'lambda 是编译器生成的匿名仿函数：捕获列表决定能看见谁，[=] 值捕获只读，[&] 引用捕获可改，[this] 捕获当前对象。' },
+    { n: 143, id: 'd9c143', t: 'lambda 操作容器', day: 9, dep: 142, d: '把 lambda 直接传给 for_each / transform / find_if，规则就地写；要累加外部变量必须引用捕获，transform 目标仍要先 resize。' },
+    { n: 144, id: 'd9c144', t: 'lambda 与仿函数', day: 9, dep: 142, d: 'lambda 就是编译器生成的仿函数，每个 lambda 类型唯一；要存进容器或当回调保存，用 std::function 包一层。' }
   ];
-  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this', 5: 'Day 5 · 重载与继承', 6: 'Day 6 · 多态与异常', 7: 'Day 7 · 模板与转换', 8: 'Day 8 · STL 与容器' };
+  var DAYNAME = { 1: 'Day 1 · 引用与传参', 2: 'Day 2 · 指针与内存', 3: 'Day 3 · 类与对象', 4: 'Day 4 · 静态与 this', 5: 'Day 5 · 重载与继承', 6: 'Day 6 · 多态与异常', 7: 'Day 7 · 模板与转换', 8: 'Day 8 · STL 与容器', 9: 'Day 9 · 仿函数与算法' };
 
   var BY = {};
   CARDS.forEach(function (c) { BY[c.n] = c; });
@@ -150,16 +172,16 @@
 
   /* ---------- 桌面散点图 ---------- */
   var NW = 168, NH = 72, GAP = 26, PADX = 16, ROW0 = 34, ROWSTEP = 96, BANDGAP = 14;
-  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 3, 7: 4, 8: 4 };
+  var ROWS = { 1: 1, 2: 2, 3: 2, 4: 3, 5: 4, 6: 3, 7: 4, 8: 4, 9: 4 };
   var FIRST = {}, CNT = {};
   var acc = 0;
-  for (var d0 = 1; d0 <= 8; d0++) {
+  for (var d0 = 1; d0 <= 9; d0++) {
     FIRST[d0] = acc;
     CNT[d0] = CARDS.filter(function (c) { return c.day === d0; }).length;
     acc += CNT[d0];
   }
   var BANDTOP = {}, BANDH = {}, H = 0;
-  for (var d1 = 1; d1 <= 8; d1++) {
+  for (var d1 = 1; d1 <= 9; d1++) {
     BANDTOP[d1] = H;
     BANDH[d1] = ROW0 + (ROWS[d1] - 1) * ROWSTEP + NH + 18;
     H += BANDH[d1] + BANDGAP;
@@ -181,7 +203,7 @@
   stage.style.height = H + 'px';
 
   var html = [];
-  for (var d = 1; d <= 8; d++) {
+  for (var d = 1; d <= 9; d++) {
     html.push('<div class="band" style="top:' + BANDTOP[d] + 'px;height:' + BANDH[d] + 'px"></div>');
     html.push('<span class="bandname" style="top:' + (BANDTOP[d] + 10) + 'px">' + DAYNAME[d] + '</span>');
   }
@@ -335,9 +357,9 @@
 
   var list = document.getElementById('mapList');
   var lh = [];
-  for (var dd = 1; dd <= 8; dd++) {
+  for (var dd = 1; dd <= 9; dd++) {
     lh.push('<div class="mgroup"><p class="mgh"><i class="i' + dd + '" style="background:' +
-      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : dd === 4 ? 'var(--d4-ink)' : dd === 5 ? 'var(--d5-ink)' : dd === 6 ? 'var(--d6-ink)' : dd === 7 ? 'var(--d7-ink)' : 'var(--d8-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
+      (dd === 1 ? 'var(--d1-ink)' : dd === 2 ? 'var(--d2-ink)' : dd === 3 ? 'var(--d3-ink)' : dd === 4 ? 'var(--d4-ink)' : dd === 5 ? 'var(--d5-ink)' : dd === 6 ? 'var(--d6-ink)' : dd === 7 ? 'var(--d7-ink)' : dd === 8 ? 'var(--d8-ink)' : 'var(--d9-ink)') + '"></i>' + DAYNAME[dd] + '</p>');
     CARDS.filter(function (c) { return c.day === dd; }).forEach(function (c) {
       var n = lvCount(c.id), dep = c.dep ? BY[c.dep] : null;
       lh.push('<button class="mrow d' + c.day + '" type="button" data-n="' + c.n + '" ' +
